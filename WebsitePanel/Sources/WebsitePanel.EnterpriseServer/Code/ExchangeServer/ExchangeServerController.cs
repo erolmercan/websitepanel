@@ -408,7 +408,7 @@ namespace WebsitePanel.EnterpriseServer
                     // rollback organization creation
                     if (organizationExtended)                    
                         mailboxRole.DeleteOrganization(org.OrganizationId, org.DistinguishedName,
-                            org.GlobalAddressList, org.AddressList, org.OfflineAddressBook, org.SecurityGroup);
+                            org.GlobalAddressList, org.AddressList, org.RoomsAddressList, org.OfflineAddressBook, org.SecurityGroup);
 
                         // rollback domain
                         if (authDomainCreated)
@@ -504,6 +504,7 @@ namespace WebsitePanel.EnterpriseServer
 					org.DistinguishedName,
 					org.GlobalAddressList,
 					org.AddressList,
+                    org.RoomsAddressList,
 					org.OfflineAddressBook,
 					org.SecurityGroup);
 

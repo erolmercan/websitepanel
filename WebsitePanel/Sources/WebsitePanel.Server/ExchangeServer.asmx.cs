@@ -176,12 +176,12 @@ namespace WebsitePanel.Server
 		}
 
 		[WebMethod, SoapHeader("settings")]
-		public bool DeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string offlineAddressBook, string securityGroup)
+		public bool DeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string roomsAddressList, string offlineAddressBook, string securityGroup)
 		{
 			try
 			{
 				LogStart("DeleteOrganization");
-				bool ret = ES.DeleteOrganization(organizationId, distinguishedName, globalAddressList, addressList, offlineAddressBook, securityGroup);
+				bool ret = ES.DeleteOrganization(organizationId, distinguishedName, globalAddressList, addressList, roomsAddressList, offlineAddressBook, securityGroup);
 				LogEnd("DeleteOrganization");
 				return ret;
 			}

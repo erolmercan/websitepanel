@@ -39,6 +39,7 @@ namespace WebsitePanel.Providers.HostedSolution
         private string defaultDomain;
         private string offlineAddressBook;
         private string addressList;
+        private string roomsAddressList;
         private string globalAddressList;
         private string database;
         private string securityGroup;
@@ -165,6 +166,13 @@ namespace WebsitePanel.Providers.HostedSolution
         {
             get { return addressList; }
             set { addressList = value; }
+        }
+
+        [Persistent]
+        public string RoomsAddressList
+        {
+            get { return roomsAddressList; }
+            set { roomsAddressList = value; }
         }
 
         [Persistent]

@@ -45,7 +45,7 @@ namespace WebsitePanel.Providers.HostedSolution
 		string GetOABVirtualDirectory();
 		Organization CreateOrganizationOfflineAddressBook(string organizationId, string securityGroup, string oabVirtualDir);
 		void UpdateOrganizationOfflineAddressBook(string id);
-		bool DeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string offlineAddressBook, string securityGroup);
+		bool DeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string roomsAddressList, string offlineAddressBook, string securityGroup);
 		void SetOrganizationStorageLimits(string organizationDistinguishedName, int issueWarningKB, int prohibitSendKB, int prohibitSendReceiveKB, int keepDeletedItemsDays);
 		ExchangeItemStatistics[] GetMailboxesStatistics(string organizationDistinguishedName);
 

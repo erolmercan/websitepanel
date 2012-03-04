@@ -84,6 +84,13 @@ namespace WebsitePanel.Providers.HostedSolution
 			action.Id = id;
 			Actions.Add(action);
 		}
+        internal void RegisterNewRoomsAddressList(string id)
+        {
+            TransactionAction action = new TransactionAction();
+            action.ActionType = TransactionAction.TransactionActionTypes.CreateRoomsAddressList;
+            action.Id = id;
+            Actions.Add(action);
+        }
         internal void RegisterNewAddressPolicy(string id)
         {
             TransactionAction action = new TransactionAction();
@@ -241,7 +248,8 @@ namespace WebsitePanel.Providers.HostedSolution
 			AddMailboxFullAccessPermission,
 			AddSendAsPermission,
 			RemoveMailboxFullAccessPermission,
-			RemoveSendAsPermission
+			RemoveSendAsPermission,
+            CreateRoomsAddressList
 		};
 	}
 

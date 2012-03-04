@@ -770,24 +770,26 @@ namespace WebsitePanel.Providers.Exchange {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/server/DeleteOrganization", RequestNamespace="http://smbsaas/websitepanel/server/", ResponseNamespace="http://smbsaas/websitepanel/server/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public bool DeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string offlineAddressBook, string securityGroup) {
+        public bool DeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string roomsAddressList, string offlineAddressBook, string securityGroup) {
             object[] results = this.Invoke("DeleteOrganization", new object[] {
                         organizationId,
                         distinguishedName,
                         globalAddressList,
                         addressList,
+                        roomsAddressList,
                         offlineAddressBook,
                         securityGroup});
             return ((bool)(results[0]));
         }
         
         /// <remarks/>
-        public System.IAsyncResult BeginDeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string offlineAddressBook, string securityGroup, System.AsyncCallback callback, object asyncState) {
+        public System.IAsyncResult BeginDeleteOrganization(string organizationId, string distinguishedName, string globalAddressList, string addressList, string roomsAddressList, string offlineAddressBook, string securityGroup, System.AsyncCallback callback, object asyncState) {
             return this.BeginInvoke("DeleteOrganization", new object[] {
                         organizationId,
                         distinguishedName,
                         globalAddressList,
                         addressList,
+                        roomsAddressList,
                         offlineAddressBook,
                         securityGroup}, callback, asyncState);
         }
@@ -799,12 +801,12 @@ namespace WebsitePanel.Providers.Exchange {
         }
         
         /// <remarks/>
-        public void DeleteOrganizationAsync(string organizationId, string distinguishedName, string globalAddressList, string addressList, string offlineAddressBook, string securityGroup) {
-            this.DeleteOrganizationAsync(organizationId, distinguishedName, globalAddressList, addressList, offlineAddressBook, securityGroup, null);
+        public void DeleteOrganizationAsync(string organizationId, string distinguishedName, string globalAddressList, string addressList, string roomsAddressList, string offlineAddressBook, string securityGroup) {
+            this.DeleteOrganizationAsync(organizationId, distinguishedName, globalAddressList, addressList, roomsAddressList, offlineAddressBook, securityGroup, null);
         }
         
         /// <remarks/>
-        public void DeleteOrganizationAsync(string organizationId, string distinguishedName, string globalAddressList, string addressList, string offlineAddressBook, string securityGroup, object userState) {
+        public void DeleteOrganizationAsync(string organizationId, string distinguishedName, string globalAddressList, string addressList, string roomsAddressList, string offlineAddressBook, string securityGroup, object userState) {
             if ((this.DeleteOrganizationOperationCompleted == null)) {
                 this.DeleteOrganizationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnDeleteOrganizationOperationCompleted);
             }
@@ -813,6 +815,7 @@ namespace WebsitePanel.Providers.Exchange {
                         distinguishedName,
                         globalAddressList,
                         addressList,
+                        roomsAddressList,
                         offlineAddressBook,
                         securityGroup}, this.DeleteOrganizationOperationCompleted, userState);
         }
