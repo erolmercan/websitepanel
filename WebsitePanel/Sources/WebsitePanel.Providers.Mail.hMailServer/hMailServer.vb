@@ -1169,7 +1169,30 @@ Public Class hMailServer
 				End Try
 			End If
 		Next
-	End Sub
+    End Sub
+
+    Public Overrides Function GetServiceItemsDiskSpace(ByVal items() As ServiceProviderItem) As ServiceProviderItemDiskSpace()
+        Dim itemsDiskspace As List(Of ServiceProviderItemDiskSpace) = New List(Of ServiceProviderItemDiskSpace)
+        Dim item As ServiceProviderItem
+        For Each item In items
+            If TypeOf item Is MailAccount Then
+                Try
+                    Dim name As String = item.Name
+                    Dim domainName As String = name.Substring((name.IndexOf("@") + 1))
+                    Dim objDomain As Service = GetDomainObject(domainName)
+                    Dim objAccount = objDomain.ComObject.Accounts.ItemByAddress(name)
+                    Dim objAccountSize As Long = objAccount.Size() * 1048576
+                    Dim diskspace As New ServiceProviderItemDiskSpace()
+                    diskspace.ItemId = item.Id
+                    diskspace.DiskSpace = objAccountSize
+                    itemsDiskspace.Add(diskspace)
+                Catch ex As Exception
+                    Log.WriteError("Error calculating disk space for mail account: " + item.Name, ex)
+                End Try
+            End If
+        Next item
+        Return itemsDiskspace.ToArray()
+    End Function
 
 	Public Overrides Sub DeleteServiceItems(ByVal items() As ServiceProviderItem)
 		For Each item As ServiceProviderItem In items
