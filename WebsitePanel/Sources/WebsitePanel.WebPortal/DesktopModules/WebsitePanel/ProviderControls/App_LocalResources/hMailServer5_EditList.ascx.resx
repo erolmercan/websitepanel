@@ -117,52 +117,31 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="cbSignatureEnabled.Text" xml:space="preserve">
-    <value>Yes</value>
+  <data name="ddlPostingModeItem.Announcements" xml:space="preserve">
+    <value>Announcements</value>
   </data>
-  <data name="chkOriginalMessage.Text" xml:space="preserve">
-    <value>Keep original Message</value>
+  <data name="ddlPostingModeItem.MemberShip" xml:space="preserve">
+    <value>Membership</value>
   </data>
-  <data name="lblFirstName.Text" xml:space="preserve">
-    <value>First Name:</value>
+  <data name="ddlPostingModeItem.Password" xml:space="preserve">
+    <value>Password Protected Posting</value>
   </data>
-  <data name="lblForwardTo.Text" xml:space="preserve">
-    <value>Forward mail to address:</value>
+  <data name="ddlPostingModeItem.Public" xml:space="preserve">
+    <value>Public</value>
   </data>
-  <data name="lblHtmlSignature.Text" xml:space="preserve">
-    <value>HTML Signature</value>
+  <data name="lblEmail.Text" xml:space="preserve">
+    <value>Announcements E-mail:</value>
   </data>
-  <data name="lblLastName.Text" xml:space="preserve">
-    <value>Last Name:</value>
+  <data name="lblMembers.Text" xml:space="preserve">
+    <value>Mailing List Members:</value>
   </data>
-  <data name="lblMessage.Text" xml:space="preserve">
-    <value>Message:</value>
+  <data name="lblPostingMode.Text" xml:space="preserve">
+    <value>Posting Mode:</value>
   </data>
-  <data name="lblPlainSignature.Text" xml:space="preserve">
-    <value>Plain Text Signature</value>
+  <data name="lblSMTPAuthentication.Text" xml:space="preserve">
+    <value>Require SMTP Authentication</value>
   </data>
-  <data name="lblReplyTo.Text" xml:space="preserve">
-    <value>Reply to address:</value>
-  </data>
-  <data name="lblResponderEnabled.Text" xml:space="preserve">
-    <value>Autoresponder Enabled:</value>
-  </data>
-  <data name="lblSignatureEnabled.Text" xml:space="preserve">
-    <value>Signature Enabled:</value>
-  </data>
-  <data name="lblSubject.Text" xml:space="preserve">
-    <value>Subject:</value>
-  </data>
-  <data name="secAutoresponder.Text" xml:space="preserve">
-    <value>Autoresponder</value>
-  </data>
-  <data name="secForwarding.Text" xml:space="preserve">
-    <value>Mail Forwarding</value>
-  </data>
-  <data name="secPersonalInfo.Text" xml:space="preserve">
-    <value>Personal Information</value>
-  </data>
-  <data name="Signature.Text" xml:space="preserve">
-    <value>Signature</value>
+  <data name="Security.Text" xml:space="preserve">
+    <value>Security</value>
   </data>
 </root>

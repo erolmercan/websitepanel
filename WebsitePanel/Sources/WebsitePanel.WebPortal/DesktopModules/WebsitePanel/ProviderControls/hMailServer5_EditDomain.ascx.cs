@@ -41,42 +41,47 @@ using WebsitePanel.Providers.Mail;
 
 namespace WebsitePanel.Portal.ProviderControls
 {
-	public partial class hMailServer43_EditAccount : WebsitePanelControlBase, IMailEditAccountControl
+	public partial class hMailServer5_EditDomain : WebsitePanelControlBase, IMailEditDomainControl
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{
 
 		}
 
-		public void BindItem(MailAccount item)
+		public void BindItem(MailDomain item)
 		{
-			chkResponderEnabled.Checked = item.ResponderEnabled;
-			txtSubject.Text = item.ResponderSubject;
-			txtMessage.Text = item.ResponderMessage;
-			txtForward.Text = item.ForwardingAddresses[0];
-            chkOriginalMessage.Checked = item.RetainLocalCopy;
-            txtFirstName.Text = item.FirstName;
-            txtLastName.Text = item.LastName;
-            cbSignatureEnabled.Checked = item.SignatureEnabled;
-            txtPlainSignature.Text = item.Signature;
-            txtHtmlSignature.Text = item.SignatureHTML;
+			BindMailboxes(item);
 		}
 
-		public void SaveItem(MailAccount item)
+		public void SaveItem(MailDomain item)
 		{
-			item.ResponderEnabled = chkResponderEnabled.Checked;
-			item.ResponderSubject = txtSubject.Text;
-			item.ResponderMessage = txtMessage.Text;
-            if (txtForward.Text.Length > 0)
-            {
-                item.ForwardingAddresses = new string[] { txtForward.Text };
-            }
-            item.RetainLocalCopy = chkOriginalMessage.Checked;
-            item.FirstName = txtFirstName.Text;
-            item.LastName = txtLastName.Text;
-            item.SignatureEnabled = cbSignatureEnabled.Checked;
-            item.Signature = txtPlainSignature.Text;
-            item.SignatureHTML = txtHtmlSignature.Text;
+			item.CatchAllAccount = ddlCatchAllAccount.SelectedValue;
+		}
+
+		private void BindMailboxes(MailDomain item)
+		{
+			MailAccount[] accounts = ES.Services.MailServers.GetMailAccounts(item.PackageId, false);
+            MailAlias[] forwardings = ES.Services.MailServers.GetMailForwardings(item.PackageId, false);
+
+			BindAccounts(item, ddlCatchAllAccount, accounts);
+			BindAccounts(item, ddlCatchAllAccount, forwardings);
+			Utils.SelectListItem(ddlCatchAllAccount, item.CatchAllAccount);
+		}
+
+		private void BindAccounts(MailDomain item, DropDownList ddl, MailAccount[] accounts)
+		{
+			if (ddl.Items.Count == 0)
+            ddl.Items.Add(new ListItem(GetLocalizedString("Text.NotSelected"), ""));
+
+			foreach (MailAccount account in accounts)
+			{
+				int idx = account.Name.IndexOf("@");
+				string accountName = account.Name.Substring(0, idx);
+				string accountDomain = account.Name.Substring(idx + 1);
+
+				if (String.Compare(accountDomain, item.Name, true) == 0)
+					ddl.Items.Add(new ListItem(account.Name, accountName));
+			}
 		}
 	}
 }

@@ -117,52 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="cbSignatureEnabled.Text" xml:space="preserve">
-    <value>Yes</value>
-  </data>
-  <data name="chkOriginalMessage.Text" xml:space="preserve">
-    <value>Keep original Message</value>
-  </data>
-  <data name="lblFirstName.Text" xml:space="preserve">
-    <value>First Name:</value>
-  </data>
-  <data name="lblForwardTo.Text" xml:space="preserve">
-    <value>Forward mail to address:</value>
-  </data>
-  <data name="lblHtmlSignature.Text" xml:space="preserve">
-    <value>HTML Signature</value>
-  </data>
-  <data name="lblLastName.Text" xml:space="preserve">
-    <value>Last Name:</value>
-  </data>
-  <data name="lblMessage.Text" xml:space="preserve">
-    <value>Message:</value>
-  </data>
-  <data name="lblPlainSignature.Text" xml:space="preserve">
-    <value>Plain Text Signature</value>
-  </data>
-  <data name="lblReplyTo.Text" xml:space="preserve">
-    <value>Reply to address:</value>
-  </data>
-  <data name="lblResponderEnabled.Text" xml:space="preserve">
-    <value>Autoresponder Enabled:</value>
-  </data>
-  <data name="lblSignatureEnabled.Text" xml:space="preserve">
-    <value>Signature Enabled:</value>
-  </data>
-  <data name="lblSubject.Text" xml:space="preserve">
-    <value>Subject:</value>
-  </data>
-  <data name="secAutoresponder.Text" xml:space="preserve">
-    <value>Autoresponder</value>
-  </data>
-  <data name="secForwarding.Text" xml:space="preserve">
-    <value>Mail Forwarding</value>
-  </data>
-  <data name="secPersonalInfo.Text" xml:space="preserve">
-    <value>Personal Information</value>
-  </data>
-  <data name="Signature.Text" xml:space="preserve">
-    <value>Signature</value>
+  <data name="lblGroupMembers.Text" xml:space="preserve">
+    <value>Group E-Mails:</value>
   </data>
 </root>

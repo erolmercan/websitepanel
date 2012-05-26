@@ -41,42 +41,20 @@ using WebsitePanel.Providers.Mail;
 
 namespace WebsitePanel.Portal.ProviderControls
 {
-	public partial class hMailServer43_EditAccount : WebsitePanelControlBase, IMailEditAccountControl
+	public partial class hMailServer5_EditForwarding : WebsitePanelControlBase, IMailEditForwardingControl
 	{
 		protected void Page_Load(object sender, EventArgs e)
 		{
+		}
+
+        public void BindItem(MailAlias item)
+		{
 
 		}
 
-		public void BindItem(MailAccount item)
+        public void SaveItem(MailAlias item)
 		{
-			chkResponderEnabled.Checked = item.ResponderEnabled;
-			txtSubject.Text = item.ResponderSubject;
-			txtMessage.Text = item.ResponderMessage;
-			txtForward.Text = item.ForwardingAddresses[0];
-            chkOriginalMessage.Checked = item.RetainLocalCopy;
-            txtFirstName.Text = item.FirstName;
-            txtLastName.Text = item.LastName;
-            cbSignatureEnabled.Checked = item.SignatureEnabled;
-            txtPlainSignature.Text = item.Signature;
-            txtHtmlSignature.Text = item.SignatureHTML;
-		}
 
-		public void SaveItem(MailAccount item)
-		{
-			item.ResponderEnabled = chkResponderEnabled.Checked;
-			item.ResponderSubject = txtSubject.Text;
-			item.ResponderMessage = txtMessage.Text;
-            if (txtForward.Text.Length > 0)
-            {
-                item.ForwardingAddresses = new string[] { txtForward.Text };
-            }
-            item.RetainLocalCopy = chkOriginalMessage.Checked;
-            item.FirstName = txtFirstName.Text;
-            item.LastName = txtLastName.Text;
-            item.SignatureEnabled = cbSignatureEnabled.Checked;
-            item.Signature = txtPlainSignature.Text;
-            item.SignatureHTML = txtHtmlSignature.Text;
 		}
 	}
 }

@@ -827,3 +827,17 @@ BEGIN
 END
 GO
 
+UPDATE [dbo].[Providers] SET [EditorControl] = N'hMailServer5' WHERE [ProviderID] = 63
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ServiceDefaultProperties] WHERE [ProviderID] = 63 AND [PropertyName] = N'AdminUsername')
+BEGIN
+	INSERT [dbo].[ServiceDefaultProperties] ([ProviderID], [PropertyName], [PropertyValue]) VALUES (63, N'AdminUsername', N'Administrator')
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ServiceDefaultProperties] WHERE [ProviderID] = 63 AND [PropertyName] = N'AdminPassword')
+BEGIN
+	INSERT [dbo].[ServiceDefaultProperties] ([ProviderID], [PropertyName], [PropertyValue]) VALUES (63, N'AdminPassword', N'')
+END
+GO

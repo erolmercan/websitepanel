@@ -199,6 +199,48 @@
     <Compile Include="Code\ReportingServices\FileSystemReportLocalizer.cs" />
     <Compile Include="Code\ReportingServices\IResourceStorage.cs" />
     <Compile Include="Code\ReportingServices\ReportingServicesUtils.cs" />
+    <Compile Include="ProviderControls\hMailServer5_EditAccount.ascx.cs">
+      <DependentUpon>hMailServer5_EditAccount.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditAccount.ascx.designer.cs">
+      <DependentUpon>hMailServer5_EditAccount.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditDomain.ascx.cs">
+      <DependentUpon>hMailServer5_EditDomain.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditDomain.ascx.designer.cs">
+      <DependentUpon>hMailServer5_EditDomain.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditForwarding.ascx.cs">
+      <DependentUpon>hMailServer5_EditForwarding.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditForwarding.ascx.designer.cs">
+      <DependentUpon>hMailServer5_EditForwarding.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditGroup.ascx.cs">
+      <DependentUpon>hMailServer5_EditGroup.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditGroup.ascx.designer.cs">
+      <DependentUpon>hMailServer5_EditGroup.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditList.ascx.cs">
+      <DependentUpon>hMailServer5_EditList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_EditList.ascx.designer.cs">
+      <DependentUpon>hMailServer5_EditList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_Settings.ascx.cs">
+      <DependentUpon>hMailServer5_Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\hMailServer5_Settings.ascx.designer.cs">
+      <DependentUpon>hMailServer5_Settings.ascx</DependentUpon>
+    </Compile>
     <Compile Include="ScheduleTaskControls\NotifyOverusedDatabases.ascx.cs">
       <DependentUpon>NotifyOverusedDatabases.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3707,6 +3749,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ProviderControls\hMailServer5_EditAccount.ascx" />
+    <Content Include="ProviderControls\hMailServer5_EditDomain.ascx" />
+    <Content Include="ProviderControls\hMailServer5_EditForwarding.ascx" />
+    <Content Include="ProviderControls\hMailServer5_EditGroup.ascx" />
+    <Content Include="ProviderControls\hMailServer5_EditList.ascx" />
+    <Content Include="ProviderControls\hMailServer5_Settings.ascx" />
     <Content Include="ScheduleTaskControls\NotifyOverusedDatabases.ascx" />
     <Content Include="VPSForPC\MonitoringPage.aspx" />
     <Content Include="VPSForPC\VdcAccountVLanAdd.ascx" />
@@ -4840,6 +4888,21 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="VPSForPC\UserControls\App_LocalResources\ServerTabs.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ProviderControls\App_LocalResources\hMailServer5_EditAccount.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ProviderControls\App_LocalResources\hMailServer5_Settings.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ProviderControls\App_LocalResources\hMailServer5_EditDomain.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ProviderControls\App_LocalResources\hMailServer5_EditGroup.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ProviderControls\App_LocalResources\hMailServer5_EditList.ascx.resx">
       <SubType>Designer</SubType>
     </Content>
     <EmbeddedResource Include="UserControls\App_LocalResources\EditDomainsList.ascx.resx">
