@@ -41,7 +41,8 @@
 
 	</PropertyGroup>
 
-	<Target Name="GenerateBuildVersionFiles">
+	
+	<Target Name="GenerateBuildVersionFiles" Inputs="build.xml" Outputs="$(TrunkFolder)\Sources\VersionInfo.cs;$(TrunkFolder)\Sources\VersionInfo.vb"> 
 		<AssemblyInfo CodeLanguage="CS" OutputFile="$(TrunkFolder)\Sources\VersionInfo.cs" AssemblyCompany="Outercurve Foundation" AssemblyCopyright="Copyright © 2012 Outercurve Foundation."
 				AssemblyVersion="$(Version)" AssemblyFileVersion="$(FileVersion)" AssemblyInformationalVersion="$(VersionLabel)" />
 		<AssemblyInfo CodeLanguage="VB" OutputFile="$(TrunkFolder)\Sources\VersionInfo.vb" AssemblyCompany="Outercurve Foundation" AssemblyCopyright="Copyright © 2012 Outercurve Foundation."
