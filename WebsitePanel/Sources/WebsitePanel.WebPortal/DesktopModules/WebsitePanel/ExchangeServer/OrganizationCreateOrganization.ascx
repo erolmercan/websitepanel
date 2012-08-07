@@ -33,7 +33,7 @@
 						<tr>
 							<td class="FormLabel150"><asp:Localize ID="locOrganizationID" runat="server" meta:resourcekey="locOrganizationID" Text="Organization ID: *"></asp:Localize></td>
 							<td>
-								<asp:TextBox ID="txtOrganizationID" runat="server" CssClass="TextBox100" 
+								<asp:TextBox ID="txtOrganizationID" runat="server" CssClass="HugeTextBox200" 
                                     MaxLength="128"></asp:TextBox>
 								<asp:RequiredFieldValidator ID="valRequiretxtOrganizationID" runat="server" meta:resourcekey="valRequiretxtOrganizationID" ControlToValidate="txtOrganizationID"
 									ErrorMessage="Enter Organization ID" ValidationGroup="CreateOrganization" Display="Dynamic" Text="*" SetFocusOnError="true"></asp:RequiredFieldValidator>

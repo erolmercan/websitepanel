@@ -156,15 +156,43 @@ namespace WebsitePanel.EnterpriseServer
 
 			try
 			{
-				Organization org = (Organization)PackageController.GetPackageItem(itemId);
-				if (org == null)
-					return null;
+                Organization org = (Organization)PackageController.GetPackageItem(itemId);
+                if (org == null)
+                    return null;
 
-				OrganizationStatistics stats = ObjectUtils.FillObjectFromDataReader<OrganizationStatistics>(
-					DataProvider.GetExchangeOrganizationStatistics(itemId));
+                OrganizationStatistics stats = new OrganizationStatistics();
+                UserInfo user = ObjectUtils.FillObjectFromDataReader<UserInfo>(DataProvider.GetUserByExchangeOrganizationIdInternally(itemId));
+
+                List<PackageInfo> Packages = PackageController.GetPackages(user.UserId);
+
+                if ((Packages != null) & (Packages.Count > 0))
+                {
+                    foreach (PackageInfo Package in Packages)
+                    {
+                        List<Organization> orgs = null;
+
+                        orgs = GetExchangeOrganizations(Package.PackageId, false);
+
+                        if ((orgs != null) & (orgs.Count > 0))
+                        {
+                            foreach (Organization o in orgs)
+                            {
+                                OrganizationStatistics tempStats = ObjectUtils.FillObjectFromDataReader<OrganizationStatistics>(DataProvider.GetExchangeOrganizationStatistics(o.Id));
+
+                                stats.CreatedMailboxes += tempStats.CreatedMailboxes;
+                                stats.CreatedContacts += tempStats.CreatedContacts;
+                                stats.CreatedDistributionLists += tempStats.CreatedDistributionLists;
+                                stats.CreatedDomains += tempStats.CreatedDomains;
+                                stats.CreatedPublicFolders += tempStats.CreatedPublicFolders;
+                                stats.UsedDiskSpace += tempStats.UsedDiskSpace;
+                            }
+                        }
+                    }
+                }
 				
 				// disk space
 				//stats.UsedDiskSpace = org.DiskSpace;
+
 
 				// allocated quotas
 				PackageContext cntx = PackageController.GetPackageContext(org.PackageId);

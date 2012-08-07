@@ -891,45 +891,91 @@ namespace WebsitePanel.EnterpriseServer
                 if (org == null)
                     return null;
 
-                OrganizationStatistics stats = ObjectUtils.FillObjectFromDataReader<OrganizationStatistics>(
-                    DataProvider.GetOrganizationStatistics(itemId));
+                OrganizationStatistics stats = new OrganizationStatistics();
 
+                UserInfo user = ObjectUtils.FillObjectFromDataReader<UserInfo>(DataProvider.GetUserByExchangeOrganizationIdInternally(itemId));
+
+                List<PackageInfo> Packages = PackageController.GetPackages(user.UserId);
+
+                if ((Packages != null) & (Packages.Count > 0))
+                {
+                    foreach (PackageInfo Package in Packages)
+                    {
+                        List<Organization> orgs = null;
+
+                        orgs = ExchangeServerController.GetExchangeOrganizations(Package.PackageId, false);
+
+                        if ((orgs != null) & (orgs.Count > 0))
+                        {
+                            foreach (Organization o in orgs)
+                            {
+                                OrganizationStatistics tempStats = ObjectUtils.FillObjectFromDataReader<OrganizationStatistics>(DataProvider.GetOrganizationStatistics(o.Id));
+
+                                stats.CreatedUsers += tempStats.CreatedUsers;
+                                stats.CreatedDomains += tempStats.CreatedDomains;
+
+                                PackageContext cntxTmp = PackageController.GetPackageContext(org.PackageId);
+
+                                if (cntxTmp.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
+                                {
+                                    SharePointSiteCollectionListPaged sharePointStats = HostedSharePointServerController.GetSiteCollectionsPaged(org.PackageId, org.Id, string.Empty, string.Empty, string.Empty, 0, 0);
+                                    stats.CreatedSharePointSiteCollections += sharePointStats.TotalRowCount;
+                                }
+
+                                if (cntxTmp.Groups.ContainsKey(ResourceGroups.HostedCRM))
+                                {
+                                    stats.CreatedCRMUsers += CRMController.GetCRMUsersCount(org.Id, string.Empty, string.Empty).Value;
+                                }
+
+                                if (cntxTmp.Groups.ContainsKey(ResourceGroups.BlackBerry))
+                                {
+                                    stats.CreatedBlackBerryUsers += BlackBerryController.GetBlackBerryUsersCount(org.Id, string.Empty, string.Empty).Value;
+                                }
+
+                                if (cntxTmp.Groups.ContainsKey(ResourceGroups.OCS))
+                                {
+                                    stats.CreatedOCSUsers += OCSController.GetOCSUsersCount(org.Id, string.Empty, string.Empty).Value;
+                                }
+
+                                if (cntxTmp.Groups.ContainsKey(ResourceGroups.Lync))
+                                {
+                                    stats.CreatedLyncUsers += LyncController.GetLyncUsersCount(org.Id).Value;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 // disk space               
                 // allocated quotas                               
-                PackageContext cntx = PackageController.GetPackageContext(org.PackageId);                
+                PackageContext cntx = PackageController.GetPackageContext(org.PackageId);
                 stats.AllocatedUsers = cntx.Quotas[Quotas.ORGANIZATION_USERS].QuotaAllocatedValue;
                 stats.AllocatedDomains = cntx.Quotas[Quotas.ORGANIZATION_DOMAINS].QuotaAllocatedValue;
 				
 				if (cntx.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
 				{
 					SharePointSiteCollectionListPaged sharePointStats = HostedSharePointServerController.GetSiteCollectionsPaged(org.PackageId, org.Id, string.Empty, string.Empty, string.Empty, 0, 0);
-					stats.CreatedSharePointSiteCollections = sharePointStats.TotalRowCount;
 					stats.AllocatedSharePointSiteCollections = cntx.Quotas[Quotas.HOSTED_SHAREPOINT_SITES].QuotaAllocatedValue;
 				}
 
 
                 if (cntx.Groups.ContainsKey(ResourceGroups.HostedCRM))
                 {                                        
-                    stats.CreatedCRMUsers = CRMController.GetCRMUsersCount(org.Id, string.Empty, string.Empty).Value;
                     stats.AllocatedCRMUsers = cntx.Quotas[Quotas.CRM_USERS].QuotaAllocatedValue;
                 }
 
                 if (cntx.Groups.ContainsKey(ResourceGroups.BlackBerry))
                 {
-                    stats.CreatedBlackBerryUsers = BlackBerryController.GetBlackBerryUsersCount(org.Id, string.Empty, string.Empty).Value;
                     stats.AllocatedBlackBerryUsers = cntx.Quotas[Quotas.BLACKBERRY_USERS].QuotaAllocatedValue;
                 }
 
                 if (cntx.Groups.ContainsKey(ResourceGroups.OCS))
                 {
-                    stats.CreatedOCSUsers = OCSController.GetOCSUsersCount(org.Id, string.Empty, string.Empty).Value;
                     stats.AllocatedOCSUsers = cntx.Quotas[Quotas.OCS_USERS].QuotaAllocatedValue;
                 }
 
                 if (cntx.Groups.ContainsKey(ResourceGroups.Lync))
                 {
-                    stats.CreatedLyncUsers = LyncController.GetLyncUsersCount(org.Id).Value;
                     stats.AllocatedLyncUsers = cntx.Quotas[Quotas.LYNC_USERS].QuotaAllocatedValue;
                 }
 

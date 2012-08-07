@@ -48,8 +48,16 @@ namespace WebsitePanel.Portal.ExchangeServer
                 gvOrgs.Columns[2].Visible = gvOrgs.Columns[3].Visible = gvOrgs.Columns[4].Visible = false;
                 btnCreate.Enabled = false;
             }
-            else
-                if (gvOrgs.Rows.Count > 0) btnCreate.Enabled = false;
+
+
+            PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+            if (cntx.Quotas.ContainsKey(Quotas.ORGANIZATIONS))
+            {
+                btnCreate.Enabled = !(cntx.Quotas[Quotas.ORGANIZATIONS].QuotaAllocatedValue <= gvOrgs.Rows.Count);
+            }
+            
+            //else
+                //if (gvOrgs.Rows.Count > 0) btnCreate.Enabled = false;
 
         }
 
@@ -103,6 +111,13 @@ namespace WebsitePanel.Portal.ExchangeServer
                     gvOrgs.DataBind();
 
                     orgsQuota.BindQuota();
+
+                    PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+                    if (cntx.Quotas.ContainsKey(Quotas.ORGANIZATIONS))
+                    {
+                        btnCreate.Enabled = !(cntx.Quotas[Quotas.ORGANIZATIONS].QuotaAllocatedValue <= gvOrgs.Rows.Count);
+                    }
+
                 }
                 catch (Exception ex)
                 {
