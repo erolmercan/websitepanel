@@ -41,6 +41,10 @@ namespace WebsitePanel.Portal {
         protected global::WebsitePanel.Portal.UsernameControl usernameControl;
         
         /// <summary>
+        /// litDBInternalServer control.
+        protected global::System.Web.UI.WebControls.Literal litDBInternalServer;
+        /// litDBExternalServer control.
+        protected global::System.Web.UI.WebControls.Literal litDBExternalServer;
         /// secUsers control.
         /// </summary>
         /// <remarks>
