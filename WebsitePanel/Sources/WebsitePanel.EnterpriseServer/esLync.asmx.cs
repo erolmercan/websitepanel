@@ -95,6 +95,13 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         [WebMethod]
+        public int UpdateLyncUserPlan(int itemId, LyncUserPlan lyncUserPlan)
+        {
+            return LyncController.UpdateLyncUserPlan(itemId, lyncUserPlan);
+        }
+
+
+        [WebMethod]
         public int DeleteLyncUserPlan(int itemId, int lyncUserPlanId)
         {
             return LyncController.DeleteLyncUserPlan(itemId, lyncUserPlanId);

@@ -40,6 +40,9 @@ namespace WebsitePanel.Portal.Lync
 
             if (!IsPostBack)
             {
+
+                PackageContext cntx = ES.Services.Packages.GetPackageContext(PanelSecurity.PackageId);
+
                 if (PanelRequest.GetInt("LyncUserPlanId") != 0)
                 {
                     Providers.HostedSolution.LyncUserPlan plan = ES.Services.Lync.GetLyncUserPlan(PanelRequest.ItemID, PanelRequest.GetInt("LyncUserPlanId"));
@@ -81,7 +84,6 @@ namespace WebsitePanel.Portal.Lync
                     chkIM.Checked = true;
                     chkIM.Enabled = false;
                     chkNone.Checked = true;
-                    PackageContext cntx = ES.Services.Packages.GetPackageContext(PanelSecurity.PackageId);
                     if (cntx != null)
                     {
                         foreach (QuotaValueInfo quota in cntx.QuotasArray)

@@ -13460,6 +13460,7 @@ CREATE TABLE [dbo].[LyncUserPlans](
 	[LyncUserPlanId] [int] IDENTITY(1,1) NOT NULL,
 	[ItemID] [int] NOT NULL,
 	[LyncUserPlanName] [nvarchar](300) COLLATE Latin1_General_CI_AS NOT NULL,
+	[LyncUserPlanType] [int] NULL,
 	[IM] [bit] NOT NULL,
 	[Mobility] [bit] NOT NULL,
 	[MobilityEnableOutsideVoice] [bit] NOT NULL,
@@ -45269,6 +45270,7 @@ CREATE PROCEDURE [dbo].[AddLyncUserPlan]
 	@LyncUserPlanId int OUTPUT,
 	@ItemID int,
 	@LyncUserPlanName	nvarchar(300),
+	@LyncUserPlanType int,
 	@IM bit,
 	@Mobility bit,
 	@MobilityEnableOutsideVoice bit,
@@ -45298,6 +45300,7 @@ INSERT INTO LyncUserPlans
 (
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -45311,6 +45314,7 @@ VALUES
 (
 	@ItemID,
 	@LyncUserPlanName,
+	@LyncUserPlanType,
 	@IM,
 	@Mobility,
 	@MobilityEnableOutsideVoice,
@@ -45326,6 +45330,45 @@ SET @LyncUserPlanId = SCOPE_IDENTITY()
 RETURN
 GO
 
+
+
+
+
+
+
+
+CREATE PROCEDURE [dbo].[UpdateLyncUserPlan] 
+(
+	@LyncUserPlanId int,
+	@LyncUserPlanName	nvarchar(300),
+	@LyncUserPlanType int,
+	@IM bit,
+	@Mobility bit,
+	@MobilityEnableOutsideVoice bit,
+	@Federation bit,
+	@Conferencing bit,
+	@EnterpriseVoice bit,
+	@VoicePolicy int,
+	@IsDefault bit
+)
+AS
+
+UPDATE LyncUserPlans SET
+	LyncUserPlanName = @LyncUserPlanName,
+	LyncUserPlanType = @LyncUserPlanType,
+	IM = @IM,
+	Mobility = @Mobility,
+	MobilityEnableOutsideVoice = @MobilityEnableOutsideVoice,
+	Federation = @Federation,
+	Conferencing =@Conferencing,
+	EnterpriseVoice = @EnterpriseVoice,
+	VoicePolicy = @VoicePolicy,
+	IsDefault = @IsDefault
+WHERE LyncUserPlanId = @LyncUserPlanId
+
+
+RETURN
+GO
 
 
 
@@ -45456,6 +45499,7 @@ SELECT
 	LyncUserPlanId,
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -45491,6 +45535,7 @@ SELECT
 	LyncUserPlanId,
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -45525,6 +45570,7 @@ SELECT
 	LyncUserPlanId,
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,

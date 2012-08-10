@@ -40,15 +40,6 @@ namespace WebsitePanel.Portal {
         protected global::System.Web.UI.WebControls.GridView gvPlans;
         
         /// <summary>
-        /// btnSetDefaultPlan control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSetDefaultPlan;
-        
-        /// <summary>
         /// secPlan control.
         /// </summary>
         /// <remarks>
@@ -220,12 +211,21 @@ namespace WebsitePanel.Portal {
         protected global::System.Web.UI.WebControls.Button btnAddPlan;
         
         /// <summary>
-        /// btnAddPlanToOrganizations control.
+        /// btnUpdatePlan control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAddPlanToOrganizations;
+        protected global::System.Web.UI.WebControls.Button btnUpdatePlan;
+        
+        /// <summary>
+        /// txtStatus control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtStatus;
     }
 }

@@ -1869,7 +1869,6 @@ GO
 
 
 
-
 -- LyncUserPlans
 IF  NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[LyncUserPlans]') AND type in (N'U'))
 BEGIN
@@ -1877,6 +1876,7 @@ CREATE TABLE [dbo].[LyncUserPlans](
 	[LyncUserPlanId] [int] IDENTITY(1,1) NOT NULL,
 	[ItemID] [int] NOT NULL,
 	[LyncUserPlanName] [nvarchar](300) NOT NULL,
+	[LyncUserPlanType] [int] NULL,
 	[IM] [bit] NOT NULL,
 	[Mobility] [bit] NOT NULL,
 	[MobilityEnableOutsideVoice] [bit] NOT NULL,
@@ -1912,6 +1912,15 @@ REFERENCES [dbo].[LyncUserPlans] ([LyncUserPlanId])
 
 ALTER TABLE [dbo].[LyncUsers] CHECK CONSTRAINT [FK_LyncUsers_LyncUserPlans]
  	 
+END
+GO
+
+
+
+IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='LyncUserPlans' AND COLS.name='LyncUserPlanType')
+BEGIN
+ALTER TABLE [dbo].[LyncUserPlans] ADD
+	[LyncUserPlanType] [int] NULL
 END
 GO
 
@@ -3671,7 +3680,7 @@ AS
 		ea.PrimaryEmailAddress,
 		ea.SamAccountName,
 		ou.LyncUserPlanId,
-		lp.LyncUserPlanName				
+		lp.LyncUserPlanName
 	FROM 
 		ExchangeAccounts ea 
 	INNER JOIN 
@@ -3694,6 +3703,42 @@ GO
 
 
 
+ALTER PROCEDURE [dbo].[GetLyncUsersByPlanId]
+(
+	@ItemID int,
+	@PlanId int
+)
+AS
+
+	SELECT 
+		ea.AccountID,
+		ea.ItemID,
+		ea.AccountName,
+		ea.DisplayName,
+		ea.PrimaryEmailAddress,
+		ea.SamAccountName,
+		ou.LyncUserPlanId,
+		lp.LyncUserPlanName
+	FROM 
+		ExchangeAccounts ea 
+	INNER JOIN 
+		LyncUsers ou
+	INNER JOIN
+		LyncUserPlans lp 
+	ON
+		ou.LyncUserPlanId = lp.LyncUserPlanId				
+	ON 
+		ea.AccountID = ou.AccountID
+	WHERE 
+		ea.ItemID = @ItemID AND
+		ou.LyncUserPlanId = @PlanId
+GO
+
+
+
+
+
+
 
 IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'AddLyncUserPlan')
 BEGIN
@@ -3702,6 +3747,7 @@ EXEC sp_executesql N'CREATE PROCEDURE [dbo].[AddLyncUserPlan]
 	@LyncUserPlanId int OUTPUT,
 	@ItemID int,
 	@LyncUserPlanName	nvarchar(300),
+	@LyncUserPlanType int,
 	@IM bit,
 	@Mobility bit,
 	@MobilityEnableOutsideVoice bit,
@@ -3713,13 +3759,15 @@ EXEC sp_executesql N'CREATE PROCEDURE [dbo].[AddLyncUserPlan]
 )
 AS
 
-IF ((SELECT Count(*) FROM LyncUserPlans WHERE ItemId = @ItemID) = 0)
+
+
+IF (((SELECT Count(*) FROM LyncUserPlans WHERE ItemId = @ItemID) = 0) AND (@LyncUserPlanType=0))
 BEGIN
 	SET @IsDefault = 1
 END
 ELSE
 BEGIN
-	IF @IsDefault = 1
+	IF ((@IsDefault = 1) AND (@LyncUserPlanType=0))
 	BEGIN
 		UPDATE LyncUserPlans SET IsDefault = 0 WHERE ItemID = @ItemID
 	END
@@ -3730,6 +3778,7 @@ INSERT INTO LyncUserPlans
 (
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -3743,6 +3792,7 @@ VALUES
 (
 	@ItemID,
 	@LyncUserPlanName,
+	@LyncUserPlanType,
 	@IM,
 	@Mobility,
 	@MobilityEnableOutsideVoice,
@@ -3761,11 +3811,18 @@ GO
 
 
 
+
+
+
+
+
+
 ALTER PROCEDURE [dbo].[AddLyncUserPlan] 
 (
 	@LyncUserPlanId int OUTPUT,
 	@ItemID int,
 	@LyncUserPlanName	nvarchar(300),
+	@LyncUserPlanType int,
 	@IM bit,
 	@Mobility bit,
 	@MobilityEnableOutsideVoice bit,
@@ -3777,24 +3834,24 @@ ALTER PROCEDURE [dbo].[AddLyncUserPlan]
 )
 AS
 
-IF ((SELECT Count(*) FROM LyncUserPlans WHERE ItemId = @ItemID) = 0)
+IF (((SELECT Count(*) FROM LyncUserPlans WHERE ItemId = @ItemID) = 0) AND (@LyncUserPlanType=0))
 BEGIN
 	SET @IsDefault = 1
 END
 ELSE
 BEGIN
-	IF @IsDefault = 1
+	IF ((@IsDefault = 1) AND (@LyncUserPlanType=0))
 	BEGIN
 		UPDATE LyncUserPlans SET IsDefault = 0 WHERE ItemID = @ItemID
 	END
 END
 
 
-
 INSERT INTO LyncUserPlans
 (
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -3808,6 +3865,7 @@ VALUES
 (
 	@ItemID,
 	@LyncUserPlanName,
+	@LyncUserPlanType,
 	@IM,
 	@Mobility,
 	@MobilityEnableOutsideVoice,
@@ -3822,8 +3880,6 @@ SET @LyncUserPlanId = SCOPE_IDENTITY()
 
 RETURN
 GO
-
-
 
 
 IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'CheckLyncUserExists')
@@ -3915,6 +3971,7 @@ SELECT
 	LyncUserPlanId,
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -3935,6 +3992,31 @@ GO
 
 
 
+ALTER PROCEDURE [dbo].[GetLyncUserPlan] 
+(
+	@LyncUserPlanId int
+)
+AS
+SELECT
+	LyncUserPlanId,
+	ItemID,
+	LyncUserPlanName,
+	LyncUserPlanType,
+	IM,
+	Mobility,
+	MobilityEnableOutsideVoice,
+	Federation,
+	Conferencing,
+	EnterpriseVoice,
+	VoicePolicy,
+	IsDefault
+FROM
+	LyncUserPlans
+WHERE
+	LyncUserPlanId = @LyncUserPlanId
+RETURN
+GO
+
 
 
 
@@ -3950,6 +4032,7 @@ SELECT
 	LyncUserPlanId,
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -3972,6 +4055,30 @@ GO
 
 
 
+ALTER PROCEDURE [dbo].[GetLyncUserPlanByAccountId] 
+(
+	@AccountID int
+)
+AS
+SELECT
+	LyncUserPlanId,
+	ItemID,
+	LyncUserPlanName,
+	LyncUserPlanType,
+	IM,
+	Mobility,
+	MobilityEnableOutsideVoice,
+	Federation,
+	Conferencing,
+	EnterpriseVoice,
+	VoicePolicy,
+	IsDefault
+FROM
+	LyncUserPlans
+WHERE
+	LyncUserPlanId IN (SELECT LyncUserPlanId FROM LyncUsers WHERE AccountID = @AccountID)
+RETURN
+GO
 
 
 
@@ -3987,6 +4094,7 @@ SELECT
 	LyncUserPlanId,
 	ItemID,
 	LyncUserPlanName,
+	LyncUserPlanType,
 	IM,
 	Mobility,
 	MobilityEnableOutsideVoice,
@@ -4008,6 +4116,32 @@ GO
 
 
 
+
+ALTER PROCEDURE [dbo].[GetLyncUserPlans]
+(
+	@ItemID int
+)
+AS
+SELECT
+	LyncUserPlanId,
+	ItemID,
+	LyncUserPlanName,
+	LyncUserPlanType,
+	IM,
+	Mobility,
+	MobilityEnableOutsideVoice,
+	Federation,
+	Conferencing,
+	EnterpriseVoice,
+	VoicePolicy,
+	IsDefault
+FROM
+	LyncUserPlans
+WHERE
+	ItemID = @ItemID 
+ORDER BY LyncUserPlanName
+RETURN
+GO
 
 
 
@@ -5179,6 +5313,46 @@ BEGIN
 END'
 END
 GO
+
+
+
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'UpdateLyncUserPlan')
+BEGIN
+EXEC sp_executesql N' CREATE PROCEDURE [dbo].[UpdateLyncUserPlan] 
+(
+	@LyncUserPlanId int,
+	@LyncUserPlanName	nvarchar(300),
+	@LyncUserPlanType int,
+	@IM bit,
+	@Mobility bit,
+	@MobilityEnableOutsideVoice bit,
+	@Federation bit,
+	@Conferencing bit,
+	@EnterpriseVoice bit,
+	@VoicePolicy int,
+	@IsDefault bit
+)
+AS
+
+UPDATE LyncUserPlans SET
+	LyncUserPlanName = @LyncUserPlanName,
+	LyncUserPlanType = @LyncUserPlanType,
+	IM = @IM,
+	Mobility = @Mobility,
+	MobilityEnableOutsideVoice = @MobilityEnableOutsideVoice,
+	Federation = @Federation,
+	Conferencing =@Conferencing,
+	EnterpriseVoice = @EnterpriseVoice,
+	VoicePolicy = @VoicePolicy,
+	IsDefault = @IsDefault
+WHERE LyncUserPlanId = @LyncUserPlanId
+
+
+RETURN'
+END
+GO
+
+
 
 
 IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE [DisplayName] = 'SmarterMail 10.x')

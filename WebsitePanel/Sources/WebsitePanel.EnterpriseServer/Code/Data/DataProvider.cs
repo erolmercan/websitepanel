@@ -3296,6 +3296,7 @@ namespace WebsitePanel.EnterpriseServer
 
                 new SqlParameter("@ItemID", itemID),
                 new SqlParameter("@LyncUserPlanName", lyncUserPlan.LyncUserPlanName),
+                new SqlParameter("@LyncUserPlanType", lyncUserPlan.LyncUserPlanType),
                 new SqlParameter("@IM", lyncUserPlan.IM),
                 new SqlParameter("@Mobility", lyncUserPlan.Mobility),
                 new SqlParameter("@MobilityEnableOutsideVoice", lyncUserPlan.MobilityEnableOutsideVoice),
@@ -3309,6 +3310,27 @@ namespace WebsitePanel.EnterpriseServer
             return Convert.ToInt32(outParam.Value);
         }
 
+
+        public static void UpdateLyncUserPlan(int itemID, LyncUserPlan lyncUserPlan)
+        {
+            SqlHelper.ExecuteNonQuery(
+                ConnectionString,
+                CommandType.StoredProcedure,
+                "UpdateLyncUserPlan",
+                new SqlParameter("@LyncUserPlanId", lyncUserPlan.LyncUserPlanId),
+                new SqlParameter("@LyncUserPlanName", lyncUserPlan.LyncUserPlanName),
+                new SqlParameter("@LyncUserPlanType", lyncUserPlan.LyncUserPlanType),
+                new SqlParameter("@IM", lyncUserPlan.IM),
+                new SqlParameter("@Mobility", lyncUserPlan.Mobility),
+                new SqlParameter("@MobilityEnableOutsideVoice", lyncUserPlan.MobilityEnableOutsideVoice),
+                new SqlParameter("@Federation", lyncUserPlan.Federation),
+                new SqlParameter("@Conferencing", lyncUserPlan.Conferencing),
+                new SqlParameter("@EnterpriseVoice", lyncUserPlan.EnterpriseVoice),
+                new SqlParameter("@VoicePolicy", lyncUserPlan.VoicePolicy),
+                new SqlParameter("@IsDefault", lyncUserPlan.IsDefault)
+            );
+        }
+        
         public static void DeleteLyncUserPlan(int lyncUserPlanId)
         {
             SqlHelper.ExecuteNonQuery(

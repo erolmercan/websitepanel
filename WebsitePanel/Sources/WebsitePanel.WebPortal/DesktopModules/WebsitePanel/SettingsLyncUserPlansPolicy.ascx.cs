@@ -55,34 +55,43 @@ namespace WebsitePanel.Portal
 
         internal static List<LyncUserPlan> list;
 
+
         public void BindSettings(UserSettings settings)
         {
+            BindPlans();
 
-            if (list == null)
-                list = new List<LyncUserPlan>();
-
-            if (!string.IsNullOrEmpty(settings[UserSettings.DEFAULT_LYNCUSERPLANS]))
-            {
-
-                XmlSerializer serializer = new XmlSerializer(list.GetType());
-
-                StringReader reader = new StringReader(settings[UserSettings.DEFAULT_LYNCUSERPLANS]);
-
-                list = (List<LyncUserPlan>)serializer.Deserialize(reader);
-            }
-
-            gvPlans.DataSource = list;
-            gvPlans.DataBind();
-
-            if (gvPlans.Rows.Count <= 1)
-            {
-                btnSetDefaultPlan.Enabled = false;
-            }
-            else
-                btnSetDefaultPlan.Enabled = true;
+            txtStatus.Visible = false;
         }
 
 
+        private void BindPlans()
+        {
+            Providers.HostedSolution.Organization[] orgs = null;
+
+            if (PanelSecurity.SelectedUserId != 1)
+            {
+                PackageInfo[] Packages = ES.Services.Packages.GetPackages(PanelSecurity.SelectedUserId);
+
+                if ((Packages != null) & (Packages.GetLength(0) > 0))
+                {
+                    orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(Packages[0].PackageId, false);
+                }
+            }
+            else
+            {
+                orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(1, false);
+            }
+
+            if ((orgs != null) & (orgs.GetLength(0) > 0))
+            {
+                LyncUserPlan[] list = ES.Services.Lync.GetLyncUserPlans(orgs[0].Id);
+
+                gvPlans.DataSource = list;
+                gvPlans.DataBind();
+            }
+
+            btnUpdatePlan.Enabled = (string.IsNullOrEmpty(txtPlan.Text)) ? false : true;
+        }
 
 
 
@@ -133,142 +142,316 @@ namespace WebsitePanel.Portal
                     plan.VoicePolicy = LyncVoicePolicyType.None;
 
             }
+            
+            if (PanelSecurity.SelectedUser.Role == UserRole.Administrator)
+                plan.LyncUserPlanType = (int)LyncUserPlanType.Administrator;
+            else
+                if (PanelSecurity.SelectedUser.Role == UserRole.Reseller)
+                    plan.LyncUserPlanType = (int)LyncUserPlanType.Reseller;
 
-            if (list == null)
-                list = new List<LyncUserPlan>();
 
-            list.Add(plan);
-            gvPlans.DataSource = list;
-            gvPlans.DataBind();
+            Providers.HostedSolution.Organization[] orgs = null;
 
-            if (gvPlans.Rows.Count <= 1)
+            if (PanelSecurity.SelectedUserId != 1)
             {
-                btnSetDefaultPlan.Enabled = false;
+                PackageInfo[] Packages = ES.Services.Packages.GetPackages(PanelSecurity.SelectedUserId);
+
+                if ((Packages != null) & (Packages.GetLength(0) > 0))
+                {
+                    orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(Packages[0].PackageId, false);
+                }
             }
             else
-                btnSetDefaultPlan.Enabled = true;
+            {
+                orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(1, false);
+            }
 
+
+            if ((orgs != null) & (orgs.GetLength(0) > 0))
+            {
+                int result = ES.Services.Lync.AddLyncUserPlan(orgs[0].Id, plan);
+
+                if (result < 0)
+                {
+                    messageBox.ShowResultMessage(result);
+                    return;
+                }
+            }
+
+            BindPlans();
         }
 
         protected void gvPlan_RowCommand(object sender, GridViewCommandEventArgs e)
         {
             int planId = Utils.ParseInt(e.CommandArgument.ToString(), 0);
+            Providers.HostedSolution.Organization[] orgs = null;
+            Providers.HostedSolution.LyncUserPlan plan;
+            int result = 0;
+
 
             switch (e.CommandName)
             {
                 case "DeleteItem":
-
-                    foreach (LyncUserPlan p in list)
+                    try
                     {
-                        if (p.LyncUserPlanId == planId)
+
+                        if (PanelSecurity.SelectedUserId != 1)
                         {
-                            list.Remove(p);
-                            break;
+                            PackageInfo[] Packages = ES.Services.Packages.GetPackages(PanelSecurity.SelectedUserId);
+
+                            if ((Packages != null) & (Packages.GetLength(0) > 0))
+                            {
+                                orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(Packages[0].PackageId, false);
+                            }
                         }
+                        else
+                        {
+                            orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(1, false);
+                        }
+
+                        plan = ES.Services.Lync.GetLyncUserPlan(orgs[0].Id, planId);
+
+                        if (plan.ItemId != orgs[0].Id)
+                        {
+                            messageBox.ShowErrorMessage("EXCHANGE_UNABLE_USE_SYSTEMPLAN");
+                            BindPlans();
+                            return;
+                        }
+
+
+                        result = ES.Services.ExchangeServer.DeleteExchangeMailboxPlan(orgs[0].Id, planId);
+                        if (result < 0)
+                        {
+                            messageBox.ShowResultMessage(result);
+                            return;
+                        }
+                        ViewState["LyncUserPlanID"] = null; 
+
+                        txtPlan.Text = string.Empty;
+
+                        btnUpdatePlan.Enabled = (string.IsNullOrEmpty(txtPlan.Text)) ? false : true;
+
                     }
-
-                    gvPlans.DataSource = list;
-                    gvPlans.DataBind();
-
-                    if (gvPlans.Rows.Count <= 1)
+                    catch (Exception)
                     {
-                        btnSetDefaultPlan.Enabled = false;
+                        messageBox.ShowErrorMessage("EXCHANGE_DELETE_MAILBOXPLAN");
                     }
-                    else
-                        btnSetDefaultPlan.Enabled = true;
+
+                    BindPlans();
+
                     break;
 
                 case "EditItem":
-                    foreach (LyncUserPlan plan in list)
+                    try
                     {
-                        if (plan.LyncUserPlanId == planId)
+
+                        ViewState["LyncUserPlanID"] = planId;
+
+                        if (PanelSecurity.SelectedUserId != 1)
                         {
+                            PackageInfo[] Packages = ES.Services.Packages.GetPackages(PanelSecurity.SelectedUserId);
 
-                            txtPlan.Text = plan.LyncUserPlanName;
-                            chkIM.Checked = plan.IM;
-                            chkIM.Enabled = false;
-                            chkFederation.Checked = plan.Federation;
-                            chkConferencing.Checked = plan.Conferencing;
-                            chkMobility.Checked = plan.Mobility;
-                            chkEnterpriseVoice.Checked = plan.EnterpriseVoice;
-                            switch (plan.VoicePolicy)
+                            if ((Packages != null) & (Packages.GetLength(0) > 0))
                             {
-                                case LyncVoicePolicyType.None:
-                                    break;
-                                case LyncVoicePolicyType.Emergency:
-                                    chkEmergency.Checked = true;
-                                    break;
-                                case LyncVoicePolicyType.National:
-                                    chkNational.Checked = true;
-                                    break;
-                                case LyncVoicePolicyType.Mobile:
-                                    chkMobile.Checked = true;
-                                    break;
-                                case LyncVoicePolicyType.International:
-                                    chkInternational.Checked = true;
-                                    break;
-                                default:
-                                    chkNone.Checked = true;
-                                    break;
+                                orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(Packages[0].PackageId, false);
                             }
-
-                            break;
                         }
+                        else
+                        {
+                            orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(1, false);
+                        }
+
+
+                        plan = ES.Services.Lync.GetLyncUserPlan(orgs[0].Id, planId);
+
+                        txtPlan.Text = plan.LyncUserPlanName;
+                        chkIM.Checked = plan.IM;
+                        chkIM.Enabled = false;
+                        chkFederation.Checked = plan.Federation;
+                        chkConferencing.Checked = plan.Conferencing;
+                        chkMobility.Checked = plan.Mobility;
+                        chkEnterpriseVoice.Checked = plan.EnterpriseVoice;
+                        switch (plan.VoicePolicy)
+                        {
+                            case LyncVoicePolicyType.None:
+                                break;
+                            case LyncVoicePolicyType.Emergency:
+                                chkEmergency.Checked = true;
+                                break;
+                            case LyncVoicePolicyType.National:
+                                chkNational.Checked = true;
+                                break;
+                            case LyncVoicePolicyType.Mobile:
+                                chkMobile.Checked = true;
+                                break;
+                            case LyncVoicePolicyType.International:
+                                chkInternational.Checked = true;
+                                break;
+                            default:
+                                chkNone.Checked = true;
+                                break;
+                        }
+
+                        btnUpdatePlan.Enabled  = (string.IsNullOrEmpty(txtPlan.Text)) ? false : true;
+
+                        break;
+                    }
+                    catch (Exception)
+                    {
+                        messageBox.ShowErrorMessage("EXCHANGE_DELETE_MAILBOXPLAN");
                     }
 
+                    BindPlans();
+
+                    break;
+                case "RestampItem":
+                    RestampLyncUsers(planId, planId);
                     break;
             }
         }
 
-        protected void btnSetDefaultPlan_Click(object sender, EventArgs e)
+
+        public string GetPlanType(int planType)
         {
-            // get domain
-            int planId = Utils.ParseInt(Request.Form["DefaultLyncUserPlan"], 0);
+            string imgName = string.Empty;
 
-
-
-            foreach (LyncUserPlan p in list)
+            LyncUserPlanType type = (LyncUserPlanType)planType;
+            switch (type)
             {
-                p.IsDefault = false;
-            }
-
-            foreach (LyncUserPlan p in list)
-            {
-                if (p.LyncUserPlanId == planId)
-                {
-                    p.IsDefault = true;
+                case LyncUserPlanType.Reseller:
+                    imgName = "company24.png";
                     break;
-                }
+                case LyncUserPlanType.Administrator:
+                    imgName = "company24.png";
+                    break;
+                default:
+                    imgName = "admin_16.png";
+                    break;
             }
 
-            gvPlans.DataSource = list;
-            gvPlans.DataBind();
+            return GetThemedImage("Exchange/" + imgName);
         }
+
 
         public void SaveSettings(UserSettings settings)
         {
-            XmlSerializer serializer = new XmlSerializer(list.GetType());
-
-            StringWriter writer = new StringWriter();
-
-            serializer.Serialize(writer, list);
-
-            settings[UserSettings.DEFAULT_LYNCUSERPLANS] = writer.ToString();
-        }
-
-        protected void btnAddPlanToOrganizations_Click(object sender, EventArgs e)
-        {
-            AddPlanToOrganizations("ServerAdmin");
+            settings["LyncUserPlansPolicy"] = "";
         }
 
 
-        private void AddPlanToOrganizations(string serverAdmin)
+        protected void btnUpdatePlan_Click(object sender, EventArgs e)
         {
-            UserInfo ServerAdminInfo = ES.Services.Users.GetUserByUsername(serverAdmin);
 
-            if (ServerAdminInfo == null) return;
+            if (ViewState["LyncUserPlanID"] == null)
+                return;
 
-            UserInfo[] UsersInfo = ES.Services.Users.GetUsers(ServerAdminInfo.UserId, true);
+            int planId = (int)ViewState["LyncUserPlanID"];
+            Providers.HostedSolution.Organization[] orgs = null;
+            Providers.HostedSolution.LyncUserPlan plan;
+
+
+            if (PanelSecurity.SelectedUserId != 1)
+            {
+                PackageInfo[] Packages = ES.Services.Packages.GetPackages(PanelSecurity.SelectedUserId);
+
+                if ((Packages != null) & (Packages.GetLength(0) > 0))
+                {
+                    orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(Packages[0].PackageId, false);
+                }
+            }
+            else
+            {
+                orgs = ES.Services.ExchangeServer.GetExchangeOrganizations(1, false);
+            }
+
+            plan = ES.Services.Lync.GetLyncUserPlan(orgs[0].Id, planId);
+
+            if (plan.ItemId != orgs[0].Id)
+            {
+                messageBox.ShowErrorMessage("EXCHANGE_UNABLE_USE_SYSTEMPLAN");
+                BindPlans();
+                return;
+            }
+
+            plan = new Providers.HostedSolution.LyncUserPlan();
+            plan.LyncUserPlanId = (int)ViewState["LyncUserPlanID"];
+
+            plan.LyncUserPlanName = txtPlan.Text;
+            plan.IsDefault = false;
+
+            plan.IM = true;
+            plan.Mobility = chkMobility.Checked;
+            plan.Federation = chkFederation.Checked;
+            plan.Conferencing = chkConferencing.Checked;
+
+            plan.EnterpriseVoice = chkEnterpriseVoice.Checked;
+            if (!plan.EnterpriseVoice)
+            {
+                plan.VoicePolicy = LyncVoicePolicyType.None;
+            }
+            else
+            {
+                if (chkEmergency.Checked)
+                    plan.VoicePolicy = LyncVoicePolicyType.Emergency;
+                else if (chkNational.Checked)
+                    plan.VoicePolicy = LyncVoicePolicyType.National;
+                else if (chkMobile.Checked)
+                    plan.VoicePolicy = LyncVoicePolicyType.Mobile;
+                else if (chkInternational.Checked)
+                    plan.VoicePolicy = LyncVoicePolicyType.International;
+                else
+                    plan.VoicePolicy = LyncVoicePolicyType.None;
+
+            }
+            
+            if (PanelSecurity.SelectedUser.Role == UserRole.Administrator)
+                plan.LyncUserPlanType = (int)LyncUserPlanType.Administrator;
+            else
+                if (PanelSecurity.SelectedUser.Role == UserRole.Reseller)
+                    plan.LyncUserPlanType = (int)LyncUserPlanType.Reseller;
+
+
+            if ((orgs != null) & (orgs.GetLength(0) > 0))
+            {
+                int result = ES.Services.Lync.UpdateLyncUserPlan(orgs[0].Id, plan);
+
+                if (result < 0)
+                {
+                    messageBox.ShowErrorMessage("EXCHANGE_UPDATEPLANS");
+                }
+                else
+                {
+                    messageBox.ShowSuccessMessage("EXCHANGE_UPDATEPLANS");
+                }
+            }
+
+            BindPlans();
+        }
+
+
+        private bool PlanExists(LyncUserPlan plan, LyncUserPlan[] plans)
+        {
+            bool result = false;
+
+            foreach (LyncUserPlan p in plans)
+            {
+                if (p.LyncUserPlanName.ToLower() == plan.LyncUserPlanName.ToLower())
+                {
+                    result = true;
+                    break;
+                }
+            }
+            return result;
+        }
+
+        protected void txtMailboxPlan_TextChanged(object sender, EventArgs e)
+        {
+            btnUpdatePlan.Enabled = (string.IsNullOrEmpty(txtPlan.Text)) ? false : true;
+        }
+
+        private void RestampLyncUsers(int sourcePlanId, int destinationPlanId)
+        {
+            UserInfo[] UsersInfo = ES.Services.Users.GetUsers(PanelSecurity.SelectedUserId, true);
 
             try
             {
@@ -290,11 +473,19 @@ namespace WebsitePanel.Portal
                                 {
                                     if (!string.IsNullOrEmpty(org.LyncTenantId))
                                     {
-                                        LyncUserPlan[] plans = ES.Services.Lync.GetLyncUserPlans(org.Id);
+                                        LyncUser[] Accounts = ES.Services.Lync.GetLyncUsersByPlanId(org.Id, sourcePlanId);
 
-                                        foreach (LyncUserPlan p in list)
+                                        foreach (LyncUser a in Accounts)
                                         {
-                                            if (!PlanExists(p, plans)) ES.Services.Lync.AddLyncUserPlan(org.Id, p);
+                                            txtStatus.Text = "Completed";
+                                            Providers.ResultObjects.LyncUserResult result = ES.Services.Lync.SetUserLyncPlan(org.Id, a.AccountID, destinationPlanId);
+                                            if (!result.IsSuccess)
+                                            {
+                                                BindPlans();
+                                                txtStatus.Text = "Error: " + a.DisplayName;
+                                                messageBox.ShowErrorMessage("EXCHANGE_STAMPMAILBOXES");
+                                                return;
+                                            }
                                         }
                                     }
                                 }
@@ -302,29 +493,15 @@ namespace WebsitePanel.Portal
                         }
                     }
                 }
-                messageBox.ShowSuccessMessage("LYNC_APPLYPLANTEMPLATE");
+                messageBox.ShowSuccessMessage("EXCHANGE_STAMPMAILBOXES");
             }
             catch (Exception ex)
             {
-                messageBox.ShowErrorMessage("LYNC_APPLYPLANTEMPLATE", ex);
+                messageBox.ShowErrorMessage("EXCHANGE_FAILED_TO_STAMP", ex);
             }
+
+            BindPlans();
         }
-
-        private bool PlanExists(LyncUserPlan plan, LyncUserPlan[] plans)
-        {
-            bool result = false;
-
-            foreach (LyncUserPlan p in plans)
-            {
-                if (p.LyncUserPlanName.ToLower() == plan.LyncUserPlanName.ToLower())
-                {
-                    result = true;
-                    break;
-                }
-            }
-            return result;
-        }
-
 
 
     }

@@ -35,8 +35,8 @@ REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\ecStorefrontProxy.cs
 REM %WSDL% %SERVER_URL%/ecStorehouse.asmx /out:.\WebsitePanel.EnterpriseServer.Client\ecStorehouseProxy.cs /namespace:WebsitePanel.Ecommerce.EnterpriseServer /type:webClient
 REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\ecStorehouseProxy.cs
 
-%WSDL% %SERVER_URL%/esExchangeServer.asmx /out:.\WebsitePanel.EnterpriseServer.Client\ExchangeServerProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
-%WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\ExchangeServerProxy.cs
+REM %WSDL% %SERVER_URL%/esExchangeServer.asmx /out:.\WebsitePanel.EnterpriseServer.Client\ExchangeServerProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
+REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\ExchangeServerProxy.cs
 
 REM %WSDL% %SERVER_URL%/esExchangeHostedEdition.asmx /out:.\WebsitePanel.EnterpriseServer.Client\ExchangeHostedEditionProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
 REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\ExchangeHostedEditionProxy.cs
@@ -92,8 +92,8 @@ REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\WebServersProxy.cs
 REM %WSDL% %SERVER_URL%/esVirtualizationServerForPrivateCloud.asmx /out:.\WebsitePanel.EnterpriseServer.Client\VirtualizationServerProxyForPrivateCloud.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
 REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\VirtualizationServerProxyForPrivateCloud.cs
 
-REM %WSDL% %SERVER_URL%/esLync.asmx /out:.\WebsitePanel.EnterpriseServer.Client\LyncProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
-REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\LyncProxy.cs
+%WSDL% %SERVER_URL%/esLync.asmx /out:.\WebsitePanel.EnterpriseServer.Client\LyncProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
+%WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\LyncProxy.cs
 
 
 
