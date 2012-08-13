@@ -1,10 +1,10 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
 	<PropertyGroup>
-		<Version>1.2.2.0</Version>
-		<FileVersion>1.2.2.1</FileVersion>
+		<Version>1.2.2</Version>
+		<FileVersion>1.2.2</FileVersion>
 		<VersionLabel>1.2.2</VersionLabel>
-		<ReleaseDate>2012-08-01</ReleaseDate>
+		<ReleaseDate>2012-08-13</ReleaseDate>
 		<BuildConfiguration>Release</BuildConfiguration>
 		<RootFolder>..</RootFolder>
 		<TrunkFolder>$(RootFolder)\WebsitePanel</TrunkFolder>
@@ -190,6 +190,7 @@
 			<WSPTransportAgentBuildExclude Include="$(WSPTransportAgentSrc)\**\obj\**" />
 			<WSPTransportAgentBuildExclude Include="$(WSPTransportAgentSrc)\bin\*.xml" />
 			<WSPTransportAgentBuildExclude Include="$(WSPTransportAgentSrc)\**\*.cache" />
+			<WSPTransportAgentBuildExclude Include="$(WSPTransportAgentSrc)\**\microsoft.*" />
 			<WSPTransportAgentBuildExclude Include="$(WSPTransportAgentSrc)\**\app.config" />
 			<WSPTransportAgentBuildExclude Include="$(WSPTransportAgentSrc)\**\*.txt" />
 			<WSPTransportAgentBuildExclude Include="$(WSPTransportAgentSrc)\**\*.pdb" Condition="'$(BuildConfiguration)' == 'Release'" />
@@ -444,10 +445,10 @@
 			<StandaloneInstallFiles Include="$(StandaloneInstall)\**\*.*" />
 		</ItemGroup>
 
-		<Zip Files="@(PortalInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Portal-$(FileVersion).zip" WorkingDirectory="$(PortalInstall)" />
-		<Zip Files="@(EnterpriseServerInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-EnterpriseServer-$(FileVersion).zip" WorkingDirectory="$(EnterpriseServerInstall)" />
-		<Zip Files="@(ServerInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Server-$(FileVersion).zip" WorkingDirectory="$(ServerInstall)" />
-		<Zip Files="@(StandaloneInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-StandaloneServerSetup-$(FileVersion).zip" WorkingDirectory="$(StandaloneInstall)" />
+		<Zip Files="@(PortalInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Portal-$(Version).zip" WorkingDirectory="$(PortalInstall)" />
+		<Zip Files="@(EnterpriseServerInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-EnterpriseServer-$(Version).zip" WorkingDirectory="$(EnterpriseServerInstall)" />
+		<Zip Files="@(ServerInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Server-$(Version).zip" WorkingDirectory="$(ServerInstall)" />
+		<Zip Files="@(StandaloneInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-StandaloneServerSetup-$(Version).zip" WorkingDirectory="$(StandaloneInstall)" />
 
 
 		<!-- zip updates -->
@@ -457,15 +458,15 @@
 			<ServerUpdateFiles Include="$(ServerUpdate)\**\*.*" />
 		</ItemGroup>
 
-		<Zip Files="@(PortalUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Portal-$(FileVersion)-Update.zip" WorkingDirectory="$(PortalUpdate)" />
-		<Zip Files="@(EnterpriseServerUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-EnterpriseServer-$(FileVersion)-Update.zip" WorkingDirectory="$(EnterpriseServerUpdate)" />
-		<Zip Files="@(ServerUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Server-$(FileVersion)-Update.zip" WorkingDirectory="$(ServerUpdate)" />
+		<Zip Files="@(PortalUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Portal-$(Version)-Update.zip" WorkingDirectory="$(PortalUpdate)" />
+		<Zip Files="@(EnterpriseServerUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-EnterpriseServer-$(Version)-Update.zip" WorkingDirectory="$(EnterpriseServerUpdate)" />
+		<Zip Files="@(ServerUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Server-$(Version)-Update.zip" WorkingDirectory="$(ServerUpdate)" />
 
 		<!-- zip tools -->
-		<Zip Files="@(ImportCsvInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-Import-CsvBulk-$(FileVersion).zip" WorkingDirectory="$(ImportCsvInstall)" />
-		<Zip Files="@(ImportEnterpriseInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-Import-Enterprise-$(FileVersion).zip" WorkingDirectory="$(ImportEnterpriseInstall)" />
-		<Zip Files="@(AWStatsViewerInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-AWStatsViewer-$(FileVersion).zip" WorkingDirectory="$(AWStatsViewerInstall)" />
-		<Zip Files="@(WSPTransportAgentInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-WSPTransportAgent-$(FileVersion).zip" WorkingDirectory="$(WSPTransportAgentInstall)" />
+		<Zip Files="@(ImportCsvInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-Import-CsvBulk-$(Version).zip" WorkingDirectory="$(ImportCsvInstall)" />
+		<Zip Files="@(ImportEnterpriseInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-Import-Enterprise-$(Version).zip" WorkingDirectory="$(ImportEnterpriseInstall)" />
+		<Zip Files="@(AWStatsViewerInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-AWStatsViewer-$(Version).zip" WorkingDirectory="$(AWStatsViewerInstall)" />
+		<Zip Files="@(WSPTransportAgentInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-WSPTransportAgent-$(Version).zip" WorkingDirectory="$(WSPTransportAgentInstall)" />
   </Target>
 
 </Project>
