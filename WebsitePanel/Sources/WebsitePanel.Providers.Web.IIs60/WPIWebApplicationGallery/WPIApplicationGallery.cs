@@ -187,9 +187,16 @@ namespace WebsitePanel.Providers.Web.WPIWebApplicationGallery
             List<Product> products = wpi.GetApplications(categoryId);
             List<GalleryApplication> applications = new List<GalleryApplication>();
 
-            foreach (Product product in products)
+            try
             {
-                applications.Add(MakeGalleryApplicationFromProduct(product));
+                foreach (Product product in products)
+                {
+                    applications.Add(MakeGalleryApplicationFromProduct(product));
+                }
+            }
+            catch(Exception ex)
+            {
+                //
             }
 
             return applications;
@@ -374,7 +381,7 @@ namespace WebsitePanel.Providers.Web.WPIWebApplicationGallery
                            Id = product.ProductId,
                            Title = product.Title,
                            Author = new Author {Name = product.Author, Uri = product.AuthorUri.ToString()},
-                           IconUrl = product.IconUrl.ToString(),
+                           IconUrl = null == product.IconUrl ? "" : product.IconUrl.ToString(),
                            Version = product.Version,
                            Description = product.LongDescription,
                            Summary = product.Summary,
