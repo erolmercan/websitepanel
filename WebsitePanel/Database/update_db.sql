@@ -875,7 +875,7 @@ INNER JOIN UsersDetailed AS U ON P.UserID = U.UserID
 LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
 LEFT OUTER JOIN Services AS S ON Z.ServiceID = S.ServiceID
 LEFT OUTER JOIN Servers AS SRV ON S.ServerID = SRV.ServerID
-WHERE (D.IsInstantAlias = 0 AND D.IsDomainPointer = 0) AND
+WHERE D.IsInstantAlias = 0 AND
 		((@Recursive = 0 AND D.PackageID = @PackageID)
 		OR (@Recursive = 1 AND dbo.CheckPackageParent(@PackageID, D.PackageID) = 1))
 AND (@ServerID = 0 OR (@ServerID > 0 AND S.ServerID = @ServerID))
