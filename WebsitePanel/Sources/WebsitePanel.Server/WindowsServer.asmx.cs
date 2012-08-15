@@ -755,7 +755,7 @@ namespace WebsitePanel.Server
         }
 
         [WebMethod]
-        public SettingPair[] WpiGetLogsInDirectory(string path)
+        public SettingPair[] WpiGetLogsInDirectory(string Path)
         {
             try
             {
@@ -763,7 +763,7 @@ namespace WebsitePanel.Server
 
                 ArrayList result = new ArrayList();
 
-                string[] filePaths = Directory.GetFiles(path);
+                string[] filePaths = Directory.GetFiles(Path);
                 foreach (string filePath in filePaths)
                 {
                     using (StreamReader streamReader = new StreamReader(filePath))
