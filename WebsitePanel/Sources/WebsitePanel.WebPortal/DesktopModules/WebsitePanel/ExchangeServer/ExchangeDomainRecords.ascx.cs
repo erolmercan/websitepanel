@@ -110,15 +110,27 @@ namespace WebsitePanel.Portal.ExchangeServer
             if (ddlRecordType.SelectedValue == "A")
             {
                 lblRecordData.Text = "IP:";
-                IPValidator1.Enabled = true;
-            }
+                IPValidator.Enabled = true;
+			}
+			else if (ddlRecordType.SelectedValue == "AAAA") {
+				lblRecordData.Text = "IPv6:";
+				IPValidator.Enabled = true;
+			}
             else
             {
                 lblRecordData.Text = "Record Data:";
-                IPValidator1.Enabled = false;
+                IPValidator.Enabled = false;
             }
 		}
 
+		protected void Validate(object source, ServerValidateEventArgs args) {
+			var ip = args.Value;
+			System.Net.IPAddress ipaddr;
+			args.IsValid = System.Net.IPAddress.TryParse(ip, out ipaddr) && (ip.Contains(":") || ip.Contains(".")) && 
+                ((ddlRecordType.SelectedValue == "A" && ipaddr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) ||
+                (ddlRecordType.SelectedValue == "AAAA" && ipaddr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6));
+		}
+	
 		private void SaveRecord()
 		{
 			if (!Page.IsValid)

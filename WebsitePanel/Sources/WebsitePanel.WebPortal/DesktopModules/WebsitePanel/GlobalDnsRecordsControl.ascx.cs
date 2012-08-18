@@ -138,13 +138,33 @@ namespace WebsitePanel.Portal
 
         private void ToggleRecordControls()
         {
-            ipAddress.Visible = (ddlRecordType.SelectedValue == "A");
-            //rowData.Visible = (ddlRecordType.SelectedValue != "A");
+            ipAddress.Visible = (ddlRecordType.SelectedValue == "A" || ddlRecordType.SelectedValue == "AAAA");
+            //rowData.Visible = (ddlRecordType.SelectedValue != "A" && ddlRecordType.SelectedValue != "AAAA");
             rowMXPriority.Visible = (ddlRecordType.SelectedValue == "MX");
+			if (ddlRecordType.SelectedValue == "A") {
+				lblRecordData.Text = "IP:";
+				IPValidator.Enabled = true;
+			} else if (ddlRecordType.SelectedValue == "AAAA") {
+				lblRecordData.Text = "IP (v6):";
+				IPValidator.Enabled = true;
+			} else {
+				lblRecordData.Text = "Record Data:";
+				IPValidator.Enabled = false;
+			}
         }
+
+		protected void Validate(object source, ServerValidateEventArgs args) {
+			var ip = args.Value;
+			System.Net.IPAddress ipaddr;
+			args.IsValid = System.Net.IPAddress.TryParse(ip, out ipaddr) && (ip.Contains(":") || ip.Contains(".")) && 
+                ((ddlRecordType.SelectedValue == "A" && ipaddr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork) ||
+                (ddlRecordType.SelectedValue == "AAAA" && ipaddr.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6));
+		}
 
         private void SaveRecord()
         {
+			if (!Page.IsValid) return;
+
             GlobalDnsRecord record = new GlobalDnsRecord();
             record.RecordId = (int)ViewState["RecordID"];
             record.RecordType = ddlRecordType.SelectedValue;
