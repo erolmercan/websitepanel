@@ -106,6 +106,16 @@ namespace WebsitePanel.Portal.Lync
 
                 try
                 {
+                    LyncUserPlan plan = ES.Services.Lync.GetLyncUserPlan(PanelRequest.ItemID, planId);
+
+                    if (plan.LyncUserPlanType > 0)
+                    {
+                        ShowErrorMessage("EXCHANGE_UNABLE_USE_SYSTEMPLAN");
+                        BindPlans();
+                        return;
+                    }
+
+
                     int result = ES.Services.Lync.DeleteLyncUserPlan(PanelRequest.ItemID, planId);
 
                     if (result < 0)
@@ -113,6 +123,9 @@ namespace WebsitePanel.Portal.Lync
                         messageBox.ShowResultMessage(result);
                         return;
                     }
+                    else
+                        ShowSuccessMessage("REQUEST_COMPLETED_SUCCESFULLY");
+
 
                 }
                 catch (Exception)
@@ -131,7 +144,18 @@ namespace WebsitePanel.Portal.Lync
 
             try
             {
+                LyncUserPlan plan = ES.Services.Lync.GetLyncUserPlan(PanelRequest.ItemID, planId);
+
+                if (plan.LyncUserPlanType > 0)
+                {
+                    ShowErrorMessage("EXCHANGE_UNABLE_USE_SYSTEMPLAN");
+                    BindPlans();
+                    return;
+                }
+
                 ES.Services.Lync.SetOrganizationDefaultLyncUserPlan(PanelRequest.ItemID, planId);
+
+                ShowSuccessMessage("REQUEST_COMPLETED_SUCCESFULLY");
 
                 // rebind domains
                 BindPlans();
@@ -169,6 +193,30 @@ namespace WebsitePanel.Portal.Lync
                 ShowErrorMessage("LYNC_FAILED_TO_STAMP", ex);
             }
         }
+
+
+
+        public string GetPlanType(int planType)
+        {
+            string imgName = string.Empty;
+
+            LyncUserPlanType type = (LyncUserPlanType)planType;
+            switch (type)
+            {
+                case LyncUserPlanType.Reseller:
+                    imgName = "company24.png";
+                    break;
+                case LyncUserPlanType.Administrator:
+                    imgName = "company24.png";
+                    break;
+                default:
+                    imgName = "admin_16.png";
+                    break;
+            }
+
+            return GetThemedImage("Exchange/" + imgName);
+        }
+
 
     }
 }

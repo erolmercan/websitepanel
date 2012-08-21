@@ -34,6 +34,11 @@
 				    <asp:GridView ID="gvPlans" runat="server" AutoGenerateColumns="False" EnableViewState="true"
 					    Width="100%" EmptyDataText="gvPlans" CssSelectorClass="NormalGridView" OnRowCommand="gvPlan_RowCommand">
 					    <Columns>
+						    <asp:TemplateField>
+							    <ItemTemplate>							        
+								    <asp:Image ID="img2" runat="server" Width="16px" Height="16px" ImageUrl='<%# GetPlanType((int)Eval("LyncUserPlanType")) %>' ImageAlign="AbsMiddle" />
+							    </ItemTemplate>
+						    </asp:TemplateField>
 						    <asp:TemplateField HeaderText="gvPlan">
 							    <ItemStyle Width="70%"></ItemStyle>
 							    <ItemTemplate>
@@ -103,9 +108,6 @@
 
 
 				</div>
-			</div>
-			<div class="Right">
-				<asp:Localize ID="FormComments" runat="server" meta:resourcekey="HSFormComments"></asp:Localize>
 			</div>
 		</div>
 	</div>

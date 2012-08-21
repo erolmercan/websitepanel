@@ -539,6 +539,16 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
 
             try
             {
+                List<LyncUserPlan> plans = new List<LyncUserPlan>();
+
+                UserInfo user = ObjectUtils.FillObjectFromDataReader<UserInfo>(DataProvider.GetUserByExchangeOrganizationIdInternally(itemId));
+
+                LyncController.GetLyncUserPlansByUser(user, ref plans);
+
+                return plans;
+
+
+
                 return ObjectUtils.CreateListFromDataReader<LyncUserPlan>(
                     DataProvider.GetLyncUserPlans(itemId));
             }
@@ -551,6 +561,43 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                 TaskManager.CompleteTask();
             }
         }
+
+        private static void GetLyncUserPlansByUser(UserInfo user, ref List<LyncUserPlan> plans)
+        {
+            if ((user != null))
+            {
+                List<Organization> orgs = null;
+
+                if (user.UserId != 1)
+                {
+                    List<PackageInfo> Packages = PackageController.GetPackages(user.UserId);
+
+                    if ((Packages != null) & (Packages.Count > 0))
+                    {
+                        orgs = ExchangeServerController.GetExchangeOrganizations(Packages[0].PackageId, false);
+                    }
+                }
+                else
+                {
+                    orgs = ExchangeServerController.GetExchangeOrganizations(1, false);
+                }
+
+                if ((orgs != null) & (orgs.Count > 0))
+                {
+                    List<LyncUserPlan> Plans = ObjectUtils.CreateListFromDataReader<LyncUserPlan>(DataProvider.GetLyncUserPlans(orgs[0].Id));
+
+                    foreach (LyncUserPlan p in Plans)
+                    {
+                        plans.Add(p);
+                    }
+                }
+
+                UserInfo owner = UserController.GetUserInternally(user.OwnerId);
+
+                GetLyncUserPlansByUser(owner, ref plans);
+            }
+        }
+
 
         public static LyncUserPlan GetLyncUserPlan(int itemID, int lyncUserPlanId)
         {
@@ -610,6 +657,50 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
             }
 
         }
+
+
+
+
+
+        public static int UpdateLyncUserPlan(int itemID, LyncUserPlan lyncUserPlan)
+        {
+            int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive);
+            if (accountCheck < 0) return accountCheck;
+
+            // place log record
+            TaskManager.StartTask("LYNC", "ADD_LYNC_LYNCUSERPLAN");
+            TaskManager.ItemId = itemID;
+
+            try
+            {
+                Organization org = GetOrganization(itemID);
+                if (org == null)
+                    return -1;
+
+                // load package context
+                PackageContext cntx = PackageController.GetPackageContext(org.PackageId);
+
+                lyncUserPlan.Conferencing = lyncUserPlan.Conferencing & Convert.ToBoolean(cntx.Quotas[Quotas.LYNC_CONFERENCING].QuotaAllocatedValue);
+                lyncUserPlan.EnterpriseVoice = lyncUserPlan.EnterpriseVoice & Convert.ToBoolean(cntx.Quotas[Quotas.LYNC_ENTERPRISEVOICE].QuotaAllocatedValue);
+                if (!lyncUserPlan.EnterpriseVoice)
+                    lyncUserPlan.VoicePolicy = LyncVoicePolicyType.None;
+                lyncUserPlan.IM = true;
+
+                DataProvider.UpdateLyncUserPlan(itemID, lyncUserPlan);
+            }
+            catch (Exception ex)
+            {
+                throw TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                TaskManager.CompleteTask();
+            }
+
+
+            return 0;
+        }
+
 
         public static int DeleteLyncUserPlan(int itemID, int lyncUserPlanId)
         {

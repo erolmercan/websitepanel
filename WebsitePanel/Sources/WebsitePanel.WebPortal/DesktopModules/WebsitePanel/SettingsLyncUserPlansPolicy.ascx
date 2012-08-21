@@ -13,18 +13,16 @@
                     <asp:ImageButton ID="cmdEdit" runat="server" SkinID="EditSmall" CommandName="EditItem" AlternateText="Edit record" CommandArgument='<%# Eval("LyncUserPlanId") %>' ></asp:ImageButton>
                 </ItemTemplate>
              </asp:TemplateField>
+			<asp:TemplateField>
+				<ItemTemplate>							        
+					<asp:Image ID="img2" runat="server" Width="16px" Height="16px" ImageUrl='<%# GetPlanType((int)Eval("LyncUserPlanType")) %>' ImageAlign="AbsMiddle" />
+				</ItemTemplate>
+			</asp:TemplateField>
 			<asp:TemplateField HeaderText="gvPlan">
 				<ItemStyle Width="70%"></ItemStyle>
 				<ItemTemplate>
 					<asp:Label id="lnkDisplayPlan" runat="server" EnableViewState="true" ><%# Eval("LyncUserPlanName")%></asp:Label>
                  </ItemTemplate>
-			</asp:TemplateField>
-			<asp:TemplateField HeaderText="gvPlanDefault">
-				<ItemTemplate>
-					<div style="text-align:center">
-						<input type="radio" name="DefaultPlan" value='<%# Eval("LyncUserPlanId") %>' <%# IsChecked((bool)Eval("IsDefault")) %> />
-					</div>
-				</ItemTemplate>
 			</asp:TemplateField>
 			<asp:TemplateField>
 				<ItemTemplate>
@@ -33,13 +31,15 @@
 						meta:resourcekey="cmdDelete" OnClientClick="return confirm('Are you sure you want to delete selected plan?')"></asp:ImageButton>
 				</ItemTemplate>
 			</asp:TemplateField>
+			<asp:TemplateField>
+				<ItemTemplate>
+                        <asp:Button ID="btnStamp" runat="server" meta:resourcekey="btnStamp"
+                        Text="Restamp all lync users with this plan" CssClass="Button1"  CommandName="RestampItem" CommandArgument='<%# Eval("LyncUserPlanId") %>' OnClientClick="if (confirm('Restamp lync user with this plan.\n\nAre you sure you want to restamp the lync users ?')) ShowProgressDialog('Stamping lync users, this might take a while ...'); else return false;"/>
+				</ItemTemplate>
+			</asp:TemplateField>
 		</Columns>
 	</asp:GridView>
 	<br />
-	<div style="text-align: center">
-		<asp:Button ID="btnSetDefaultPlan" runat="server" meta:resourcekey="btnSetDefaulPlan"
-            Text="Set Default Lync user plan" CssClass="Button1" OnClick="btnSetDefaultPlan_Click" />
-    </div>
 	<wsp:CollapsiblePanel id="secPlan" runat="server"
         TargetControlID="Plan" meta:resourcekey="secPlan" Text="Plan">
     </wsp:CollapsiblePanel>
@@ -131,14 +131,29 @@
 					
 	<br />
 
-    <div class="FormButtonsBarClean">
-        <asp:Button ID="btnAddPlan" runat="server" meta:resourcekey="btnAddPlan"
-            Text="Add New plan" CssClass="Button1" OnClick="btnAddPlan_Click" />
-    </div>
 
-    <div class="FormButtonsBarClean">
-        <asp:Button ID="btnAddPlanToOrganizations" runat="server" meta:resourcekey="btnAddPlanToOrganizations"
-            Text="Add Plans Template to All Organizations" CssClass="Button1" OnClick="btnAddPlanToOrganizations_Click" OnClientClick="if (confirm('Plans with an existing name will not be added. \nAre you sure you want to add the plans template to all tenants ?')) ShowProgressDialog('Adding plans, this might take a while ...'); else return false;"/>
-    </div>
+    <table>
+        <tr>
+            <td>
+                <div class="FormButtonsBarClean">
+                    <asp:Button ID="btnAddPlan" runat="server" meta:resourcekey="btnAddPlan"
+                        Text="Add New plan" CssClass="Button1" OnClick="btnAddPlan_Click" />
+                </div>
+            </td>
+            <td>
+                <div class="FormButtonsBarClean">
+                        <asp:Button ID="btnUpdatePlan" runat="server" meta:resourcekey="btnUpdatePlan"
+                            Text="Update Plan" CssClass="Button1" OnClick="btnUpdatePlan_Click" />
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <br />
+
+    <asp:TextBox ID="txtStatus" runat="server" CssClass="TextBox400" MaxLength="128" ReadOnly="true"></asp:TextBox>
+
+
+    
 
 

@@ -35,6 +35,7 @@ namespace WebsitePanel.Providers.HostedSolution
     public class LyncUserPlan
     {
         int lyncUserPlanId;
+        int itemId;
         string lyncUserPlanName;
 
         bool im;
@@ -44,8 +45,15 @@ namespace WebsitePanel.Providers.HostedSolution
         bool mobility;
         bool mobilityEnableOutsideVoice;
         LyncVoicePolicyType voicePolicy;
+        int lyncUserPlanType;
 
         bool isDefault;
+
+        public int ItemId
+        {
+            get { return this.itemId; }
+            set { this.itemId = value; }
+        }
 
         public int LyncUserPlanId
         {
@@ -58,6 +66,13 @@ namespace WebsitePanel.Providers.HostedSolution
             get { return this.lyncUserPlanName; }
             set { this.lyncUserPlanName = value; }
         }
+
+        public int LyncUserPlanType
+        {
+            get { return this.lyncUserPlanType; }
+            set { this.lyncUserPlanType = value; }
+        }
+
 
         public bool IM
         {

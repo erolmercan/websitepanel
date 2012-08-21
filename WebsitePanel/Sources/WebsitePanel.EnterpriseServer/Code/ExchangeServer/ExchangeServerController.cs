@@ -109,6 +109,15 @@ namespace WebsitePanel.EnterpriseServer
 				delegate(ServiceProviderItem item) { return (Organization)item; }));
 		}
 
+        public static List<Organization> GetExchangeOrganizationsInternal(int packageId, bool recursive)
+        {
+            List<ServiceProviderItem> items = PackageController.GetPackageItemsByTypeInternal(packageId, null, typeof(Organization), recursive);
+
+            return items.ConvertAll<Organization>(
+                new Converter<ServiceProviderItem, Organization>(
+                delegate(ServiceProviderItem item) { return (Organization)item; }));
+        }
+
 		public static Organization GetOrganization(int itemId)
 		{
 			#region Demo Mode
@@ -273,19 +282,22 @@ namespace WebsitePanel.EnterpriseServer
 
                 int exchangeServiceId = PackageController.GetPackageServiceId(org.PackageId, ResourceGroups.Exchange);
 
-                ServiceProvider exchange = GetServiceProvider(exchangeServiceId, org.ServiceId);
-                
-				ServiceProviderItemDiskSpace[] itemsDiskspace = exchange.GetServiceItemsDiskSpace(new SoapServiceProviderItem[] { soapOrg });
+                if (exchangeServiceId != 0)
+                {
+                    ServiceProvider exchange = GetServiceProvider(exchangeServiceId, org.ServiceId);
 
-				
-                if (itemsDiskspace != null && itemsDiskspace.Length > 0)
-				{
-					// set disk space
-					org.DiskSpace = (int)Math.Round(((float)itemsDiskspace[0].DiskSpace / 1024 / 1024));
+                    ServiceProviderItemDiskSpace[] itemsDiskspace = exchange.GetServiceItemsDiskSpace(new SoapServiceProviderItem[] { soapOrg });
 
-					// save organization
-					UpdateOrganization(org);
-				}
+
+                    if (itemsDiskspace != null && itemsDiskspace.Length > 0)
+                    {
+                        // set disk space
+                        org.DiskSpace = (int)Math.Round(((float)itemsDiskspace[0].DiskSpace / 1024 / 1024));
+
+                        // save organization
+                        UpdateOrganization(org);
+                    }
+                }
 			}
 			catch (Exception ex)
 			{
@@ -2551,12 +2563,12 @@ namespace WebsitePanel.EnterpriseServer
                 
                     if ((Packages != null) & (Packages.Count > 0))
                     {
-                        orgs = GetExchangeOrganizations(Packages[0].PackageId, false);
+                        orgs = GetExchangeOrganizationsInternal(Packages[0].PackageId, false);
                     }
                 }
                 else
                 {
-                    orgs = GetExchangeOrganizations(1, false);
+                    orgs = GetExchangeOrganizationsInternal(1, false);
                 }
 
                 if ((orgs != null) &(orgs.Count > 0))

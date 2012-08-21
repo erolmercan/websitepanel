@@ -52,7 +52,7 @@
 				    <asp:GridView ID="gvContacts" runat="server" AutoGenerateColumns="False" EnableViewState="true"
 					    Width="100%" EmptyDataText="gvContacts" CssSelectorClass="NormalGridView"
 					    OnRowCommand="gvContacts_RowCommand" AllowPaging="True" AllowSorting="True"
-					    DataSourceID="odsAccountsPaged" PageSize="20">>
+					    DataSourceID="odsAccountsPaged" PageSize="20">
 					    <Columns>
 						    <asp:TemplateField HeaderText="gvContactsDisplayName" SortExpression="DisplayName">
 							    <ItemStyle Width="50%"></ItemStyle>
@@ -93,9 +93,6 @@
 				    
 				    
 				</div>
-			</div>
-			<div class="Right">
-				<asp:Localize ID="FormComments" runat="server" meta:resourcekey="FormComments"></asp:Localize>
 			</div>
 		</div>
 	</div>
