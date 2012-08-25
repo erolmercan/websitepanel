@@ -12,9 +12,9 @@
 			<ItemStyle Width="100%"></ItemStyle>
 			<ItemTemplate>
 				<b><asp:hyperlink id="lnkEdit" runat="server" NavigateUrl='<%# EditUrl("PlanID", Eval("PlanID").ToString(), "edit_plan", "UserID=" + Eval("UserID").ToString()) %>'>
-					<%# PortalAntiXSS.Encode((string)Eval("PlanName")) %>
+					<%# PortalAntiXSS.EncodeOld((string)Eval("PlanName")) %>
 				</asp:hyperlink></b><br />
-				<%# PortalAntiXSS.Encode((string)Eval("PlanDescription")) %>
+				<%# PortalAntiXSS.EncodeOld((string)Eval("PlanDescription")) %>
 			</ItemTemplate>
 		</asp:TemplateField>
 		<asp:TemplateField>
