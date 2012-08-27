@@ -387,7 +387,7 @@ namespace WebsitePanel.Providers.Web.WPIWebApplicationGallery
                            Summary = product.Summary,
                            LastUpdated = product.Published,
                            Published = product.Published,
-                           Link = product.Link.ToString(),
+                           Link = (null == product.Link) ? "" : product.Link.ToString(),
                            InstallerFileSize = size
                        };
         }
