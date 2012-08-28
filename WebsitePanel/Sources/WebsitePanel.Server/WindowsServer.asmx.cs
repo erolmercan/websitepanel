@@ -376,7 +376,7 @@ namespace WebsitePanel.Server
                     feedLocation = feeds.GetEnumerator().Current;
                 }
 
-                List<Product> products = wpi.GetProducts(feedLocation, keywordId);
+                List<Product> products = wpi.GetProductsToInstall(feedLocation, keywordId);
 
                 if (products != null)
                 {
@@ -573,7 +573,7 @@ namespace WebsitePanel.Server
                 WpiHelper wpi = GetWpiFeed();
 
                 List<WPIProduct> result = new List<WPIProduct>();
-                foreach (Product product in wpi.GetProductsWithDependencies(products))
+                foreach (Product product in wpi.GetProductsToInstallWithDependencies(products))
                 {
                     result.Add(ProductToWPIProduct(product));
                 }

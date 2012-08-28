@@ -50,11 +50,7 @@ namespace WebsitePanel.Server.Code
 
     public class WpiHelper
     {
-        #region public consts
-
         public const string DeafultLanguage = "en";
-
-        #endregion
 
         #region private fields
 
@@ -68,7 +64,7 @@ namespace WebsitePanel.Server.Code
         private bool _installCompleted;
         private InstallManager _installManager;
         private string _LogFileDirectory = string.Empty;
-        string _resourceLanguage = DeafultLanguage;
+        private string _resourceLanguage = DeafultLanguage;
         private const DeploymentWellKnownTag databaseEngineTags =
                     DeploymentWellKnownTag.Sql |
                     DeploymentWellKnownTag.MySql |
@@ -78,6 +74,8 @@ namespace WebsitePanel.Server.Code
 
         #endregion private fields
 
+        #region Public interface
+
         public WpiHelper(IEnumerable<string> feeds)
         {
             _feeds = new List<string>();
@@ -86,65 +84,19 @@ namespace WebsitePanel.Server.Code
             Initialize();
         }
 
-        private void Initialize()
+        public string GetLogFileDirectory()
         {
-            // insert Main WebPI xml file
-            if (!_feeds.Contains(MainWpiFeed, StringComparer.OrdinalIgnoreCase))
-            {
-                _feeds.Insert(0, MainWpiFeed);
-            }
-
-            // create cache folder if not exists
-            //_webPIinstallersFolder = Environment.ExpandEnvironmentVariables(@"%LocalAppData%\Microsoft\Web Platform Installer\installers");
-            _webPIinstallersFolder = Path.Combine(
-                Environment.ExpandEnvironmentVariables("%SystemRoot%"), 
-                "Temp\\zoo.wpi\\AppData\\Local\\Microsoft\\Web Platform Installer\\installers" );
-
-            if (!Directory.Exists(_webPIinstallersFolder))
-            {
-                Directory.CreateDirectory(_webPIinstallersFolder);
-            }
-
-            // load feeds
-            _productManager = new ProductManager();
-            
-
-            foreach (string feed in _feeds)
-            {
-                Log(string.Format("Loading {0}", feed));
-                if (feed.StartsWith("https://www.microsoft.com", StringComparison.OrdinalIgnoreCase))
-                {
-                    _productManager.Load(new Uri(feed), true, true, true, _webPIinstallersFolder);
-                }
-                else
-                {
-                    _productManager.LoadExternalFile(new Uri(feed));
-                }
-            }
-
-            Log(string.Format("{0} products loaded", _productManager.Products.Count));
-
-            LogDebugInfo();
+            return _LogFileDirectory;
         }
 
-        public void SetResourceLanguage(string resourceLanguage)
-        {
-            _resourceLanguage = resourceLanguage;
-            _productManager.SetResourceLanguage(resourceLanguage);
-        }
 
-        #region Public interface
-
-        public List<Product> GetProducts()
-        {
-            return GetProducts(null,null);
-        }
-
+        
+        #region Languages
         public List<Language> GetLanguages()
         {
             List<Language> languages = new List<Language>();
 
-            foreach (Product product in GetProducts())
+            foreach (Product product in GetProductsToInstall(null, null))
             {
                 if (null!=product.Installers)
                 {
@@ -162,30 +114,131 @@ namespace WebsitePanel.Server.Code
             return languages;
         }
 
-        public void CancelInstallProducts()
+        public void SetResourceLanguage(string resourceLanguage)
         {
-            if (_installManager!= null)
-            {
-                _installManager.Cancel();
-            }
+            _resourceLanguage = resourceLanguage;
+            _productManager.SetResourceLanguage(resourceLanguage);
         }
 
-        private List<Installer> GetInstallers(List<Product> productsToInstall, Language lang)
+        #endregion
+
+        #region Tabs
+        public ReadOnlyCollection<Tab> GetTabs()
         {
-            List<Installer> installersToUse = new List<Installer>();
-            foreach (Product product in productsToInstall)
+            return _productManager.Tabs;
+        }
+
+        public Tab GetTab(string tabId)
+        {
+            return _productManager.GetTab(tabId);
+        }
+       #endregion
+
+
+        #region Keywords
+        public ReadOnlyCollection<Keyword> GetKeywords()
+        {
+            return _productManager.Keywords;
+        }
+
+        public bool IsKeywordApplication(Keyword keyword)
+        {
+            //if all products are Application
+            foreach (Product product in keyword.Products)
             {
-                Installer installer = product.GetInstaller(lang);
-                if (null != installer)
+                if (!product.IsApplication)
                 {
-                    installersToUse.Add(installer);
+                    return false;
                 }
             }
 
-            return installersToUse;
+            return true;
+
+        }
+        #endregion
+
+
+
+        #region Products
+        public List<Product> GetProductsToInstall(string FeedLocation, string keywordId)
+        {
+            Keyword keyword = null;
+            if (!string.IsNullOrEmpty(keywordId))
+            {
+                keyword = _productManager.GetKeyword(keywordId);
+            }
+
+            List<Product> products = new List<Product>();
+
+            foreach (Product product in _productManager.Products)
+            {
+                if (!string.IsNullOrEmpty(FeedLocation) && string.Compare(product.FeedLocation, FeedLocation, StringComparison.OrdinalIgnoreCase) != 0)
+                {
+                    // if FeedLocation defined, then select products only from this feed location
+                    continue;
+                }
+
+                if (null == product.Installers || product.Installers.Count == 0)
+                {
+                    // skip this product
+                    // usually product without intsallers user as product detection
+                    continue;
+                }
+
+                if (null == keyword)
+                {
+                    products.Add(product);
+                }
+                else if (product.Keywords.Contains(keyword))
+                {
+                    products.Add(product);
+                }
+            }
+
+            //Sort by Title
+            products.Sort(delegate(Product a, Product b)
+            {
+                return a.Title.CompareTo(b.Title);
+            });
+
+            return products;
         }
 
-        public List<Product> GetProducts(IEnumerable<string> productIdsToInstall)
+        public List<Product> GetProductsFiltered(string filter)
+        {
+
+            List<Product> products = new List<Product>();
+
+            foreach (Product product in _productManager.Products)
+            {
+                if (null == product.Installers || product.Installers.Count == 0)
+                {
+                    // skip this product
+                    // usually product without intsallers user as product detection
+                    continue;
+                }
+
+                if (string.IsNullOrEmpty(filter))
+                {
+                    products.Add(product);
+                }
+                else if (product.Title.ToLower().Contains(filter.ToLower()))
+                {
+                    products.Add(product);
+                }
+            }
+
+            //Sort by Title
+            products.Sort(delegate(Product a, Product b)
+            {
+                return a.Title.CompareTo(b.Title);
+            });
+
+
+            return products;
+        }
+        
+        public List<Product> GetProductsToInstall(IEnumerable<string> productIdsToInstall)
         {
             List<Product> productsToInstall = new List<Product>();
 
@@ -213,9 +266,8 @@ namespace WebsitePanel.Server.Code
 
             return productsToInstall;
         }
-
-
-        public List<Product> GetProductsWithDependencies(IEnumerable<string> productIdsToInstall )
+        
+        public List<Product> GetProductsToInstallWithDependencies(IEnumerable<string> productIdsToInstall )
         {
             List<string> updatedProductIdsToInstall = new List<string>();
             // add iis chioce product to force iis (not-iisexpress/webmatrix) branch
@@ -249,40 +301,105 @@ namespace WebsitePanel.Server.Code
             return productsToInstall;
         }
 
-        public string GetLogFileDirectory()
+        public Product GetProduct(string productId)
         {
-            return _LogFileDirectory;
+            return _productManager.GetProduct(productId);
         }
 
-
-        private Language GetLanguage(string languageId)
+        public void InstallProducts(
+            IEnumerable<string> productIdsToInstall,
+            bool installDependencies,
+            string languageId,
+            EventHandler<InstallStatusEventArgs> installStatusUpdatedHandler,
+            EventHandler<EventArgs> installCompleteHandler)
         {
-            if (!string.IsNullOrEmpty(languageId))
+
+            List<Product> productsToInstall = null;
+            if (installDependencies)
             {
-                return _productManager.GetLanguage(languageId);    
+                // Get products & dependencies list to install
+                productsToInstall = GetProductsToInstallWithDependencies(productIdsToInstall);
+            }
+            else
+            {
+                productsToInstall = GetProductsToInstall(productIdsToInstall);
             }
 
-            return _productManager.GetLanguage(DeafultLanguage);
+
+
+            // Get installers
+            Language lang = GetLanguage(languageId);
+            List<Installer> installersToUse = GetInstallers(productsToInstall, lang);
+
+
+            // Prepare install manager & set event handlers
+            _installManager = new InstallManager();
+            _installManager.Load(installersToUse);
+
+
+            if (null != installStatusUpdatedHandler)
+            {
+                _installManager.InstallerStatusUpdated += installStatusUpdatedHandler;
+            }
+            _installManager.InstallerStatusUpdated += InstallManager_InstallerStatusUpdated;
+
+            if (null != installCompleteHandler)
+            {
+                _installManager.InstallCompleted += installCompleteHandler;
+            }
+            _installManager.InstallCompleted += InstallManager_InstallCompleted;
+
+            // Download installer files
+            foreach (InstallerContext installerContext in _installManager.InstallerContexts)
+            {
+                if (null != installerContext.Installer.InstallerFile)
+                {
+                    string failureReason;
+                    if (!_installManager.DownloadInstallerFile(installerContext, out failureReason))
+                    {
+                        Log(string.Format("DownloadInstallerFile '{0}' failed: {1}",
+                                          installerContext.Installer.InstallerFile.InstallerUrl, failureReason));
+                    }
+                }
+            }
+
+            if (installersToUse.Count > 0)
+            {
+                // Start installation
+                _installCompleted = false;
+                Log("_installManager.StartInstallation()");
+                _installManager.StartInstallation();
+
+                Log("_installManager.StartInstallation() done");
+                while (!_installCompleted)
+                {
+                    Thread.Sleep(100);
+                }
+
+                //save logs
+                SaveLogDirectory();
+
+
+                _installCompleted = false;
+            }
+            else
+            {
+                Log("Nothing to install");
+            }
+
         }
 
-
-        // GetTabs
-        public ReadOnlyCollection<Tab> GetTabs()
+        public void CancelInstallProducts()
         {
-            return _productManager.Tabs;
+            if (_installManager != null)
+            {
+                _installManager.Cancel();
+            }
         }
 
-        public Tab GetTab(string tabId)
-        {
-            return _productManager.GetTab(tabId);
-        }
+        #endregion
 
-        // GetKeywords
-        public ReadOnlyCollection<Keyword> GetKeywords()
-        {
-            return _productManager.Keywords;
-        }
-
+        #region Applications
         public List<Product> GetApplications(string keywordId)
         {
 
@@ -336,100 +453,11 @@ namespace WebsitePanel.Server.Code
             return products;
         }
 
-        public Product GetProduct(string productId)
-        {
-
-            return _productManager.GetProduct(productId);
-        }
-
         public IList<DeclaredParameter> GetAppDecalredParameters(string productId)
         {
             Product app = _productManager.GetProduct(productId);
             Installer appInstaller = app.GetInstaller(GetLanguage(null));
             return appInstaller.MSDeployPackage.DeclaredParameters;
-        }
-
-        public void InstallProducts(
-            IEnumerable<string> productIdsToInstall,
-            bool installDependencies,
-            string languageId,
-            EventHandler<InstallStatusEventArgs> installStatusUpdatedHandler,
-            EventHandler<EventArgs> installCompleteHandler)
-        {
-
-            List<Product> productsToInstall = null;
-            if (installDependencies)
-            {
-                // Get products & dependencies list to install
-                productsToInstall  = GetProductsWithDependencies(productIdsToInstall);
-            }
-            else
-            {
-                productsToInstall  = GetProducts(productIdsToInstall);
-            }
-            
-             
-
-            // Get installers
-            Language lang = GetLanguage(languageId);
-            List<Installer> installersToUse =  GetInstallers(productsToInstall, lang );
-
-        
-            // Prepare install manager & set event handlers
-            _installManager = new InstallManager();
-            _installManager.Load(installersToUse);
-
-
-            if (null != installStatusUpdatedHandler)
-            {
-                _installManager.InstallerStatusUpdated += installStatusUpdatedHandler;
-            }
-            _installManager.InstallerStatusUpdated += InstallManager_InstallerStatusUpdated;
-
-            if (null != installCompleteHandler)
-            {
-                _installManager.InstallCompleted += installCompleteHandler;
-            }
-            _installManager.InstallCompleted += InstallManager_InstallCompleted;
-
-            // Download installer files
-            foreach (InstallerContext installerContext in _installManager.InstallerContexts)
-            {
-                if (null != installerContext.Installer.InstallerFile)
-                {
-                    string failureReason;
-                    if (!_installManager.DownloadInstallerFile(installerContext, out failureReason))
-                    {
-                        Log(string.Format("DownloadInstallerFile '{0}' failed: {1}",
-                                          installerContext.Installer.InstallerFile.InstallerUrl, failureReason));
-                    }
-                }
-            }
-
-            if (installersToUse.Count > 0)
-            {
-                // Start installation
-                _installCompleted = false;
-                Log("_installManager.StartInstallation()");
-                _installManager.StartInstallation();
-                
-                Log("_installManager.StartInstallation() done");
-                while (!_installCompleted)
-                {
-                    Thread.Sleep(100);
-                }
-
-                //save logs
-                SaveLogDirectory();
-
-              
-                _installCompleted = false;
-            }
-            else
-            {
-                Log("Nothing to install");
-            }
-
         }
 
         public bool InstallApplication(
@@ -504,25 +532,78 @@ namespace WebsitePanel.Server.Code
             return !logger.IsFailed;
         }
 
-        public bool IsKeywordApplication(Keyword keyword)
-        {
-            //if all products are Application
-            foreach (Product product in keyword.Products)
-            {
-                if (!product.IsApplication)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-
-        }
-
+        #endregion
         #endregion Public interface
 
 
         #region private members
+
+        private void Initialize()
+        {
+            // insert Main WebPI xml file
+            if (!_feeds.Contains(MainWpiFeed, StringComparer.OrdinalIgnoreCase))
+            {
+                _feeds.Insert(0, MainWpiFeed);
+            }
+
+            // create cache folder if not exists
+            //_webPIinstallersFolder = Environment.ExpandEnvironmentVariables(@"%LocalAppData%\Microsoft\Web Platform Installer\installers");
+            _webPIinstallersFolder = Path.Combine(
+                Environment.ExpandEnvironmentVariables("%SystemRoot%"),
+                "Temp\\zoo.wpi\\AppData\\Local\\Microsoft\\Web Platform Installer\\installers");
+
+            if (!Directory.Exists(_webPIinstallersFolder))
+            {
+                Directory.CreateDirectory(_webPIinstallersFolder);
+            }
+
+            // load feeds
+            _productManager = new ProductManager();
+
+
+            foreach (string feed in _feeds)
+            {
+                Log(string.Format("Loading {0}", feed));
+                if (feed.StartsWith("https://www.microsoft.com", StringComparison.OrdinalIgnoreCase))
+                {
+                    _productManager.Load(new Uri(feed), true, true, true, _webPIinstallersFolder);
+                }
+                else
+                {
+                    _productManager.LoadExternalFile(new Uri(feed));
+                }
+            }
+
+            Log(string.Format("{0} products loaded", _productManager.Products.Count));
+
+            LogDebugInfo();
+        }
+
+        private Language GetLanguage(string languageId)
+        {
+            if (!string.IsNullOrEmpty(languageId))
+            {
+                return _productManager.GetLanguage(languageId);
+            }
+
+            return _productManager.GetLanguage(DeafultLanguage);
+        }
+
+
+        private List<Installer> GetInstallers(List<Product> productsToInstall, Language lang)
+        {
+            List<Installer> installersToUse = new List<Installer>();
+            foreach (Product product in productsToInstall)
+            {
+                Installer installer = product.GetInstaller(lang);
+                if (null != installer)
+                {
+                    installersToUse.Add(installer);
+                }
+            }
+
+            return installersToUse;
+        }
 
         private void LogDebugInfo()
         {
@@ -566,85 +647,6 @@ namespace WebsitePanel.Server.Code
             Console.WriteLine(message);
 //#endif
         }
-
-        public List<Product> GetProducts(string FeedLocation, string keywordId)
-        {
-            Keyword keyword = null;
-            if (!string.IsNullOrEmpty(keywordId))
-            {
-                keyword = _productManager.GetKeyword(keywordId);
-            }
-
-            List<Product> products = new List<Product>();
-
-            foreach (Product product in _productManager.Products)
-            {
-                if (!string.IsNullOrEmpty(FeedLocation) && string.Compare(product.FeedLocation, FeedLocation, StringComparison.OrdinalIgnoreCase) != 0)
-                {
-                    // if FeedLocation defined, then select products only from this feed location
-                    continue;
-                }
-
-                if (null == product.Installers || product.Installers.Count == 0)
-                {
-                    // skip this product
-                    // usually product without intsallers user as product detection
-                    continue;
-                }
-
-                if (null == keyword)
-                {
-                    products.Add(product);
-                }
-                else if (product.Keywords.Contains(keyword))
-                {
-                    products.Add(product);
-                }
-            }
-
-            //Sort by Title
-            products.Sort(delegate(Product a, Product b)
-            {
-                return a.Title.CompareTo(b.Title);
-            });
-
-            return products;
-        }
-
-        public List<Product> GetProductsFiltered(string filter)
-        {
-           
-            List<Product> products = new List<Product>();
-
-            foreach (Product product in _productManager.Products)
-            {
-                if (null == product.Installers || product.Installers.Count == 0)
-                {
-                    // skip this product
-                    // usually product without intsallers user as product detection
-                    continue;
-                }
-
-                if (string.IsNullOrEmpty(filter))
-                {
-                    products.Add(product);
-                }
-                else if (product.Title.ToLower().Contains(filter.ToLower()))
-                {
-                    products.Add(product);
-                }
-            }
-
-            //Sort by Title
-            products.Sort(delegate(Product a, Product b)
-            {
-                return a.Title.CompareTo(b.Title);
-            });
-
-
-            return products;
-        }
-
 
         private void InstallManager_InstallCompleted(object sender, EventArgs e)
         {

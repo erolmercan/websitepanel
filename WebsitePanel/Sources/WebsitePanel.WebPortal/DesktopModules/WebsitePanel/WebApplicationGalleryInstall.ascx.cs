@@ -46,7 +46,8 @@ namespace WebsitePanel.Portal
         {
             try
             {
-                GalleryApplicationResult appResult = ES.Services.WebApplicationGallery.GetGalleryApplicationDetails(PanelSecurity.PackageId,
+                GalleryApplicationResult appResult = 
+                    ES.Services.WebApplicationGallery.GetGalleryApplicationDetails(PanelSecurity.PackageId,
                                                                                     PanelRequest.ApplicationID);
                 // check for errors
                 if (!appResult.IsSuccess)

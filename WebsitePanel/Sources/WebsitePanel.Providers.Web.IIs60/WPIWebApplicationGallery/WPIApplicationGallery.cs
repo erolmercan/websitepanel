@@ -237,7 +237,7 @@ namespace WebsitePanel.Providers.Web.WPIWebApplicationGallery
             WpiHelper wpi = GetWpiHelper(UserId);
 
             List<string> missingDeps = new List<string>();
-            foreach (Product product in wpi.GetProductsWithDependencies(new string[] { id }))
+            foreach (Product product in wpi.GetProductsToInstallWithDependencies(new string[] { id }))
             {
                 if (product.ProductId != id)
                 {
@@ -400,13 +400,16 @@ namespace WebsitePanel.Providers.Web.WPIWebApplicationGallery
 
         protected static DeploymentParameter MakeDeploymentParameterFromDecalredParameter(DeclaredParameter d)
         {
+
+
             DeploymentParameter r = new DeploymentParameter();
             r.Name = d.Name;
             r.FriendlyName = d.FriendlyName;
             r.DefaultValue = d.DefaultValue;
             r.Description = d.Description;
+
 #pragma warning disable 612,618
-            r.WellKnownTags = (DeploymentParameterWellKnownTag) d.Tags;
+            r.WellKnownTags =   DeploymentParameterWellKnownTag.ALLKNOWN & (DeploymentParameterWellKnownTag) d.Tags;
             if (null != d.Validation)
             {
                 r.ValidationKind = (DeploymentParameterValidationKind) d.Validation.Kind;
