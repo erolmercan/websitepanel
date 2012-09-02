@@ -2537,7 +2537,10 @@ namespace WebsitePanel.EnterpriseServer
 
                 UserInfo user = ObjectUtils.FillObjectFromDataReader<UserInfo>(DataProvider.GetUserByExchangeOrganizationIdInternally(itemId));
 
-                ExchangeServerController.GetExchangeMailboxPlansByUser(user, ref mailboxPlans);
+                if (user.Role == UserRole.User)
+                    ExchangeServerController.GetExchangeMailboxPlansByUser(itemId, user, ref mailboxPlans);
+                else
+                    ExchangeServerController.GetExchangeMailboxPlansByUser(0, user, ref mailboxPlans);
 
                 return mailboxPlans;
             }
@@ -2551,7 +2554,7 @@ namespace WebsitePanel.EnterpriseServer
             }
         }
 
-        private static void GetExchangeMailboxPlansByUser(UserInfo user, ref List<ExchangeMailboxPlan>mailboxPlans)
+        private static void GetExchangeMailboxPlansByUser(int itemId, UserInfo user, ref List<ExchangeMailboxPlan>mailboxPlans)
         {
             if ((user != null))
             {
@@ -2571,9 +2574,14 @@ namespace WebsitePanel.EnterpriseServer
                     orgs = GetExchangeOrganizationsInternal(1, false);
                 }
 
-                if ((orgs != null) &(orgs.Count > 0))
+                int OrgId = -1;
+                if (itemId > 0) OrgId = itemId;
+                else if ((orgs != null) & (orgs.Count > 0)) OrgId = orgs[0].Id;
+
+
+                if (OrgId != -1)
                 {
-                    List<ExchangeMailboxPlan> Plans = ObjectUtils.CreateListFromDataReader<ExchangeMailboxPlan>(DataProvider.GetExchangeMailboxPlans(orgs[0].Id));
+                    List<ExchangeMailboxPlan> Plans = ObjectUtils.CreateListFromDataReader<ExchangeMailboxPlan>(DataProvider.GetExchangeMailboxPlans(OrgId));
 
                     foreach (ExchangeMailboxPlan p in Plans)
                     {
@@ -2583,7 +2591,7 @@ namespace WebsitePanel.EnterpriseServer
 
                 UserInfo owner = UserController.GetUserInternally(user.OwnerId);
 
-                GetExchangeMailboxPlansByUser(owner, ref mailboxPlans);
+                GetExchangeMailboxPlansByUser(0, owner, ref mailboxPlans);
             }
         }
 

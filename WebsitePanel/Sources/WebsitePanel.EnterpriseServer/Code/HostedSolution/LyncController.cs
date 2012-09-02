@@ -542,15 +542,13 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                 List<LyncUserPlan> plans = new List<LyncUserPlan>();
 
                 UserInfo user = ObjectUtils.FillObjectFromDataReader<UserInfo>(DataProvider.GetUserByExchangeOrganizationIdInternally(itemId));
-
-                LyncController.GetLyncUserPlansByUser(user, ref plans);
+                
+                if (user.Role == UserRole.User)
+                    LyncController.GetLyncUserPlansByUser(itemId, user, ref plans);
+                else
+                    LyncController.GetLyncUserPlansByUser(0, user, ref plans);
 
                 return plans;
-
-
-
-                return ObjectUtils.CreateListFromDataReader<LyncUserPlan>(
-                    DataProvider.GetLyncUserPlans(itemId));
             }
             catch (Exception ex)
             {
@@ -562,7 +560,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
             }
         }
 
-        private static void GetLyncUserPlansByUser(UserInfo user, ref List<LyncUserPlan> plans)
+        private static void GetLyncUserPlansByUser(int itemId, UserInfo user, ref List<LyncUserPlan> plans)
         {
             if ((user != null))
             {
@@ -582,9 +580,13 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                     orgs = ExchangeServerController.GetExchangeOrganizations(1, false);
                 }
 
-                if ((orgs != null) & (orgs.Count > 0))
+                int OrgId = -1;
+                if (itemId > 0) OrgId = itemId;
+                else if ((orgs != null) & (orgs.Count > 0)) OrgId = orgs[0].Id;
+
+                if (OrgId != -1)
                 {
-                    List<LyncUserPlan> Plans = ObjectUtils.CreateListFromDataReader<LyncUserPlan>(DataProvider.GetLyncUserPlans(orgs[0].Id));
+                    List<LyncUserPlan> Plans = ObjectUtils.CreateListFromDataReader<LyncUserPlan>(DataProvider.GetLyncUserPlans(OrgId));
 
                     foreach (LyncUserPlan p in Plans)
                     {
@@ -594,7 +596,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
 
                 UserInfo owner = UserController.GetUserInternally(user.OwnerId);
 
-                GetLyncUserPlansByUser(owner, ref plans);
+                GetLyncUserPlansByUser(0, owner, ref plans);
             }
         }
 
