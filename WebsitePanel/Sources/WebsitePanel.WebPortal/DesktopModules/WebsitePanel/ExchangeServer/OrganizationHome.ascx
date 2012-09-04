@@ -48,6 +48,7 @@
                     </table>
                     <br />
                     <table width="100%">
+                        <asp:Panel runat="server" ID="organizationStatsPanel">
                         <tr>
                             <td class="OrgStatsGroup" width="100%" colspan="2">
                                 <asp:Localize ID="locHeadStatistics" runat="server" meta:resourcekey="locHeadStatistics"
@@ -72,6 +73,7 @@
                                 <wsp:QuotaViewer ID="userStats" QuotaTypeId="2" runat="server" DisplayGauge="true" />
                             </td>
                         </tr>
+                        </asp:Panel>
                         <asp:Panel runat="server" ID="exchangeStatsPanel">
                         <tr>
                             <td class="OrgStatsGroup" width="100%" colspan="2">
@@ -110,7 +112,7 @@
                                 <wsp:QuotaViewer ID="foldersStats" QuotaTypeId="2" runat="server" DisplayGauge="true" />
                             </td>
                         </tr>
-                        <tr class="OrgStatsRow">
+                        <tr class="OrgStatsRow" id="rowExchangeStorage" runat="server">
                             <td align="right" nowrap>
                                 <asp:HyperLink ID="lnkExchangeStorage" runat="server" meta:resourcekey="lnkExchangeStorage"></asp:HyperLink>
                             </td>

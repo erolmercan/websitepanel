@@ -37,6 +37,9 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 
+using WebsitePanel.WebPortal;
+using WebsitePanel.EnterpriseServer;
+
 namespace WebsitePanel.Portal
 {
     public partial class UserAccountTools : WebsitePanelModuleBase
@@ -52,6 +55,20 @@ namespace WebsitePanel.Portal
             {
                 lnkBackup.Visible = lnkRestore.Visible = ToolsHeader.Visible = false;
             }
+
+            UserInfo user = UsersHelper.GetUser(PanelSecurity.EffectiveUserId);
+
+            if (user != null)
+            {
+                PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+                if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                {
+                    lnkBackup.Visible = lnkRestore.Visible = ToolsHeader.Visible = false;
+                }
+                    
+            }
+
         }
+
     }
 }

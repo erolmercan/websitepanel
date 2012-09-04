@@ -29,6 +29,8 @@
 using System;
 using System.Collections.Generic;
 using WebsitePanel.Portal.Code.UserControls;
+using WebsitePanel.WebPortal;
+using WebsitePanel.EnterpriseServer;
 
 namespace WebsitePanel.Portal.ExchangeServer.UserControls
 {
@@ -49,14 +51,25 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 
         private void BindTabs()
         {
+            bool hideItems = false;
+
+            UserInfo user = UsersHelper.GetUser(PanelSecurity.EffectiveUserId);
+
+            if (user != null)
+            {
+                PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+                if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                    hideItems = true;
+            }
+
             List<Tab> tabsList = new List<Tab>();
             tabsList.Add(CreateTab("edit_user", "Tab.General"));
             tabsList.Add(CreateTab("mailbox_settings", "Tab.Settings"));
-            tabsList.Add(CreateTab("mailbox_addresses", "Tab.Addresses"));
-            tabsList.Add(CreateTab("mailbox_mailflow", "Tab.Mailflow"));
-            tabsList.Add(CreateTab("mailbox_permissions", "Tab.Permissions"));
+            if (!hideItems) tabsList.Add(CreateTab("mailbox_addresses", "Tab.Addresses"));
+            if (!hideItems) tabsList.Add(CreateTab("mailbox_mailflow", "Tab.Mailflow"));
+            if (!hideItems) tabsList.Add(CreateTab("mailbox_permissions", "Tab.Permissions"));
             tabsList.Add(CreateTab("mailbox_setup", "Tab.Setup"));
-            tabsList.Add(CreateTab("mailbox_mobile", "Tab.Mobile"));
+            if (!hideItems) tabsList.Add(CreateTab("mailbox_mobile", "Tab.Mobile"));
             //tabsList.Add(CreateTab("mailbddox_spam", "Tab.Spam"));
 
 
@@ -83,5 +96,7 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
                 "ItemID=" + PanelRequest.ItemID.ToString(),
                 "Context=Mailbox"));
         }
+
+
     }
 }

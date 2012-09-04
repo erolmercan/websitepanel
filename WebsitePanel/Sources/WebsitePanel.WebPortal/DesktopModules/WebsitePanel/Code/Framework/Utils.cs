@@ -39,6 +39,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 
+using WebsitePanel.EnterpriseServer;
 
 namespace WebsitePanel.Portal
 {
@@ -286,5 +287,13 @@ namespace WebsitePanel.Portal
 
             return sb.ToString();
         }
+
+        public static bool CheckQouta(string key, PackageContext cntx)
+        {
+            return cntx.Quotas.ContainsKey(key) &&
+                ((cntx.Quotas[key].QuotaAllocatedValue == 1 && cntx.Quotas[key].QuotaTypeId == 1) ||
+                (cntx.Quotas[key].QuotaTypeId != 1 && (cntx.Quotas[key].QuotaAllocatedValue > 0 || cntx.Quotas[key].QuotaAllocatedValue == -1)));
+        }
+
     }
 }

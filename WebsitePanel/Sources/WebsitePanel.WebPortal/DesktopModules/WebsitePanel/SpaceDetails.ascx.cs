@@ -46,6 +46,19 @@ namespace WebsitePanel.Portal
         protected void Page_Load(object sender, EventArgs e)
         {
             BindSpace();
+
+            UserInfo user = UsersHelper.GetUser(PanelSecurity.EffectiveUserId);
+
+            if (user != null)
+            {
+                PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+                if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                {
+                    lnkSummaryLetter.Visible = false;
+                }
+
+            }
+
         }
 
         private void BindSpace()

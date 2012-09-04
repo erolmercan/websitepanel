@@ -58,6 +58,20 @@ namespace WebsitePanel.Portal
                 lnkBackup.Visible = lnkRestore.Visible = ToolsHeader.Visible;
             }
 
+
+            UserInfo user = UsersHelper.GetUser(PanelSecurity.EffectiveUserId);
+
+            if (user != null)
+            {
+                PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+                if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                {
+                    lnkBackup.Visible = lnkRestore.Visible = ToolsHeader.Visible = false;
+                }
+
+            }
+
         }
+
     }
 }

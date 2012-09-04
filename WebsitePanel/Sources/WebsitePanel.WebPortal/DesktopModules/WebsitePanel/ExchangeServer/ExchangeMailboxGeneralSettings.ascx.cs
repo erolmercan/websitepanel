@@ -39,8 +39,28 @@ namespace WebsitePanel.Portal.ExchangeServer
             if (!IsPostBack)
             {
                 BindSettings();
+
+                UserInfo user = UsersHelper.GetUser(PanelSecurity.EffectiveUserId);
+
+                if (user != null)
+                {
+                    PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+                    if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                    {
+                        chkHideAddressBook.Visible = false;
+                        chkDisable.Visible = false;
+                    }
+                }
+
             }
 
+        }
+
+        private bool CheckQouta(string key, PackageContext cntx)
+        {
+            return cntx.Quotas.ContainsKey(key) &&
+                ((cntx.Quotas[key].QuotaAllocatedValue == 1 && cntx.Quotas[key].QuotaTypeId == 1) ||
+                (cntx.Quotas[key].QuotaTypeId != 1 && (cntx.Quotas[key].QuotaAllocatedValue > 0 || cntx.Quotas[key].QuotaAllocatedValue == -1)));
         }
 
         private void BindSettings()

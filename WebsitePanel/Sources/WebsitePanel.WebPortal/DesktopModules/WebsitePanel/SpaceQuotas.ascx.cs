@@ -76,6 +76,19 @@ namespace WebsitePanel.Portal
         {
             // bind quotas
             BindQuotas();
+
+            UserInfo user = UsersHelper.GetUser(PanelSecurity.EffectiveUserId);
+
+            if (user != null)
+            {
+                PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+                if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                {
+                    btnViewQuotas.Visible = lnkViewDiskspaceDetails.Visible = false;
+                }
+
+            }
+
         }
 
         private void BindQuotas()

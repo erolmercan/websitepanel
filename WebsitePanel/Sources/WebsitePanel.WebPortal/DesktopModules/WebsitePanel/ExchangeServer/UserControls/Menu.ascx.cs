@@ -102,13 +102,7 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 			set { selectedItem = value; }
 		}
 
-		private bool CheckQouta(string key, PackageContext cntx)
-		{
-            return cntx.Quotas.ContainsKey(key) &&
-                ((cntx.Quotas[key].QuotaAllocatedValue == 1 && cntx.Quotas[key].QuotaTypeId == 1) ||
-                (cntx.Quotas[key].QuotaTypeId != 1 && (cntx.Quotas[key].QuotaAllocatedValue > 0 || cntx.Quotas[key].QuotaAllocatedValue == -1)));
-		}
-        
+       
         private void PrepareExchangeMenu(PackageContext cntx, List<MenuGroup> groups, string imagePath)
         {
             bool hideItems = false;
@@ -117,34 +111,34 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 
             if (user != null)
             {
-                if ((user.Role == UserRole.User) & (CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
                     hideItems = true;
             }
 
             MenuGroup exchangeGroup = new MenuGroup(GetLocalizedString("Text.ExchangeGroup"), imagePath + "exchange24.png");
 
-            if (CheckQouta(Quotas.EXCHANGE2007_MAILBOXES, cntx))
+            if (Utils.CheckQouta(Quotas.EXCHANGE2007_MAILBOXES, cntx))
                 exchangeGroup.MenuItems.Add(CreateMenuItem("Mailboxes", "mailboxes"));
 
-            if (CheckQouta(Quotas.EXCHANGE2007_CONTACTS, cntx))
+            if (Utils.CheckQouta(Quotas.EXCHANGE2007_CONTACTS, cntx))
                 exchangeGroup.MenuItems.Add(CreateMenuItem("Contacts", "contacts"));
 
-            if (CheckQouta(Quotas.EXCHANGE2007_DISTRIBUTIONLISTS, cntx))
+            if (Utils.CheckQouta(Quotas.EXCHANGE2007_DISTRIBUTIONLISTS, cntx))
                 exchangeGroup.MenuItems.Add(CreateMenuItem("DistributionLists", "dlists"));
 
-            if (CheckQouta(Quotas.EXCHANGE2007_PUBLICFOLDERS, cntx))
+            if (Utils.CheckQouta(Quotas.EXCHANGE2007_PUBLICFOLDERS, cntx))
                 exchangeGroup.MenuItems.Add(CreateMenuItem("PublicFolders", "public_folders"));
 
             if (!hideItems)
-                if (CheckQouta(Quotas.EXCHANGE2007_ACTIVESYNCALLOWED, cntx))
+                if (Utils.CheckQouta(Quotas.EXCHANGE2007_ACTIVESYNCALLOWED, cntx))
                     exchangeGroup.MenuItems.Add(CreateMenuItem("ActiveSyncPolicy", "activesync_policy"));
 
             if (!hideItems)
-                if (CheckQouta(Quotas.EXCHANGE2007_MAILBOXES, cntx))
+                if (Utils.CheckQouta(Quotas.EXCHANGE2007_MAILBOXES, cntx))
                     exchangeGroup.MenuItems.Add(CreateMenuItem("MailboxPlans", "mailboxplans"));
 
             if (!hideItems)
-                if (CheckQouta(Quotas.ORGANIZATION_DOMAINS, cntx))
+                if (Utils.CheckQouta(Quotas.ORGANIZATION_DOMAINS, cntx))
                     exchangeGroup.MenuItems.Add(CreateMenuItem("DomainNames", "domains"));
 
             if (!hideItems)
@@ -163,7 +157,7 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 
             if (user != null)
             {
-                if ((user.Role == UserRole.User) & (CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
+                if ((user.Role == UserRole.User) & (Utils.CheckQouta(Quotas.EXCHANGE2007_ISCONSUMER, cntx)))
                     hideItems = true;
             }
 
@@ -172,7 +166,7 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
                 MenuGroup organizationGroup = new MenuGroup(GetLocalizedString("Text.OrganizationGroup"), imagePath + "company24.png");
                 //if (CheckQouta(Quotas.ORGANIZATION_DOMAINS, cntx))
                 //    organizationGroup.MenuItems.Add(CreateMenuItem("DomainNames", "domains"));
-                if (CheckQouta(Quotas.ORGANIZATION_USERS, cntx))
+                if (Utils.CheckQouta(Quotas.ORGANIZATION_USERS, cntx))
                     organizationGroup.MenuItems.Add(CreateMenuItem("Users", "users"));
 
                 if (organizationGroup.MenuItems.Count > 0)
@@ -237,7 +231,7 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
             lyncGroup.MenuItems.Add(CreateMenuItem("LyncUserPlans", "lync_userplans"));
 
 
-            if (CheckQouta(Quotas.LYNC_FEDERATION, cntx))
+            if (Utils.CheckQouta(Quotas.LYNC_FEDERATION, cntx))
                 lyncGroup.MenuItems.Add(CreateMenuItem("LyncFederationDomains", "lync_federationdomains"));
 
             groups.Add(lyncGroup);
