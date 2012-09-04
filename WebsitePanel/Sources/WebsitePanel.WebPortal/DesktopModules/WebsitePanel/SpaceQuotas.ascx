@@ -30,6 +30,14 @@
         <td class="SubHead" nowrap><asp:Label ID="lblUserAccounts" runat="server" meta:resourcekey="lblUserAccounts" Text="User Accounts:"></asp:Label></td>
         <td class="Normal"><wsp:Quota ID="quotaUserAccounts" runat="server" QuotaName="HostedSolution.Users" DisplayGauge="True" /></td>
     </tr>
+    <tr ID="pnlExchangeAccounts" runat="server">
+        <td class="SubHead" nowrap><asp:Label ID="lblExchangeAccounts" runat="server" meta:resourcekey="lblExchangeAccounts" Text="Exchange Accounts:"></asp:Label></td>
+        <td class="Normal"><wsp:Quota ID="quotaExchangeAccounts" runat="server" QuotaName="Exchange2007.Mailboxes" DisplayGauge="True" /></td>
+    </tr>
+    <tr ID="pnlExchangeStorage" runat="server">
+        <td class="SubHead" nowrap><asp:Label ID="lblExchangeStorage" runat="server" meta:resourcekey="lblExchangeStorage" Text="Exchange Storage:"></asp:Label></td>
+        <td class="Normal"><wsp:Quota ID="quotaExchangeStorage" runat="server" QuotaName="Exchange2007.DiskSpace" DisplayGauge="True" /></td>
+    </tr>
     <tr ID="pnlMailAccounts" runat="server">
         <td class="SubHead" nowrap><asp:Label ID="lblMailAccounts" runat="server" meta:resourcekey="lblMailAccounts" Text="Mail Accounts:"></asp:Label></td>
         <td class="Normal"><wsp:Quota ID="quotaMailAccounts" runat="server" QuotaName="Mail.Accounts" DisplayGauge="True" /></td>

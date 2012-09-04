@@ -189,4 +189,10 @@
   <data name="lblLyncUsers.Text" xml:space="preserve">
     <value>Lync Users:</value>
   </data>
+  <data name="lblExchangeAccounts.Text" xml:space="preserve">
+    <value>Exchange Mailboxes:</value>
+  </data>
+  <data name="lblExchangeStorage.Text" xml:space="preserve">
+    <value>Exchange Storage, MB:</value>
+  </data>
 </root>

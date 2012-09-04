@@ -26213,6 +26213,12 @@ AS
 							INNER JOIN ServiceItems  si ON ea.ItemID = si.ItemID
 							INNER JOIN PackagesTreeCache pt ON si.PackageID = pt.PackageID
 							WHERE pt.ParentPackageID = @PackageID)
+		ELSE IF @QuotaID = 320 -- OCS Users
+			SET @Result = (SELECT COUNT(ea.AccountID) FROM ExchangeAccounts ea 
+							INNER JOIN OCSUsers ocs ON ea.AccountID = ocs.AccountID
+							INNER JOIN ServiceItems  si ON ea.ItemID = si.ItemID
+							INNER JOIN PackagesTreeCache pt ON si.PackageID = pt.PackageID
+							WHERE pt.ParentPackageID = @PackageID)
 		ELSE IF @QuotaID = 206 -- HostedSolution.Users
 			SET @Result = (SELECT COUNT(ea.AccountID) FROM ExchangeAccounts AS ea
 				INNER JOIN ServiceItems  si ON ea.ItemID = si.ItemID

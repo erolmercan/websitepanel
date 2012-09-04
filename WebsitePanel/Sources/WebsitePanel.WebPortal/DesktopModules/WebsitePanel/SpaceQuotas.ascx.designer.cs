@@ -175,6 +175,60 @@ namespace WebsitePanel.Portal {
         protected global::WebsitePanel.Portal.Quota quotaUserAccounts;
         
         /// <summary>
+        /// pnlExchangeAccounts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow pnlExchangeAccounts;
+        
+        /// <summary>
+        /// lblExchangeAccounts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblExchangeAccounts;
+        
+        /// <summary>
+        /// quotaExchangeAccounts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::WebsitePanel.Portal.Quota quotaExchangeAccounts;
+        
+        /// <summary>
+        /// pnlExchangeStorage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow pnlExchangeStorage;
+        
+        /// <summary>
+        /// lblExchangeStorage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblExchangeStorage;
+        
+        /// <summary>
+        /// quotaExchangeStorage control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::WebsitePanel.Portal.Quota quotaExchangeStorage;
+        
+        /// <summary>
         /// pnlMailAccounts control.
         /// </summary>
         /// <remarks>

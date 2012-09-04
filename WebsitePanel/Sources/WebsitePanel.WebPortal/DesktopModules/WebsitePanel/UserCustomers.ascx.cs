@@ -64,6 +64,9 @@ namespace WebsitePanel.Portal
 					Utils.SelectListItem(ddlStatus, Request["StatusID"]);
 				if (Request["RoleID"] != null)
 					Utils.SelectListItem(ddlRole, Request["RoleID"]);
+
+
+                gvUsers.Sort("Username", System.Web.UI.WebControls.SortDirection.Ascending);
 			}
 		}
 
