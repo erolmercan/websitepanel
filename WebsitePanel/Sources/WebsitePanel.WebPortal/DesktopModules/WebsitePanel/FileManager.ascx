@@ -88,8 +88,8 @@
 	
 	<asp:Image ID="Image8" runat="server" SkinID="FM_Separator" />
 	
-		<asp:LinkButton ID="cmdCreateAccessDB" runat="server" CssClass="FileManagerButton" CausesValidation="false">
-			<asp:Image ID="Image2" runat="server" SkinID="FM_CreateAccessDB" /><asp:Localize ID="locCreateAccessDB" runat="server" meta:resourcekey="locCreateAccessDB" Text="Create Access DB"/>
+		<asp:LinkButton ID="cmdCreateAccessDB" runat="server" CssClass="FileManagerButton" CausesValidation="false" Enabled="false" Visible="false">
+			<asp:Image ID="Image2" runat="server" SkinID="FM_CreateAccessDB" /><asp:Localize ID="locCreateAccessDB" runat="server" meta:resourcekey="locCreateAccessDB" Text="Create Access DB" />
 		</asp:LinkButton>
 	
 	<asp:Image ID="Image9" runat="server" SkinID="FM_Separator" />
