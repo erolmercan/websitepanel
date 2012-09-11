@@ -766,6 +766,7 @@ namespace WebsitePanel.EnterpriseServer
             TaskManager.ItemId = siteItemId;
             TaskManager.WriteParameter("Domain pointer", domain.DomainName);
             TaskManager.WriteParameter("Host name", hostName);
+            TaskManager.WriteParameter("updateWebSite", updateWebSite.ToString());
 
             try
             {
@@ -817,6 +818,12 @@ namespace WebsitePanel.EnterpriseServer
 
                         // fill bindings
                         FillWebServerBindings(bindings, dnsRecords, ipAddr, hostName, domain.DomainName);
+
+                        foreach (ServerBinding b in bindings)
+                        {
+                            string header = string.Format("{0} {1} {2}", b.Host, b.IP, b.Port);
+                            TaskManager.WriteParameter("Add Binding", b.Host);
+                        }
 
                         // update bindings
                         web.UpdateSiteBindings(siteItem.SiteId, bindings.ToArray());
@@ -946,6 +953,7 @@ namespace WebsitePanel.EnterpriseServer
                 // update domain
                 domain.WebSiteId = 0;
                 ServerController.UpdateDomain(domain);
+                ServerController.DeleteDomain(domain.DomainId);
 
                 return 0;
             }
