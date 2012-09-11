@@ -1588,8 +1588,8 @@ namespace WebsitePanel.EnterpriseServer
                 return BusinessErrorCodes.ERROR_RESTRICTED_DOMAIN;
             else
                 return checkDomainResult;
-        }
-
+        }        
+        
         public static List<DomainInfo> GetDomains(int packageId, bool recursive)
         {
             return ObjectUtils.CreateListFromDataSet<DomainInfo>(
