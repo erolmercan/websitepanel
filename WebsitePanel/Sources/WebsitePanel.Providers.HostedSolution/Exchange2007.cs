@@ -3353,7 +3353,7 @@ namespace WebsitePanel.Providers.HostedSolution
 
                 //fix showInAddressBook Attribute
                 if (addressLists.Length > 0)
-                    FixShowInAddressBook(runSpace, email, addressLists);
+                    FixShowInAddressBook(runSpace, email, addressLists, false);
 
 			}
 			catch (Exception ex)
@@ -3370,7 +3370,7 @@ namespace WebsitePanel.Providers.HostedSolution
 			ExchangeLog.LogEnd("CreateDistributionListInternal");
 		}
 
-        private void FixShowInAddressBook(Runspace runSpace, string accountName, string[] addressLists)
+        private void FixShowInAddressBook(Runspace runSpace, string accountName, string[] addressLists, bool HideFromAddressList)
         {
             Command cmd = new Command("Get-DistributionGroup");
             cmd.Parameters.Add("Identity", accountName);
@@ -3380,9 +3380,12 @@ namespace WebsitePanel.Providers.HostedSolution
 
             DirectoryEntry dlDEEntry = GetADObject(AddADPrefix(id));
             dlDEEntry.Properties["showInAddressBook"].Clear();
-            foreach (string addressList in addressLists)
+            if (!HideFromAddressList)
             {
-                dlDEEntry.Properties["showInAddressBook"].Add(addressList);
+                foreach (string addressList in addressLists)
+                {
+                    dlDEEntry.Properties["showInAddressBook"].Add(addressList);
+                }
             }
             dlDEEntry.CommitChanges();
         }
@@ -3542,7 +3545,7 @@ namespace WebsitePanel.Providers.HostedSolution
 				}
 
                 if (addressLists.Length > 0)
-                    FixShowInAddressBook(runSpace, accountName, addressLists);
+                    FixShowInAddressBook(runSpace, accountName, addressLists, hideFromAddressBook);
 
 			}
 			finally
@@ -3612,7 +3615,14 @@ namespace WebsitePanel.Providers.HostedSolution
 					}
 
                     if (addressLists.Length > 0)
-                        FixShowInAddressBook(runSpace, accountName, addressLists);
+                    {
+                        cmd = new Command("Get-DistributionGroup");
+                        cmd.Parameters.Add("Identity", accountName);
+                        Collection<PSObject> result = ExecuteShellCommand(runSpace, cmd);
+                        PSObject distributionGroup = result[0];
+
+                        FixShowInAddressBook(runSpace, accountName, addressLists, (bool)GetPSObjectProperty(distributionGroup, "HiddenFromAddressListsEnabled"));
+                    }
 
 				}
 				finally
@@ -3648,7 +3658,14 @@ namespace WebsitePanel.Providers.HostedSolution
 					}
 
                     if (addressLists.Length > 0)
-                        FixShowInAddressBook(runSpace, accountName, addressLists);
+                    {
+                        cmd = new Command("Get-DistributionGroup");
+                        cmd.Parameters.Add("Identity", accountName);
+                        Collection<PSObject> result = ExecuteShellCommand(runSpace, cmd);
+                        PSObject distributionGroup = result[0];
+
+                        FixShowInAddressBook(runSpace, accountName, addressLists, (bool)GetPSObjectProperty(distributionGroup, "HiddenFromAddressListsEnabled"));
+                    }
 
 				}
 				finally
@@ -3720,7 +3737,14 @@ namespace WebsitePanel.Providers.HostedSolution
 				ExecuteShellCommand(runSpace, cmd);
 
                 if (addressLists.Length > 0)
-                    FixShowInAddressBook(runSpace, accountName, addressLists);
+                {
+                    cmd = new Command("Get-DistributionGroup");
+                    cmd.Parameters.Add("Identity", accountName);
+                    Collection<PSObject> result = ExecuteShellCommand(runSpace, cmd);
+                    PSObject distributionGroup = result[0];
+
+                    FixShowInAddressBook(runSpace, accountName, addressLists, (bool)GetPSObjectProperty(distributionGroup, "HiddenFromAddressListsEnabled"));
+                }
 
 			}
 			finally
@@ -3856,7 +3880,14 @@ namespace WebsitePanel.Providers.HostedSolution
 				ExecuteShellCommand(runSpace, cmd);
 
                 if (addressLists.Length > 0)
-                    FixShowInAddressBook(runSpace, accountName, addressLists);
+                {
+                    cmd = new Command("Get-DistributionGroup");
+                    cmd.Parameters.Add("Identity", accountName);
+                    Collection<PSObject> r = ExecuteShellCommand(runSpace, cmd);
+                    PSObject distributionGroup = r[0];
+
+                    FixShowInAddressBook(runSpace, accountName, addressLists, (bool)GetPSObjectProperty(distributionGroup, "HiddenFromAddressListsEnabled"));
+                }
 			}
 			finally
 			{
@@ -3955,17 +3986,24 @@ namespace WebsitePanel.Providers.HostedSolution
 			if (sendOnBehalfAccounts == null)
 				throw new ArgumentNullException("sendOnBehalfAccounts");
 
-			Runspace runspace = null;
+			Runspace runSpace = null;
 			try
 			{
-				runspace = OpenRunspace();
-				string cn = GetDistributionListCommonName(runspace, accountName);
-				ExchangeDistributionList distributionList = GetDistributionListPermissionsInternal(organizationId, accountName, runspace);
-				SetSendAsPermissions(runspace, distributionList.SendAsAccounts, cn, sendAsAccounts);
-				SetDistributionListSendOnBehalfAccounts(runspace, accountName, sendOnBehalfAccounts);
+				runSpace = OpenRunspace();
+				string cn = GetDistributionListCommonName(runSpace, accountName);
+				ExchangeDistributionList distributionList = GetDistributionListPermissionsInternal(organizationId, accountName, runSpace);
+				SetSendAsPermissions(runSpace, distributionList.SendAsAccounts, cn, sendAsAccounts);
+				SetDistributionListSendOnBehalfAccounts(runSpace, accountName, sendOnBehalfAccounts);
 
                 if (addressLists.Length > 0)
-                    FixShowInAddressBook(runspace, accountName, addressLists);
+                {
+                    Command cmd = new Command("Get-DistributionGroup");
+                    cmd.Parameters.Add("Identity", accountName);
+                    Collection<PSObject> result = ExecuteShellCommand(runSpace, cmd);
+                    PSObject distributionGroup = result[0];
+
+                    FixShowInAddressBook(runSpace, accountName, addressLists, (bool)GetPSObjectProperty(distributionGroup, "HiddenFromAddressListsEnabled"));
+                }
 
 			}
 			catch (Exception ex)
@@ -3975,7 +4013,7 @@ namespace WebsitePanel.Providers.HostedSolution
 			}
 			finally
 			{
-				CloseRunspace(runspace);
+				CloseRunspace(runSpace);
 			}
 
 			ExchangeLog.LogEnd("SetDistributionListPermissionsInternal");
