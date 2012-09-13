@@ -52,6 +52,30 @@ namespace WebsitePanel.Portal
         {
             if (!IsPostBack)
             {
+
+
+                try
+                {
+                    if (!ES.Services.Servers.CheckLoadUserProfile(PanelRequest.ServerId))
+                    {
+                        ShowWarningMessage("Server application pool \"Load User Profile\" setting is set to false. Please open IIS Manager, Application Pools, select pool running Web Site Panel Server component and set \"Load User Profile\" to TRUE. This setting is required for Web Paltform Installer to run.");
+
+                        //ES.Services.Servers.EnableLoadUserProfile(PanelRequest.ServerId);
+                    }
+                }
+                catch
+                {
+                    ProductsPanel.Visible = false;
+                    keywordsList.Visible = false;
+                    SearchPanel.Visible = false;
+                    InstallButtons1.Visible = false;
+                    InstallButtons2.Visible = false;
+
+                    ShowWarningMessage("Server application pool \"Load User Profile\" setting is set to false. Please open IIS Manager, Application Pools, select pool running Web Site Panel Server component and set \"Load User Profile\" to TRUE. This setting is required for Web Paltform Installer to run.");
+
+                }
+
+
                 try
                 {
                     ES.Services.Servers.InitWPIFeeds(PanelRequest.ServerId);
