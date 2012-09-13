@@ -2005,7 +2005,8 @@ namespace WebsitePanel.EnterpriseServer
                 }
 
                 // delete zone if required
-                DnsServerController.DeleteZone(domain.ZoneItemId);
+                if (!domain.IsDomainPointer)
+                    DnsServerController.DeleteZone(domain.ZoneItemId);
 
                 // delete domain
                 DataProvider.DeleteDomain(SecurityContext.User.UserId, domainId);

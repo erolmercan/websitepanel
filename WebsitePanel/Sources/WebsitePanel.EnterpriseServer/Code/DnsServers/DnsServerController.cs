@@ -310,7 +310,10 @@ namespace WebsitePanel.EnterpriseServer
                     rr.MxPriority = record.MxPriority;
 
                 if (!String.IsNullOrEmpty(rr.RecordData))
-                    zoneRecords.Add(rr);
+                {
+                    if (rr.RecordName != "[host_name]")
+                        zoneRecords.Add(rr);
+                }
             }
 
             return zoneRecords;
