@@ -8,6 +8,10 @@ namespace WebsitePanel.Providers.FTP
 {
     public class MsFTP80 : MsFTP
     {
+        public MsFTP80() : base()
+        {
+        }
+
         protected new bool IsMsFTPInstalled()
         {
             int value = 0;

@@ -8,6 +8,10 @@ namespace WebsitePanel.Providers.Web
 {
     public class IIs80 : IIs70, IWebServer
     {
+        public IIs80() : base()
+        {
+        }
+
         public new bool IsIISInstalled()
         {
             int value = 0;
