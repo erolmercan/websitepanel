@@ -1729,7 +1729,7 @@ namespace WebsitePanel.EnterpriseServer
             int webSiteId = 0;
             if (webEnabled && createWebSite)
             {
-                webSiteId = WebServerController.AddWebSite(packageId, hostName, domainId, 0, createInstantAlias);
+                webSiteId = WebServerController.AddWebSite(packageId, hostName, domainId, 0, createInstantAlias, false);
 
                 if (webSiteId < 0)
                 {

@@ -157,11 +157,11 @@ namespace WebsitePanel.EnterpriseServer
 
         public static int AddWebSite(int packageId, string hostName, int domainId, int ipAddressId)
         {
-            return AddWebSite(packageId, hostName, domainId, ipAddressId, false);
+            return AddWebSite(packageId, hostName, domainId, ipAddressId, false, true);
         }
 
         public static int AddWebSite(int packageId, string hostName, int domainId, int packageAddressId,
-            bool addInstantAlias)
+            bool addInstantAlias, bool ignoreGlobalDNSRecords)
         {
             // check account
             int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive);
@@ -182,9 +182,13 @@ namespace WebsitePanel.EnterpriseServer
 
             string siteName = string.IsNullOrEmpty(hostName) ? domainName : hostName + "." + domainName; 
 
-            // check if the web site already exists
+            // check if the web site already exists (legacy)
             if (PackageController.GetPackageItemByName(packageId, siteName, typeof(WebSite)) != null)
                 return BusinessErrorCodes.ERROR_WEB_SITE_ALREADY_EXISTS;
+
+            if (DataProvider.CheckDomain(domain.PackageId, siteName, true) != 0)
+                return BusinessErrorCodes.ERROR_WEB_SITE_ALREADY_EXISTS;
+
 
             // place log record
             TaskManager.StartTask("WEB_SITE", "ADD", siteName);
@@ -239,13 +243,7 @@ namespace WebsitePanel.EnterpriseServer
                 if (ip != null)
                     ipAddr = !String.IsNullOrEmpty(ip.InternalIP) ? ip.InternalIP : ip.ExternalIP;
 
-                // load domain instant alias
-/*
-                string instantAlias = ServerController.GetDomainAlias(packageId, domainName);
-                DomainInfo instantDomain = ServerController.GetDomain(instantAlias);
-                if (instantDomain == null || instantDomain.WebSiteId > 0)
-                    instantAlias = "";
-*/
+
                 // load web DNS records
                 List<GlobalDnsRecord> dnsRecords = ServerController.GetDnsRecordsByService(serviceId);
 
@@ -256,18 +254,15 @@ namespace WebsitePanel.EnterpriseServer
                 {
                     // SHARED IP
                     // fill main domain bindings
-                    FillWebServerBindings(bindings, dnsRecords, ipAddr, hostName, domain.DomainName, false);
+                    FillWebServerBindings(bindings, dnsRecords, ipAddr, hostName, domain.DomainName, ignoreGlobalDNSRecords);
 
-                    // fill alias bindings if required
-                    /*
-                    if (addInstantAlias && !String.IsNullOrEmpty(instantAlias))
+                    //double check all bindings
+                    foreach (ServerBinding b in bindings)
                     {
-                        // fill bindings from DNS "A" records
-                        FillWebServerBindings(bindings, dnsRecords, ipAddr, "", instantAlias);
+                        if (DataProvider.CheckDomain(domain.PackageId, b.Host, true) != 0)
+                            return BusinessErrorCodes.ERROR_WEB_SITE_ALREADY_EXISTS;
                     }
-                     */
 
-                    //bindings.Add(new ServerBinding(ipAddr, "80", siteName));
                 }
                 else
                 {
@@ -391,14 +386,9 @@ namespace WebsitePanel.EnterpriseServer
 
                 // update domain
                 // add main pointer
-                AddWebSitePointer(siteItemId, hostName, domain.DomainId, false);
+                AddWebSitePointer(siteItemId, hostName, domain.DomainId, false, ignoreGlobalDNSRecords);
 
-                // add instant pointer
-                /*
-                if (addInstantAlias && !String.IsNullOrEmpty(instantAlias))
-                    AddWebSitePointer(siteItemId, "", instantDomain.DomainId, false);
-                 */
-                
+               
                 // add parking page
                 // load package
                 if (webPolicy["AddParkingPage"] != null)
@@ -722,38 +712,24 @@ namespace WebsitePanel.EnterpriseServer
 				if ((dnsRecord.RecordType == "A" || dnsRecord.RecordType == "AAAA" || dnsRecord.RecordType == "CNAME") &&
                     dnsRecord.RecordName != "*")
                 {
-                    /*
-                    string recordData = dnsRecord.RecordName +
-                        ((dnsRecord.RecordName != "") ? "." : "") + domainName;
+                    string recordData = Utils.ReplaceStringVariable(dnsRecord.RecordName, "host_name", hostName, true);
 
-                    bindings.Add(new ServerBinding(ipAddr, "80", recordData));
-                     */
-
-                    string tmpName = string.Empty;
-
-                    tmpName = Utils.ReplaceStringVariable(dnsRecord.RecordName, "host_name", hostName);
-
-                    if (!(tmpName== "[host_name]"))
+                    if (!string.IsNullOrEmpty(domainName))
+                        recordData = recordData + ((string.IsNullOrEmpty(recordData)) ? "" : ".") + domainName;
+                    //otherwise full recordData is supplied by hostName
+                    
+                    if (ignoreGlobalDNSRecords)
                     {
-                        string recordData = string.Empty;
-                        if (tmpName.Contains("."))
-                            recordData = hostName;
-                        else
-                            recordData = tmpName + ((tmpName != "") ? "." : "") + domainName;
-
-
-                        if (ignoreGlobalDNSRecords)
-                        {
-                            if (dnsRecord.RecordName == "[host_name]")
-                            {
-                                AddBinding(bindings, new ServerBinding(ipAddr, "80", recordData));
-                                break;
-                            }
-                        }
-                        else
+                        //only look for the host_nanme record, ignore all others
+                        if (dnsRecord.RecordName == "[host_name]")
                         {
                             AddBinding(bindings, new ServerBinding(ipAddr, "80", recordData));
+                            break;
                         }
+                    }
+                    else
+                    {
+                        AddBinding(bindings, new ServerBinding(ipAddr, "80", recordData));
                     }
                 }
             }
@@ -915,8 +891,10 @@ namespace WebsitePanel.EnterpriseServer
 
                     string serviceIp = (ip != null) ? ip.ExternalIP : null;
 
+                    //filter initiat GlobaDNSRecords list
                     if (ignoreGlobalDNSRecords)
                     {
+                        //ignore all other except the host_name record
                         foreach (GlobalDnsRecord r in dnsRecords)
                         {
                             if (r.RecordName == "[host_name]")
@@ -977,6 +955,7 @@ namespace WebsitePanel.EnterpriseServer
                     // fill bindings
                     FillWebServerBindings(bindings, dnsRecords, ipAddr, hostName, domain.DomainName, ignoreGlobalDNSRecords);
 
+                    //for logging purposes
                     foreach (ServerBinding b in bindings)
                     {
                         string header = string.Format("{0} {1} {2}", b.Host, b.IP, b.Port);
@@ -991,14 +970,12 @@ namespace WebsitePanel.EnterpriseServer
 
                 // update domain
                 domain.WebSiteId = siteItemId;
-                //ServerController.UpdateDomain(domain);
-
+                domain.IsDomainPointer = true;
                 foreach (ServerBinding b in bindings)
                 {
+                    //add new domain record
                     domain.DomainName = b.Host;
-                    domain.IsDomainPointer = true;
                     int domainID = ServerController.AddDomain(domain);
-
                     DomainInfo domainTmp = ServerController.GetDomain(domainID);
                     if (domainTmp != null)
                     {
@@ -1007,7 +984,6 @@ namespace WebsitePanel.EnterpriseServer
                         ServerController.UpdateDomain(domainTmp);
                     }
                 }
-
 
                 return 0;
             }
@@ -1070,7 +1046,7 @@ namespace WebsitePanel.EnterpriseServer
                     {
                         foreach (GlobalDnsRecord r in dnsRecords)
                         {
-                            if (r.RecordName == "[host_name]")
+                            if ((r.RecordName == "[host_name]") | ((r.RecordName + (string.IsNullOrEmpty(r.RecordName) ? domain.ZoneName : "." + domain.ZoneName)) == domain.DomainName))
                                 tmpDnsRecords.Add(r);
                         }
                     }

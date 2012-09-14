@@ -104,9 +104,9 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         [WebMethod]
-        public int AddWebSite(int packageId, string hostName, int domainId, int ipAddressId)
+        public int AddWebSite(int packageId, string hostName, int domainId, int ipAddressId, bool ignoreGlobalDNSZone)
         {
-            return WebServerController.AddWebSite(packageId, hostName, domainId, ipAddressId, true);
+            return WebServerController.AddWebSite(packageId, hostName, domainId, ipAddressId, true, ignoreGlobalDNSZone);
         }
 
         [WebMethod]
