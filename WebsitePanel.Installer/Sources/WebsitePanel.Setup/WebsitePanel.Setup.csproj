@@ -133,6 +133,7 @@
     <Compile Include="Common\SqlProcess.cs" />
     <Compile Include="Common\SqlUtils.cs" />
     <Compile Include="Common\ServerItem.cs" />
+    <Compile Include="Common\StringUtils.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Common\WebException.cs" />
     <Compile Include="Common\WebUtils.cs" />
