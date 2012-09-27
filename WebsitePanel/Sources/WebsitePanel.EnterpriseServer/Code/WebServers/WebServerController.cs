@@ -223,7 +223,7 @@ namespace WebsitePanel.EnterpriseServer
                 StringDictionary webSettings = ServerController.GetServiceSettings(serviceId);
                 int addressId = Utils.ParseInt(webSettings["SharedIP"], 0);
 
-
+                bool dedicatedIp = false;
                 if (packageAddressId != 0)
                 {
                     // dedicated IP
@@ -231,6 +231,7 @@ namespace WebsitePanel.EnterpriseServer
                     if (packageIp != null)
                     {
                         addressId = packageIp.AddressID;
+                        dedicatedIp = true;
                     }
                 }
 
@@ -256,6 +257,12 @@ namespace WebsitePanel.EnterpriseServer
                 {
                     if (DataProvider.CheckDomain(domain.PackageId, b.Host, true) != 0)
                         return BusinessErrorCodes.ERROR_WEB_SITE_ALREADY_EXISTS;
+                }
+
+                if (dedicatedIp)
+                {
+                    // DEDICATED IP
+                    bindings.Add(new ServerBinding(ipAddr, "80", ""));
                 }
 
                 UserInfo user = PackageController.GetPackageOwner(packageId);
@@ -628,7 +635,6 @@ namespace WebsitePanel.EnterpriseServer
                 if (addressId != 0)
                     ServerController.AddItemIPAddress(siteItemId, addressId);
 
-
                 DomainInfo ZoneInfo = ServerController.GetDomain(domain.ZoneName);
 
                 AddWebSitePointer(siteItemId,
@@ -644,6 +650,27 @@ namespace WebsitePanel.EnterpriseServer
                         , ZoneInfo.DomainId, true, true, true);
                 }
 
+
+                WebServer web = new WebServer();
+                ServiceProviderProxy.Init(web, siteItem.ServiceId);
+                WebSite site = web.GetSite(siteItem.SiteId);
+
+                List<ServerBinding> newBindings = new List<ServerBinding>();
+                foreach (ServerBinding b in site.Bindings)
+                {
+                    newBindings.Add(b);
+                }
+
+                // load web site IP address
+                IPAddressInfo ip = ServerController.GetIPAddress(siteItem.SiteIPAddressId);
+                string ipAddr = "*";
+                if (ip != null)
+                    ipAddr = !String.IsNullOrEmpty(ip.InternalIP) ? ip.InternalIP : ip.ExternalIP;
+
+                newBindings.Add(new ServerBinding(ipAddr, "80", ""));
+               
+                web.UpdateSiteBindings(siteItem.SiteId, newBindings.ToArray(), false);
+                
                 return 0;
             }
             catch (Exception ex)
