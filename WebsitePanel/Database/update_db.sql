@@ -1699,6 +1699,25 @@ GO
 
 
 
+USE [WebsitePanelMerge]
+GO
+/****** Object:  UserDefinedFunction [dbo].[CalculateQuotaUsage]    Script Date: 09/28/2012 22:39:53 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+
+
+
+
+
+
+
+
+
+
 ALTER FUNCTION [dbo].[CalculateQuotaUsage]
 (
 	@PackageID int,
@@ -1728,7 +1747,7 @@ AS
 		ELSE IF @QuotaID = 54 -- sub-domains
 			SET @Result = (SELECT COUNT(D.DomainID) FROM PackagesTreeCache AS PT
 				INNER JOIN Domains AS D ON D.PackageID = PT.PackageID
-				WHERE IsSubDomain = 1 AND IsInstantAlias = 0 AND PT.ParentPackageID = @PackageID)
+				WHERE IsSubDomain = 1 AND IsInstantAlias = 0 AND IsDomainPointer = 0 AND PT.ParentPackageID = @PackageID)
 		ELSE IF @QuotaID = 220 -- domain pointers
 			SET @Result = (SELECT COUNT(D.DomainID) FROM PackagesTreeCache AS PT
 				INNER JOIN Domains AS D ON D.PackageID = PT.PackageID
@@ -1821,7 +1840,6 @@ AS
 
 		RETURN @Result
 	END
-
 GO
 
 
