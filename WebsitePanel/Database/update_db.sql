@@ -4852,20 +4852,22 @@ GO
 
 
 
+UPDATE [dbo].[Providers] SET [DisplayName] = 'SmarterMail 7.x - 8.x' WHERE [DisplayName] = 'SmarterMail 7.x'
+GO
+UPDATE [dbo].[Providers] SET [DisplayName] = 'SmarterMail 10.x +' WHERE [DisplayName] = 'SmarterMail 10.x'
+GO
+UPDATE [dbo].[Providers] SET [DisplayName] = 'SmarterStats 5.x +' WHERE [DisplayName] = 'SmarterStats 5.x-6.x'
+GO
 
-IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE DisplayName = 'SmarterMail 10.x +')
+IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE [DisplayName] = 'SmarterMail 10.x +')
 BEGIN
-	INSERT [dbo].[Providers] ([ProviderID], [GroupID], [ProviderName], [DisplayName], [ProviderType], [EditorControl], [DisableAutoDiscovery]) VALUES (66, 4, N'SmarterMail', N'SmarterMail 10.x', N'WebsitePanel.Providers.Mail.SmarterMail10, WebsitePanel.Providers.Mail.SmarterMail10', N'SmarterMail60', NULL)
+	INSERT [dbo].[Providers] ([ProviderID], [GroupID], [ProviderName], [DisplayName], [ProviderType], [EditorControl], [DisableAutoDiscovery]) VALUES (66, 4, N'SmarterMail', N'SmarterMail 10.x +', N'WebsitePanel.Providers.Mail.SmarterMail10, WebsitePanel.Providers.Mail.SmarterMail10', N'SmarterMail60', NULL)
 	INSERT [dbo].[ServiceDefaultProperties] ([ProviderID], [PropertyName], [PropertyValue]) VALUES (66, N'AdminPassword', N'')
 	INSERT [dbo].[ServiceDefaultProperties] ([ProviderID], [PropertyName], [PropertyValue]) VALUES (66, N'AdminUsername', N'admin')
 	INSERT [dbo].[ServiceDefaultProperties] ([ProviderID], [PropertyName], [PropertyValue]) VALUES (66, N'DomainsPath', N'%SYSTEMDRIVE%\SmarterMail')
 	INSERT [dbo].[ServiceDefaultProperties] ([ProviderID], [PropertyName], [PropertyValue]) VALUES (66, N'ServerIPAddress', N'127.0.0.1;127.0.0.1')
 	INSERT [dbo].[ServiceDefaultProperties] ([ProviderID], [PropertyName], [PropertyValue]) VALUES (66, N'ServiceUrl', N'http://localhost:9998/services/')
 END
-GO
-UPDATE [dbo].[Providers] SET [DisplayName] = 'SmarterMail 7.x - 8.x' WHERE [DisplayName] = 'SmarterMail 7.x'
-GO
-UPDATE [dbo].[Providers] SET [DisplayName] = 'SmarterMail 10.x +' WHERE [DisplayName] = 'SmarterMail 10.x'
 GO
 
 
@@ -4968,18 +4970,6 @@ COMMIT TRAN
 RETURN 
 
 GO
-
-
-IF EXISTS (SELECT * FROM [dbo].[Providers] WHERE [DisplayName] = 'SmarterStats 5.x-6.x')
-BEGIN
-	UPDATE [dbo].[Providers]
-	SET [DisplayName] = 'SmarterStats 5.x +'
-	WHERE [DisplayName] = 'SmarterStats 5.x-6.x'
-END
-GO
-
-
-
 
 
 
