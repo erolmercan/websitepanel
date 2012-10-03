@@ -3266,7 +3266,7 @@ namespace WebsitePanel.EnterpriseServer
 			var ip = IPAddress.Parse(subnetMask);
 			if (ip.V4) {
 				int cidr = 32;
-				long mask = (long)ip.Address;
+				var mask = ip.Address;
 				while ((mask & 1) == 0 && cidr > 0) {
 					mask >>= 1;
 					cidr -= 1;
