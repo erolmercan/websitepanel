@@ -276,11 +276,13 @@ namespace WebsitePanel.Portal
             if (site.IsDedicatedIP)
             {
                 IsDedicatedIP = true;
+                WebsitesSSLControl.Visible = true;
                 WebsitesSSLControl.BindWebItem(site);
             }
             else
             {
                 IsDedicatedIP = false;
+                WebsitesSSLControl.Visible = false;
             }
 
 			BindVirtualDirectories();
