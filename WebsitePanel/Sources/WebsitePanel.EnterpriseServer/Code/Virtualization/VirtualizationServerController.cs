@@ -3235,40 +3235,31 @@ namespace WebsitePanel.EnterpriseServer
             Trace.TraceInformation("Param - subnetMask: {0}", subnetMask);
 
             // start IP address
-            var startIp = IPAddress.Parse(startIPAddress);
-            var mask = IPAddress.Parse(subnetMask);
-
-            Trace.TraceInformation("Calculate initial value for lastAddress");
-            var lastAddress = (startIp & ~mask) - 1;
-            Trace.TraceInformation("Initial lastAddress: {0}", lastAddress.ToString());
+            var ip = IPAddress.Parse(startIPAddress) - 1;
 
             Trace.TraceInformation("Start looking for next available IP");
             foreach (var addr in ips.Keys)
             {
-                if ((addr - lastAddress) > 1)
+                if ((addr - ip) > 1)
                 {
                     // it is a gap
-                    Trace.TraceInformation("Gap");
                     break;
                 }
                 else
                 {
-                    lastAddress = addr;
-                    Trace.TraceInformation("New lastAddress: {0}", lastAddress.ToString());
+                    ip = addr;
                 }
             }
 
-            var genAddr = lastAddress + 1;
-            Trace.TraceInformation("Generated address: {0}", genAddr.ToString());
+            // final IP found
+            ip = ip + 1;
 
-            // convert to IP address
-            var ip = startIp & mask | genAddr;
             string genIP = ip.ToString();
             Trace.TraceInformation("Generated IP: {0}", genIP);
 
             // store in cache
             Trace.TraceInformation("Adding to sorted list");
-            ips.Add(genAddr, genIP);
+            ips.Add(ip, genIP);
 
             Trace.TraceInformation("Leaving GenerateNextAvailablePrivateIP()");
             return genIP;
@@ -3292,8 +3283,14 @@ namespace WebsitePanel.EnterpriseServer
         }
 
 		private static string GetPrivateNetworkSubnetMask(string cidr, bool v6) {
-			if (v6) return "/" + cidr;
-			else return IPAddress.Parse("/" + cidr).ToV4MaskString();
+            if (v6)
+            {
+                return "/" + cidr;
+            }
+            else
+            {
+                return IPAddress.Parse("/" + cidr).ToV4MaskString();
+            }
 		}
 
 		private static string GetSubnetMaskCidr(string subnetMask) {
