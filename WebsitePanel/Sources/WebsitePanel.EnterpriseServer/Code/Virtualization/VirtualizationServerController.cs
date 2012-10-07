@@ -3274,11 +3274,12 @@ namespace WebsitePanel.EnterpriseServer
             SortedList<IPAddress, string> sortedIps = new SortedList<IPAddress, string>();
             foreach (PrivateIPAddress ip in ips)
             {
-                var addr = ~mask & IPAddress.Parse(ip.IPAddress);
+                var addr = IPAddress.Parse(ip.IPAddress);
                 sortedIps.Add(addr, ip.IPAddress);
 
                 Trace.TraceInformation("Added {0} to sorted IPs list with key: {1} ", ip.IPAddress, addr.ToString());
             }
+            Trace.TraceInformation("Leaving GetSortedNormalizedIPAddresses()");
             return sortedIps;
         }
 
@@ -3315,7 +3316,8 @@ namespace WebsitePanel.EnterpriseServer
             var mask = IPAddress.Parse(subnetMask);
             var ip = IPAddress.Parse(ipAddress);
 
-            return ((mask & ip) == mask);
+            //return ((mask & ip) == mask);
+            return true;
         }
         #endregion
 

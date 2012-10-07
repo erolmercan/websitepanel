@@ -182,7 +182,7 @@ namespace WebsitePanel.EnterpriseServer {
 		}
 		public static IPAddress operator &(IPAddress a, IPAddress b) {
 			if (a.V6 != b.V6) throw new ArgumentException("Arithmetic with mixed v4 & v6 addresses not supported.");
-			return new IPAddress { Address = a.Address | b.Address, Cidr = a.V4 ? 32 : 128, Null = false, V6 = a.V6, IsSubnet = false };
+			return new IPAddress { Address = a.Address & b.Address, Cidr = a.V4 ? 32 : 128, Null = false, V6 = a.V6, IsSubnet = false };
 		}
 		public static IPAddress operator ~(IPAddress a) {
 			if (a.Null) return new IPAddress { Address = 0, Null = true, Cidr = a.V4 ? 32 : 128, V6 = true, IsSubnet = false };
