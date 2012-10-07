@@ -337,31 +337,31 @@ namespace WebsitePanel.Portal {
         protected global::System.Web.UI.WebControls.Panel pnlCSR;
         
         /// <summary>
-        /// sslDomain control.
+        /// SelectCertType control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Localize sslDomain;
+        protected global::System.Web.UI.WebControls.Localize SelectCertType;
         
         /// <summary>
-        /// lstDomains control.
+        /// rbSiteCertificate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList lstDomains;
+        protected global::System.Web.UI.WebControls.RadioButton rbSiteCertificate;
         
         /// <summary>
-        /// chkWild control.
+        /// rbDomainCertificate control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox chkWild;
+        protected global::System.Web.UI.WebControls.RadioButton rbDomainCertificate;
         
         /// <summary>
         /// sslBitLength control.
