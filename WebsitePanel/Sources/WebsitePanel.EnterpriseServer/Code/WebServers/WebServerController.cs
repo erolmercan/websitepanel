@@ -171,6 +171,16 @@ namespace WebsitePanel.EnterpriseServer
             return AddWebSite(packageId, hostName, domainId, ipAddressId, false, true);
         }
 
+        private static Regex regIP = new Regex(
+            @"(?<First>2[0-4]\d|25[0-5]|[01]?\d\d?)\.(?<Second>2[0-4]\d|25"
+            + @"[0-5]|[01]?\d\d?)\.(?<Third>2[0-4]\d|25[0-5]|[01]?\d\d?)\.(?"
+            + @"<Fourth>2[0-4]\d|25[0-5]|[01]?\d\d?)",
+            RegexOptions.IgnoreCase
+            | RegexOptions.CultureInvariant
+            | RegexOptions.IgnorePatternWhitespace
+            | RegexOptions.Compiled
+            );
+
         public static int AddWebSite(int packageId, string hostName, int domainId, int packageAddressId,
             bool addInstantAlias, bool ignoreGlobalDNSRecords)
         {
@@ -256,6 +266,14 @@ namespace WebsitePanel.EnterpriseServer
 
                 // load web DNS records
                 List<GlobalDnsRecord> dnsRecords = ServerController.GetDnsRecordsByService(serviceId);
+
+                if (dedicatedIp)
+                {
+                     foreach (GlobalDnsRecord d in dnsRecords)
+                    {
+                        if (regIP.IsMatch(d.ExternalIP)) return BusinessErrorCodes.ERROR_GLOBALDNS_FOR_DEDICATEDIP;
+                    }
+                } 
 
                 // prepare site bindings
                 List<ServerBinding> bindings = new List<ServerBinding>();
@@ -630,6 +648,13 @@ namespace WebsitePanel.EnterpriseServer
                 addressId = packageIp.AddressID;
             }
 
+
+            List<GlobalDnsRecord> dnsRecords = ServerController.GetDnsRecordsByService(siteItem.ServiceId);
+
+            foreach (GlobalDnsRecord d in dnsRecords)
+            {
+                if (regIP.IsMatch(d.ExternalIP)) return BusinessErrorCodes.ERROR_GLOBALDNS_FOR_DEDICATEDIP;
+            }
 
             // place log record
             TaskManager.StartTask("WEB_SITE", "SWITCH_TO_DEDICATED_IP", siteItem.Name);

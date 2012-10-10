@@ -1056,6 +1056,9 @@
   <data name="Error.607" xml:space="preserve">
     <value>Web Site meta-item IP address is not specified</value>
   </data>
+  <data name="Error.610" xml:space="preserve">
+    <value>Invalid Global DNS entries in platform server configuration for dedicated IP address usage. Contact you platform administrator</value>
+  </data>
   <data name="Error.700" xml:space="preserve">
     <value>Specified mail domain already exists on the service</value>
   </data>
