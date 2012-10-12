@@ -460,13 +460,17 @@ namespace WebsitePanel.EnterpriseServer
                             domain.PackageId = packageId;
                             domain.DomainName = domainName;
                             domain.HostingAllowed = false;
-                            domainId = ServerController.AddDomain(domain, createInstantAlias, true);
+                            domainId = ServerController.AddDomain(domain, false, true);
                             if (domainId < 0)
                             {
                                 result.Result = domainId;
                                 DeletePackage(packageId);
                                 return result;
                             }
+
+                            if (createInstantAlias)
+                                ServerController.CreateDomainInstantAlias("", domainId);
+
                         }
                         catch (Exception ex)
                         {
@@ -481,7 +485,7 @@ namespace WebsitePanel.EnterpriseServer
                         // create web site
                         try
                         {
-                            int webSiteId = WebServerController.AddWebSite(packageId, hostName, domainId, 0, true, false);
+                            int webSiteId = WebServerController.AddWebSite(packageId, hostName, domainId, 0, createInstantAlias, false);
                             if (webSiteId < 0)
                             {
                                 result.Result = webSiteId;

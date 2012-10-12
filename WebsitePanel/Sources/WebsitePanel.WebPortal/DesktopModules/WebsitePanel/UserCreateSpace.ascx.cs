@@ -133,7 +133,7 @@ namespace WebsitePanel.Portal
                     spaceName,
                     Utils.ParseInt(ddlStatus.SelectedValue, 0),
                     chkPackageLetter.Checked,
-                    chkCreateResources.Checked, domainName, true, chkCreateWebSite.Checked,
+                    chkCreateResources.Checked, domainName, false, chkCreateWebSite.Checked,
                     chkCreateFtpAccount.Checked, ftpAccount, chkCreateMailAccount.Checked, "");
 
                 if (result.Result < 0)
