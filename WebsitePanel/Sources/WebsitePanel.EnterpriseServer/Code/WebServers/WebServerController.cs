@@ -682,6 +682,11 @@ namespace WebsitePanel.EnterpriseServer
                     DeleteCertificate(siteItemId, c);
                 }
 
+                certificates = GetPendingCertificates(siteItemId);
+                foreach (SSLCertificate c in certificates)
+                {
+                    DeleteCertificateRequest(siteItemId, c.id);
+                }
                 
                 List<DomainInfo> pointers = GetWebSitePointers(siteItemId);
                 foreach (DomainInfo pointer in pointers)
@@ -788,6 +793,12 @@ namespace WebsitePanel.EnterpriseServer
                 foreach (SSLCertificate c in certificates)
                 {
                     DeleteCertificate(siteItemId, c);
+                }
+
+                certificates = GetPendingCertificates(siteItemId);
+                foreach (SSLCertificate c in certificates)
+                {
+                    DeleteCertificateRequest(siteItemId, c.id);
                 }
 
                 // remove all web site pointers
