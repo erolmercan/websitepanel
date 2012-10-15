@@ -62,10 +62,10 @@ namespace WebsitePanel.Portal
 
         private void ToggleControls()
         {
-            rowDedicatedIP.Visible = rbDedicatedIP.Checked;
-
             PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
 
+            rowDedicatedIP.Visible = rbDedicatedIP.Checked;
+            
             if (Utils.CheckQouta(Quotas.WEB_ENABLEHOSTNAMESUPPORT, cntx))
             {
                 txtHostName.Visible = chkIgnoreGlobalDNSRecords.Visible = lblIgnoreGlobalDNSRecords.Visible = lblTheDotInTheMiddle.Visible = true;
@@ -78,6 +78,7 @@ namespace WebsitePanel.Portal
                 txtHostName.Visible = chkIgnoreGlobalDNSRecords.Visible = lblIgnoreGlobalDNSRecords.Visible = lblTheDotInTheMiddle.Visible = false;
                 chkIgnoreGlobalDNSRecords.Checked = true;
                 txtHostName.Text = "";
+                domainsSelectDomainControl.HideWebSites = true;
             }
 
         }

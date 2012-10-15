@@ -38,6 +38,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 
 using WebsitePanel.EnterpriseServer;
+using WebsitePanel.Providers.Web;
 
 namespace WebsitePanel.Portal
 {
@@ -108,6 +109,10 @@ namespace WebsitePanel.Portal
         {
             DomainInfo[] domains = ES.Services.Servers.GetMyDomains(PackageId);
 
+            WebSite[] sites = null;
+            if (HideWebSites)
+                sites = ES.Services.WebServers.GetWebSites(PackageId, false);
+
             ddlDomains.Items.Clear();
 
             // add "select" item
@@ -115,10 +120,28 @@ namespace WebsitePanel.Portal
 
             foreach (DomainInfo domain in domains)
             {
-                if (HideWebSites && domain.WebSiteId > 0)
-                    continue;
+                if (HideWebSites)
+                {
+                    if (domain.WebSiteId > 0)
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        bool bFound = false;
+                        foreach (WebSite w in sites)
+                        {
+                            if (w.Name.ToLower() == domain.DomainName.ToLower())
+                            {
+                                bFound = true;
+                                break;
+                            }
+                        }
+                        if (bFound) continue;
+                    }
+                }
                 else if (HideInstantAlias && domain.IsInstantAlias)
-                    continue; 
+                    continue;
                 else if (HideMailDomains && domain.MailDomainId > 0)
                     continue;
                 else if (HideDomainPointers && (domain.IsDomainPointer))
