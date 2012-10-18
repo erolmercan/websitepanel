@@ -1609,7 +1609,14 @@ namespace WebsitePanel.EnterpriseServer
             return ObjectUtils.CreateListFromDataSet<DomainInfo>(
                 DataProvider.GetDomainsByZoneId(SecurityContext.User.UserId, zoneId));
         }
-        
+
+        public static List<DomainInfo> GetDomainsByDomainItemId(int zoneId)
+        {
+            return ObjectUtils.CreateListFromDataSet<DomainInfo>(
+                DataProvider.GetDomainsByDomainItemId(SecurityContext.User.UserId, zoneId));
+        }
+
+
         public static List<DomainInfo> GetMyDomains(int packageId)
         {
             return ObjectUtils.CreateListFromDataSet<DomainInfo>(
@@ -1908,7 +1915,7 @@ namespace WebsitePanel.EnterpriseServer
             {
                 DataProvider.UpdateDomain(SecurityContext.User.UserId,
                     domain.DomainId, domain.ZoneItemId, domain.HostingAllowed, domain.WebSiteId,
-                    domain.MailDomainId);
+                    domain.MailDomainId, domain.DomainItemId);
 
                 return 0;
             }
@@ -1959,7 +1966,7 @@ namespace WebsitePanel.EnterpriseServer
                 }
 
 
-                List<DomainInfo> domains = GetDomainsByZoneId(domain.ZoneItemId);
+                List<DomainInfo> domains = GetDomainsByDomainItemId(domain.DomainId);
                 foreach (DomainInfo d in domains)
                 {
                     if (d.WebSiteId > 0)
@@ -2030,7 +2037,7 @@ namespace WebsitePanel.EnterpriseServer
 
                 if (!domain.IsDomainPointer)
                 {
-                    List<DomainInfo> domains = GetDomainsByZoneId(domain.ZoneItemId);
+                    List<DomainInfo> domains = GetDomainsByDomainItemId(domain.DomainId);
                     foreach (DomainInfo d in domains)
                     {
                         if (d.WebSiteId > 0)
@@ -2218,16 +2225,22 @@ namespace WebsitePanel.EnterpriseServer
                     instantAlias = GetDomainItem(instantAliasId);
                 }
 
+                if (domain.WebSiteId > 0)
+                {
+                    WebServerController.AddWebSitePointer(domain.WebSiteId,
+                                                            (domain.DomainName.Replace("." + domain.ZoneName, "") == domain.ZoneName) ? "" : domain.DomainName.Replace("." + domain.ZoneName, ""),
+                                                            instantAlias.DomainId);
+                }
+
+
                 // add web site pointer if required
-                List<DomainInfo> domains = GetDomainsByZoneId(domain.ZoneItemId);
+                List<DomainInfo> domains = GetDomainsByDomainItemId(domain.DomainId);
                 foreach (DomainInfo d in domains)
                 {
                     if (d.WebSiteId > 0)
                     {
-                        WebSite w = WebServerController.GetWebSite(d.WebSiteId);
-
                         WebServerController.AddWebSitePointer(d.WebSiteId,
-                                                                (w.Name.Replace("." + domain.ZoneName, "") == domain.ZoneName) ? "" : w.Name.Replace("." + domain.ZoneName, ""),
+                                                                (d.DomainName.Replace("." + domain.ZoneName, "") == domain.ZoneName) ? "" : d.DomainName.Replace("." + domain.ZoneName, ""),
                                                                 instantAlias.DomainId);
 
                     }
@@ -2283,7 +2296,8 @@ namespace WebsitePanel.EnterpriseServer
                         return webRes;
                 }
 
-                List<DomainInfo> domains = GetDomainsByZoneId(instantAlias.ZoneItemId);
+                List<DomainInfo> domains = GetDomainsByDomainItemId(instantAlias.DomainId);
+
                 foreach (DomainInfo d in domains)
                 {
                     if (d.WebSiteId > 0)

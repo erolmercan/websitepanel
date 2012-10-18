@@ -811,6 +811,15 @@ namespace WebsitePanel.EnterpriseServer
                 new SqlParameter("@ZoneID", zoneId));
         }
 
+        public static DataSet GetDomainsByDomainItemId(int actorId, int domainId)
+        {
+            return SqlHelper.ExecuteDataset(ConnectionString, CommandType.StoredProcedure,
+                ObjectQualifier + "GetDomainsByDomainItemId",
+                new SqlParameter("@ActorId", actorId),
+                new SqlParameter("@DomainID", domainId));
+        }
+
+
 
         public static int CheckDomain(int packageId, string domainName, bool isDomainPointer)
         {
@@ -851,7 +860,7 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         public static void UpdateDomain(int actorId, int domainId, int zoneItemId,
-            bool hostingAllowed, int webSiteId, int mailDomainId)
+            bool hostingAllowed, int webSiteId, int mailDomainId, int domainItemId)
         {
             SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.StoredProcedure,
                 ObjectQualifier + "UpdateDomain",
@@ -860,7 +869,8 @@ namespace WebsitePanel.EnterpriseServer
                 new SqlParameter("@ZoneItemId", zoneItemId),
                 new SqlParameter("@HostingAllowed", hostingAllowed),
                 new SqlParameter("@WebSiteId", webSiteId),
-                new SqlParameter("@MailDomainId", mailDomainId));
+                new SqlParameter("@MailDomainId", mailDomainId),
+                new SqlParameter("@DomainItemId", domainItemId));
         }
 
         public static void DeleteDomain(int actorId, int domainId)

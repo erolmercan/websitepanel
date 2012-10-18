@@ -5856,7 +5856,101 @@ END
 GO
 
 
-IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'GetExchangeOrganization')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='Domains' AND COLS.name='DomainItemId')
+BEGIN
+ALTER TABLE [dbo].[Domains] ADD
+	[DomainItemId] [int] NULL
+END
+GO
+
+
+
+
+
+BEGIN TRAN	
+CREATE TABLE #TempDomains
+(
+	[PackageID] [int] NOT NULL,
+	[ZoneItemID] [int] NULL,
+	[DomainName] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
+	[HostingAllowed] [bit] NOT NULL,
+	[WebSiteID] [int] NULL,
+	[IsSubDomain] [bit] NOT NULL,
+	[IsInstantAlias] [bit] NOT NULL,
+	[IsDomainPointer] [bit] NOT NULL,
+	[DomainItemID] [int] NULL,
+)
+
+UPDATE Domains SET DomainItemID = DomainID
+
+INSERT INTO #TempDomains SELECT PackageID,
+ZoneItemID,
+DomainName,
+HostingAllowed,
+WebSiteID,
+IsSubDomain,
+IsInstantAlias,
+IsDomainPointer,
+DomainItemID FROM Domains WHERE IsDomainPointer = 1
+
+
+UPDATE Domains SET IsDomainPointer=0,WebSiteID=NULL, DomainItemID=NULL WHERE IsDomainPointer = 1 AND DomainName IN (SELECT DomainName FROM Domains AS D WHERE 
+D.DomainName = (SELECT DISTINCT ItemName FROM ServiceItems WHERE ItemID = D.ZoneItemId )
+Group BY DOmainName
+HAVING (COUNT(DomainName) = 1)) 
+
+
+INSERT INTO Domains SELECT PackageID,
+ZoneItemID,
+DomainName,
+HostingAllowed,
+WebSiteID,
+NULL,
+IsSubDomain,
+IsInstantAlias,
+IsDomainPointer,
+DomainItemID
+ FROM #TempDomains As T WHERE DomainName IN (SELECT DomainName FROM Domains AS D WHERE 
+D.DomainName = (SELECT DISTINCT ItemName FROM ServiceItems WHERE ItemID = D.ZoneItemId )
+Group BY DOmainName
+HAVING (COUNT(DomainName) = 1))
+
+
+UPDATE Domains SET DomainItemID = null WHERE IsDomainPointer=0
+
+DROP TABLE #TempDomains
+COMMIT TRAN
+GO
+
+
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'Web.EnableHostNameSupport')
+BEGIN
+	INSERT [dbo].[Quotas] ([QuotaID], [GroupID], [QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) VALUES (334, 2, 23, N'Web.EnableHostNameSupport', N'Enable Hostname Support', 1, 0, NULL)
+END
+GO
+
+
+
+
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'GetDomainByNameByPointer')
 BEGIN
 EXEC sp_executesql N'CREATE PROCEDURE [dbo].[GetDomainByNameByPointer]
 (
@@ -5897,76 +5991,79 @@ GO
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-BEGIN TRAN	
-CREATE TABLE #TempDomains
-(
-	[PackageID] [int] NOT NULL,
-	[ZoneItemID] [int] NULL,
-	[DomainName] [nvarchar](100) COLLATE Latin1_General_CI_AS NOT NULL,
-	[HostingAllowed] [bit] NOT NULL,
-	[WebSiteID] [int] NULL,
-	[IsSubDomain] [bit] NOT NULL,
-	[IsInstantAlias] [bit] NOT NULL,
-	[IsDomainPointer] [bit] NOT NULL,
-)
-
-
-INSERT INTO #TempDomains SELECT PackageID,
-ZoneItemID,
-DomainName,
-HostingAllowed,
-WebSiteID,
-IsSubDomain,
-IsInstantAlias,
-IsDomainPointer FROM Domains WHERE IsDomainPointer = 1
-
-
-UPDATE Domains SET IsDomainPointer=0,WebSiteID=NULL WHERE IsDomainPointer = 1 AND DomainName IN (SELECT DomainName FROM Domains AS D WHERE 
-D.DomainName = (SELECT DISTINCT ItemName FROM ServiceItems WHERE ItemID = D.ZoneItemId )
-Group BY DOmainName
-HAVING (COUNT(DomainName) = 1)) 
-
-
-INSERT INTO Domains SELECT PackageID,
-ZoneItemID,
-DomainName,
-HostingAllowed,
-WebSiteID,
-NULL,
-IsSubDomain,
-IsInstantAlias,
-IsDomainPointer
- FROM #TempDomains As T WHERE DomainName IN (SELECT DomainName FROM Domains AS D WHERE 
-D.DomainName = (SELECT DISTINCT ItemName FROM ServiceItems WHERE ItemID = D.ZoneItemId )
-Group BY DOmainName
-HAVING (COUNT(DomainName) = 1))
-
-DROP TABLE #TempDomains
-COMMIT TRAN
-GO
-
-
-
-IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'Web.EnableHostNameSupport')
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'GetDomainsByDomainItemID')
 BEGIN
-	INSERT [dbo].[Quotas] ([QuotaID], [GroupID], [QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) VALUES (334, 2, 23, N'Web.EnableHostNameSupport', N'Enable Hostname Support', 1, 0, NULL)
+EXEC sp_executesql N'CREATE PROCEDURE [dbo].[GetDomainsByDomainItemID]
+(
+	@ActorID int,
+	@DomainID int
+)
+AS
+
+SELECT
+	D.DomainID,
+	D.PackageID,
+	D.ZoneItemID,
+	D.DomainItemID,
+	D.DomainName,
+	D.HostingAllowed,
+	ISNULL(D.WebSiteID, 0) AS WebSiteID,
+	WS.ItemName AS WebSiteName,
+	ISNULL(D.MailDomainID, 0) AS MailDomainID,
+	MD.ItemName AS MailDomainName,
+	Z.ItemName AS ZoneName,
+	D.IsSubDomain,
+	D.IsInstantAlias,
+	D.IsDomainPointer
+FROM Domains AS D
+INNER JOIN Packages AS P ON D.PackageID = P.PackageID
+LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
+LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
+LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+WHERE
+	D.DomainItemID = @DomainID
+	AND dbo.CheckActorPackageRights(@ActorID, P.PackageID) = 1
+RETURN'
 END
 GO
 
+
+
+
+
+ALTER PROCEDURE [dbo].[UpdateDomain]
+(
+	@DomainID int,
+	@ActorID int,
+	@ZoneItemID int,
+	@HostingAllowed bit,
+	@WebSiteID int,
+	@MailDomainID int,
+	@DomainItemID int
+)
+AS
+
+-- check rights
+DECLARE @PackageID int
+SELECT @PackageID = PackageID FROM Domains
+WHERE DomainID = @DomainID
+
+IF dbo.CheckActorPackageRights(@ActorID, @PackageID) = 0
+RAISERROR('You are not allowed to access this package', 16, 1)
+
+IF @ZoneItemID = 0 SET @ZoneItemID = NULL
+IF @WebSiteID = 0 SET @WebSiteID = NULL
+IF @MailDomainID = 0 SET @MailDomainID = NULL
+
+-- update record
+UPDATE Domains
+SET
+	ZoneItemID = @ZoneItemID,
+	HostingAllowed = @HostingAllowed,
+	WebSiteID = @WebSiteID,
+	MailDomainID = @MailDomainID,
+	DomainItemID = @DomainItemID
+WHERE
+	DomainID = @DomainID
+	RETURN
+GO

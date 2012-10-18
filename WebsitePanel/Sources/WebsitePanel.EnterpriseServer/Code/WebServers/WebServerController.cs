@@ -1170,6 +1170,8 @@ namespace WebsitePanel.EnterpriseServer
                                 {
                                     domainTmp.WebSiteId = siteItemId;
                                     domainTmp.ZoneItemId = domain.ZoneItemId;
+                                    domainTmp.DomainItemId = domainId;
+                                    
                                     ServerController.UpdateDomain(domainTmp);
                                 }
                             }
