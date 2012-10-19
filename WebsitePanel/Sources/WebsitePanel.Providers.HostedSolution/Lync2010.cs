@@ -199,7 +199,8 @@ namespace WebsitePanel.Providers.HostedSolution
                 //create conferencing policy
                 cmd = new Command("New-CsConferencingPolicy");
                 cmd.Parameters.Add("Identity", organizationId);
-                cmd.Parameters.Add("MaxMeetingSize", maxConferenceSize);
+
+                cmd.Parameters.Add("MaxMeetingSize", ((maxConferenceSize == -1) | (maxConferenceSize > 250)) ? 250 : maxConferenceSize);
                 cmd.Parameters.Add("AllowIPVideo", enableConferencingVideo);
                 ExecuteShellCommand(runSpace, cmd, false);
                 transaction.RegisterNewConferencingPolicy(organizationId);

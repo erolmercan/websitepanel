@@ -156,4 +156,7 @@
   <data name="valRequireOrgName.Text" xml:space="preserve">
     <value>*</value>
   </data>
+  <data name="locDomainName.Text" xml:space="preserve">
+    <value>Domain Name:</value>
+  </data>
 </root>

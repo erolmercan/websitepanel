@@ -281,7 +281,7 @@ namespace WebsitePanel.EnterpriseServer
 				TaskManager.WriteError(ex);
 			}
 		}
-        public static int CreateOrganization(int packageId,  string organizationId, string organizationName)
+        public static int CreateOrganization(int packageId,  string organizationId, string organizationName, string domainName)
         {
             int itemId;
             int errorCode;
@@ -291,6 +291,7 @@ namespace WebsitePanel.EnterpriseServer
             // place log record
             TaskManager.StartTask("ORGANIZATION", "CREATE_ORG", organizationName);
             TaskManager.TaskParameters["Organization ID"] = organizationId;
+            TaskManager.TaskParameters["DomainName"] = domainName;
 
 			try
 			{
@@ -311,7 +312,12 @@ namespace WebsitePanel.EnterpriseServer
 					return BusinessErrorCodes.ERROR_ORG_ID_EXISTS;
 
 				//create temporary domain name;
-				string domainName = CreateTemporyDomainName(serviceId, organizationId);
+                if (string.IsNullOrEmpty(domainName))
+                {
+                    string tmpDomainName = CreateTemporyDomainName(serviceId, organizationId);
+
+                    if (!string.IsNullOrEmpty(tmpDomainName)) domainName = tmpDomainName;
+                }
                 
 				if (string.IsNullOrEmpty(domainName))
 				{

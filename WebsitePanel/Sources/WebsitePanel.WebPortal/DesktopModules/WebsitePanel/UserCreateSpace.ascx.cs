@@ -171,7 +171,7 @@ namespace WebsitePanel.Portal
                             if (user.Role != UserRole.Reseller)
                             {
 
-                                ES.Services.Organizations.CreateOrganization(result.Result, domainName.ToLower(), domainName.ToLower());
+                                ES.Services.Organizations.CreateOrganization(result.Result, domainName.ToLower(), domainName.ToLower(), domainName.ToLower());
 
                                 if (result.Result < 0)
                                 {

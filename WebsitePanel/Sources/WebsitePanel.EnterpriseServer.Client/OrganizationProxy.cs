@@ -54,6 +54,7 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
     using WebsitePanel.Providers.ResultObjects;
 
     
+    
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -84,6 +85,8 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
         private System.Threading.SendOrPostCallback GetAccountIdByUserPrincipalNameOperationCompleted;
         
         private System.Threading.SendOrPostCallback AddOrganizationDomainOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback ChangeOrganizationDomainTypeOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetOrganizationDomainsOperationCompleted;
         
@@ -146,6 +149,9 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
         public event AddOrganizationDomainCompletedEventHandler AddOrganizationDomainCompleted;
         
         /// <remarks/>
+        public event ChangeOrganizationDomainTypeCompletedEventHandler ChangeOrganizationDomainTypeCompleted;
+        
+        /// <remarks/>
         public event GetOrganizationDomainsCompletedEventHandler GetOrganizationDomainsCompleted;
         
         /// <remarks/>
@@ -180,20 +186,22 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/CreateOrganization", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public int CreateOrganization(int packageId, string organizationID, string organizationName) {
+        public int CreateOrganization(int packageId, string organizationID, string organizationName, string domainName) {
             object[] results = this.Invoke("CreateOrganization", new object[] {
                         packageId,
                         organizationID,
-                        organizationName});
+                        organizationName,
+                        domainName});
             return ((int)(results[0]));
         }
         
         /// <remarks/>
-        public System.IAsyncResult BeginCreateOrganization(int packageId, string organizationID, string organizationName, System.AsyncCallback callback, object asyncState) {
+        public System.IAsyncResult BeginCreateOrganization(int packageId, string organizationID, string organizationName, string domainName, System.AsyncCallback callback, object asyncState) {
             return this.BeginInvoke("CreateOrganization", new object[] {
                         packageId,
                         organizationID,
-                        organizationName}, callback, asyncState);
+                        organizationName,
+                        domainName}, callback, asyncState);
         }
         
         /// <remarks/>
@@ -203,19 +211,20 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
         }
         
         /// <remarks/>
-        public void CreateOrganizationAsync(int packageId, string organizationID, string organizationName) {
-            this.CreateOrganizationAsync(packageId, organizationID, organizationName, null);
+        public void CreateOrganizationAsync(int packageId, string organizationID, string organizationName, string domainName) {
+            this.CreateOrganizationAsync(packageId, organizationID, organizationName, domainName, null);
         }
         
         /// <remarks/>
-        public void CreateOrganizationAsync(int packageId, string organizationID, string organizationName, object userState) {
+        public void CreateOrganizationAsync(int packageId, string organizationID, string organizationName, string domainName, object userState) {
             if ((this.CreateOrganizationOperationCompleted == null)) {
                 this.CreateOrganizationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnCreateOrganizationOperationCompleted);
             }
             this.InvokeAsync("CreateOrganization", new object[] {
                         packageId,
                         organizationID,
-                        organizationName}, this.CreateOrganizationOperationCompleted, userState);
+                        organizationName,
+                        domainName}, this.CreateOrganizationOperationCompleted, userState);
         }
         
         private void OnCreateOrganizationOperationCompleted(object arg) {
@@ -687,6 +696,53 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ChangeOrganizationDomainType", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public int ChangeOrganizationDomainType(int itemId, int domainId, ExchangeAcceptedDomainType newDomainType) {
+            object[] results = this.Invoke("ChangeOrganizationDomainType", new object[] {
+                        itemId,
+                        domainId,
+                        newDomainType});
+            return ((int)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginChangeOrganizationDomainType(int itemId, int domainId, ExchangeAcceptedDomainType newDomainType, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("ChangeOrganizationDomainType", new object[] {
+                        itemId,
+                        domainId,
+                        newDomainType}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public int EndChangeOrganizationDomainType(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((int)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void ChangeOrganizationDomainTypeAsync(int itemId, int domainId, ExchangeAcceptedDomainType newDomainType) {
+            this.ChangeOrganizationDomainTypeAsync(itemId, domainId, newDomainType, null);
+        }
+        
+        /// <remarks/>
+        public void ChangeOrganizationDomainTypeAsync(int itemId, int domainId, ExchangeAcceptedDomainType newDomainType, object userState) {
+            if ((this.ChangeOrganizationDomainTypeOperationCompleted == null)) {
+                this.ChangeOrganizationDomainTypeOperationCompleted = new System.Threading.SendOrPostCallback(this.OnChangeOrganizationDomainTypeOperationCompleted);
+            }
+            this.InvokeAsync("ChangeOrganizationDomainType", new object[] {
+                        itemId,
+                        domainId,
+                        newDomainType}, this.ChangeOrganizationDomainTypeOperationCompleted, userState);
+        }
+        
+        private void OnChangeOrganizationDomainTypeOperationCompleted(object arg) {
+            if ((this.ChangeOrganizationDomainTypeCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.ChangeOrganizationDomainTypeCompleted(this, new ChangeOrganizationDomainTypeCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetOrganizationDomains", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
         public OrganizationDomainName[] GetOrganizationDomains(int itemId) {
             object[] results = this.Invoke("GetOrganizationDomains", new object[] {
@@ -733,17 +789,6 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
             object[] results = this.Invoke("DeleteOrganizationDomain", new object[] {
                         itemId,
                         domainId});
-            return ((int)(results[0]));
-        }
-
-        /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/ChangeOrganizationDomainType", RequestNamespace = "http://tempuri.org/", ResponseNamespace = "http://tempuri.org/", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public int ChangeOrganizationDomainType(int itemId, int domainId, ExchangeAcceptedDomainType newDomainType)
-        {
-            object[] results = this.Invoke("ChangeOrganizationDomainType", new object[] {
-                        itemId,
-                        domainId,
-                        newDomainType});
             return ((int)(results[0]));
         }
         
@@ -1708,6 +1753,32 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution {
         private object[] results;
         
         internal AddOrganizationDomainCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public int Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((int)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void ChangeOrganizationDomainTypeCompletedEventHandler(object sender, ChangeOrganizationDomainTypeCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class ChangeOrganizationDomainTypeCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal ChangeOrganizationDomainTypeCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
