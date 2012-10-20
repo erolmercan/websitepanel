@@ -40,15 +40,18 @@
             <div style="padding-left: 20px;">
                 <asp:Localize ID="DescribeCreateWebSite" runat="server" meta:resourcekey="DescribeCreateWebSite">Description...</asp:Localize>
             </div>
+            <div style="padding-left: 20px;">
+		        <asp:Label ID="lblHostName" runat="server" meta:resourcekey="lblHostName" Text="Host name:"></asp:Label>
+			    <asp:TextBox ID="txtHostName" runat="server" CssClass="TextBox100" MaxLength="64" Text="www"></asp:TextBox>
+            </div>
+        </asp:Panel>
 
-            <table>
-                <tr>
-		            <td class="SubHead">
-		                <asp:Label ID="lblHostName" runat="server" meta:resourcekey="lblHostName" Text="Host name:"></asp:Label>
-			            <asp:TextBox ID="txtHostName" runat="server" CssClass="TextBox100" MaxLength="64" Text="www"></asp:TextBox>
-                    </td>
-                </tr>
-            </table>
+        <asp:Panel id="PointWebSitePanel" runat="server" style="padding-bottom: 15px;">
+            <asp:CheckBox ID="PointWebSite" runat="server" meta:resourcekey="PointWebSite" Text="Point to Web Site" CssClass="Checkbox Bold"
+                AutoPostBack="true" /><br />
+            <div style="padding-left: 20px;">
+                <asp:DropDownList ID="WebSitesList" Runat="server" CssClass="NormalTextBox" DataTextField="Name" DataValueField="ID"></asp:DropDownList>
+            </div>
         </asp:Panel>
         
         <asp:Panel id="PointMailDomainPanel" runat="server" style="padding-bottom: 15px;">

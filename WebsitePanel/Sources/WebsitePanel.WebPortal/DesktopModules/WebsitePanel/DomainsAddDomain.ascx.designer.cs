@@ -175,6 +175,33 @@ namespace WebsitePanel.Portal {
         protected global::System.Web.UI.WebControls.TextBox txtHostName;
         
         /// <summary>
+        /// PointWebSitePanel control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Panel PointWebSitePanel;
+        
+        /// <summary>
+        /// PointWebSite control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox PointWebSite;
+        
+        /// <summary>
+        /// WebSitesList control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList WebSitesList;
+        
+        /// <summary>
         /// PointMailDomainPanel control.
         /// </summary>
         /// <remarks>
