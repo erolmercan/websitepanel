@@ -67,7 +67,7 @@ namespace WebsitePanel.Portal
         {
             try
             {
-                int result = ES.Services.WebServers.AddWebSitePointer(PanelRequest.ItemID, txtHostName.Text, domainsSelectDomainControl.DomainId);
+                int result = ES.Services.WebServers.AddWebSitePointer(PanelRequest.ItemID, txtHostName.Text.ToLower(), domainsSelectDomainControl.DomainId);
                 if (result < 0)
                 {
                     ShowResultMessage(result);

@@ -92,8 +92,8 @@ namespace WebsitePanel.Portal.HostedSolution
             try
             {
                 int accountId = ES.Services.Organizations.CreateUser(PanelRequest.ItemID, txtDisplayName.Text.Trim(),
-                    email.AccountName,
-                    email.DomainName,
+                    email.AccountName.ToLower(),
+                    email.DomainName.ToLower(),
                     password.Password,
                     txtSubscriberNumber.Text.Trim(),
                     false,

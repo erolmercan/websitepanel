@@ -225,7 +225,7 @@ namespace WebsitePanel.Portal
 			{
 				domainId = ES.Services.Servers.AddDomainWithProvisioning(PanelSecurity.PackageId,
 					domainName.ToLower(), type, CreateWebSite.Checked, pointWebSiteId, pointMailDomainId,
-                    EnableDns.Checked, CreateInstantAlias.Checked, AllowSubDomains.Checked, (PointWebSite.Checked && WebSitesList.Items.Count > 0) ? string.Empty : txtHostName.Text);
+                    EnableDns.Checked, CreateInstantAlias.Checked, AllowSubDomains.Checked, (PointWebSite.Checked && WebSitesList.Items.Count > 0) ? string.Empty : txtHostName.Text.ToLower());
 
 				if (domainId < 0)
 				{

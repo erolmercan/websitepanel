@@ -162,6 +162,7 @@ namespace WebsitePanel.Providers.HostedSolution
         #region organization
         private string CreateOrganizationInternal(string organizationId, string sipDomain, bool enableConferencing, bool enableConferencingVideo, int maxConferenceSize, bool enabledFederation, bool enabledEnterpriseVoice)
         {
+            sipDomain = sipDomain.ToLower();
             HostedSolutionLog.LogStart("CreateOrganizationInternal");
             HostedSolutionLog.DebugInfo("organizationId: {0}", organizationId);
             HostedSolutionLog.DebugInfo("sipDomain: {0}", sipDomain);
@@ -839,6 +840,9 @@ namespace WebsitePanel.Providers.HostedSolution
             HostedSolutionLog.DebugInfo("organizationId: {0}", organizationId);
             HostedSolutionLog.DebugInfo("domainName: {0}", domainName);
 
+            domainName = domainName.ToLower();
+            proxyFqdn = proxyFqdn.ToLower();
+
             Runspace runSpace = null;
             try
             {
@@ -926,9 +930,19 @@ namespace WebsitePanel.Providers.HostedSolution
 
                         if (GetPSObjectProperty(result[0], "AllowedDomains").GetType().ToString() == "Microsoft.Rtc.Management.WritableConfig.Settings.Edge.AllowList")
                         {
+                            HostedSolutionLog.DebugInfo("Remove DomainName: {0}", domainName);
                             allowList = (AllowList)GetPSObjectProperty(result[0], "AllowedDomains");
-                            DomainPattern domain = new DomainPattern(domainName);
-                            allowList.AllowedDomain.Remove(domain);
+                            DomainPattern domain = null;
+                            foreach (DomainPattern d in allowList.AllowedDomain)
+                            {
+                                if (d.Domain.ToLower() == domainName.ToLower())
+                                {
+                                    domain = d;
+                                    break;
+                                }
+                            }
+                            if (domain != null)
+                                allowList.AllowedDomain.Remove(domain);
                         }
 
                         cmd = new Command("Set-CsTenantFederationConfiguration");

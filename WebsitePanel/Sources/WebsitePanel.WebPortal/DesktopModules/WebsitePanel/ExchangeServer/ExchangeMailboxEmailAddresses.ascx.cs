@@ -91,7 +91,7 @@ namespace WebsitePanel.Portal.ExchangeServer
             try
             {
                 int result = ES.Services.ExchangeServer.AddMailboxEmailAddress(
-                    PanelRequest.ItemID, PanelRequest.AccountID, email.Email);
+                    PanelRequest.ItemID, PanelRequest.AccountID, email.Email.ToLower());
 
                 if (result < 0)
                 {
