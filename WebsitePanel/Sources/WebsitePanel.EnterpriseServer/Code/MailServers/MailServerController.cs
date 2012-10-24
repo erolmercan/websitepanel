@@ -1056,6 +1056,9 @@ namespace WebsitePanel.EnterpriseServer
 				{
 					domain.MailDomainId = itemId;
 					ServerController.UpdateDomain(domain);
+
+                    domain = ServerController.GetDomain(domain.DomainId);
+                    ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Mail, domain, "");
 				}
 
 				// check if instant alias must be added
