@@ -1202,7 +1202,7 @@ namespace WebsitePanel.EnterpriseServer
 			return pointers;
 		}
 
-		public static int AddMailDomainPointer(int itemId, int domainId)
+		public static int AddMailDomainPointer( int itemId, int domainId)
 		{
 			// check account
 			int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo);
@@ -1230,6 +1230,16 @@ namespace WebsitePanel.EnterpriseServer
 				MailServer mail = new MailServer();
 				ServiceProviderProxy.Init(mail, mailDomain.ServiceId);
 				mail.AddDomainAlias(mailDomain.Name, domain.DomainName);
+
+
+                if (domain != null)
+                {
+                    if (domain.ZoneItemId != 0)
+                    {
+                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Mail, domain, "");
+                    }
+                }
+
 
 				// update domain
 				domain.MailDomainId = itemId;
