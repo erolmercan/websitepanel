@@ -651,7 +651,6 @@ namespace WebsitePanel.EnterpriseServer
                 addressId = packageIp.AddressID;
             }
 
-
             List<GlobalDnsRecord> dnsRecords = ServerController.GetDnsRecordsByService(siteItem.ServiceId);
 
             foreach (GlobalDnsRecord d in dnsRecords)
@@ -668,6 +667,8 @@ namespace WebsitePanel.EnterpriseServer
 
             try
             {
+                IPAddressInfo ip;
+
                 // remove all web site pointers
                 DomainInfo domain = ServerController.GetDomain(siteItem.Name);
                 DomainInfo ZoneInfo = ServerController.GetDomain(domain.ZoneName);
@@ -709,6 +710,27 @@ namespace WebsitePanel.EnterpriseServer
 
                 }
 
+                List<WebSite> sites = WebServerController.GetWebSites(domain.PackageId, false);
+                bool oneSiteOnly = (sites.Count == 1);
+
+                if (oneSiteOnly)
+                {
+                    // load site item
+                    ip = ServerController.GetIPAddress(sites[0].SiteIPAddressId);
+
+                    string serviceIp = (ip != null) ? ip.ExternalIP : null;
+
+                    if (string.IsNullOrEmpty(serviceIp))
+                    {
+                        StringDictionary settings = ServerController.GetServiceSettings(sites[0].ServiceId);
+                        if (settings["PublicSharedIP"] != null)
+                            serviceIp = settings["PublicSharedIP"].ToString();
+                    }
+
+                    ServerController.RemoveServiceDNSRecords(domain.PackageId, ResourceGroups.Web, domain, serviceIp, true);
+                }
+
+
                 // update site item
                 siteItem.SiteIPAddressId = addressId;
                 PackageController.UpdatePackageItem(siteItem);
@@ -731,7 +753,7 @@ namespace WebsitePanel.EnterpriseServer
                 }
 
                 // load web site IP address
-                IPAddressInfo ip = ServerController.GetIPAddress(siteItem.SiteIPAddressId);
+                ip = ServerController.GetIPAddress(siteItem.SiteIPAddressId);
                 string ipAddr = "*";
                 if (ip != null)
                     ipAddr = !String.IsNullOrEmpty(ip.InternalIP) ? ip.InternalIP : ip.ExternalIP;
@@ -748,10 +770,27 @@ namespace WebsitePanel.EnterpriseServer
                         (b.Port == srvBinding.Port)))
                         newBindings.Add(b);
                 }
-
-                
                
                 web.UpdateSiteBindings(siteItem.SiteId, newBindings.ToArray(), false);
+
+                if (oneSiteOnly)
+                {
+                    sites = WebServerController.GetWebSites(domain.PackageId, false);
+
+                    // load site item
+                    ip = ServerController.GetIPAddress(sites[0].SiteIPAddressId);
+
+                    string serviceIp = (ip != null) ? ip.ExternalIP : null;
+
+                    if (string.IsNullOrEmpty(serviceIp))
+                    {
+                        StringDictionary settings = ServerController.GetServiceSettings(sites[0].ServiceId);
+                        if (settings["PublicSharedIP"] != null)
+                            serviceIp = settings["PublicSharedIP"].ToString();
+                    }
+
+                    ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Web, domain, serviceIp, true);
+                }
                 
                 return 0;
             }
@@ -782,6 +821,8 @@ namespace WebsitePanel.EnterpriseServer
 
             try
             {
+                IPAddressInfo ip;
+
                 DomainInfo domain = ServerController.GetDomain(siteItem.Name);
                 DomainInfo ZoneInfo = ServerController.GetDomain(domain.ZoneName);
 
@@ -822,6 +863,27 @@ namespace WebsitePanel.EnterpriseServer
                 catch (Exception)
                 {
 
+                }
+
+
+                List<WebSite> sites = WebServerController.GetWebSites(domain.PackageId, false);
+                bool oneSiteOnly = (sites.Count == 1);
+
+                if (oneSiteOnly)
+                {
+                    // load site item
+                    ip = ServerController.GetIPAddress(sites[0].SiteIPAddressId);
+
+                    string serviceIp = (ip != null) ? ip.ExternalIP : null;
+
+                    if (string.IsNullOrEmpty(serviceIp))
+                    {
+                        StringDictionary settings = ServerController.GetServiceSettings(sites[0].ServiceId);
+                        if (settings["PublicSharedIP"] != null)
+                            serviceIp = settings["PublicSharedIP"].ToString();
+                    }
+
+                    ServerController.RemoveServiceDNSRecords(domain.PackageId, ResourceGroups.Web, domain, serviceIp, true);
                 }
 
 
@@ -857,6 +919,26 @@ namespace WebsitePanel.EnterpriseServer
                         (pointer.DomainName.Replace("." + pointer.ZoneName, "") == pointer.ZoneName) ? "" : pointer.DomainName.Replace("." + pointer.ZoneName, "")
                         , ZoneInfo.DomainId, true, true, true);
                 }
+
+                if (oneSiteOnly)
+                {
+                    sites = WebServerController.GetWebSites(domain.PackageId, false);
+
+                    // load site item
+                    ip = ServerController.GetIPAddress(sites[0].SiteIPAddressId);
+
+                    string serviceIp = (ip != null) ? ip.ExternalIP : null;
+
+                    if (string.IsNullOrEmpty(serviceIp))
+                    {
+                        StringDictionary settings = ServerController.GetServiceSettings(sites[0].ServiceId);
+                        if (settings["PublicSharedIP"] != null)
+                            serviceIp = settings["PublicSharedIP"].ToString();
+                    }
+
+                    ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Web, domain, serviceIp, true);
+                }
+
 
                 return 0;
             }
@@ -1171,10 +1253,22 @@ namespace WebsitePanel.EnterpriseServer
                                     domainTmp.WebSiteId = siteItemId;
                                     domainTmp.ZoneItemId = domain.ZoneItemId;
                                     domainTmp.DomainItemId = domainId;
-                                    
+
                                     ServerController.UpdateDomain(domainTmp);
                                 }
                             }
+                        }
+                    }
+                }
+                else
+                {
+                    if (domain.ZoneItemId > 0)
+                    {
+                        DomainInfo domainTmp = ServerController.GetDomain(string.IsNullOrEmpty(hostName) ? domain.DomainName : hostName + "." + domain.DomainName, true, true);
+                        if (domainTmp != null)
+                        {
+                            domainTmp.ZoneItemId = domain.ZoneItemId;
+                            ServerController.UpdateDomain(domainTmp);
                         }
                     }
                 }

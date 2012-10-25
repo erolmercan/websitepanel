@@ -1051,7 +1051,7 @@ namespace WebsitePanel.EnterpriseServer
 				int itemId = PackageController.AddPackageItem(item);
 
 				// update related domain with a new pointer
-				DomainInfo domain = ServerController.GetDomain(item.Name);
+                DomainInfo domain = ServerController.GetDomain(item.Name, true, false);
 				if (domain != null)
 				{
 					domain.MailDomainId = itemId;
@@ -1065,7 +1065,7 @@ namespace WebsitePanel.EnterpriseServer
 				if (!String.IsNullOrEmpty(domain.InstantAliasName))
 				{
 					// load instant alias
-					DomainInfo instantAlias = ServerController.GetDomainItem(domain.InstantAliasName);
+					DomainInfo instantAlias = ServerController.GetDomain(domain.InstantAliasId);
 					if (instantAlias != null)
 					{
 						AddMailDomainPointer(itemId, instantAlias.DomainId);
@@ -1164,7 +1164,7 @@ namespace WebsitePanel.EnterpriseServer
 				PackageController.DeletePackageItem(origItem.Id);
 
 				// update related domain with a new pointer
-				DomainInfo domain = ServerController.GetDomain(origItem.Name);
+				DomainInfo domain = ServerController.GetDomain(origItem.Name, true, false);
 				if (domain != null)
 				{
 					domain.MailDomainId = 0;
@@ -1487,7 +1487,7 @@ namespace WebsitePanel.EnterpriseServer
 			// add/update domains/pointers
 			foreach (string domainName in domains)
 			{
-				DomainInfo domain = ServerController.GetDomain(domainName);
+				DomainInfo domain = ServerController.GetDomain(domainName, true, false);
 				if (domain == null)
 				{
 					domain = new DomainInfo();

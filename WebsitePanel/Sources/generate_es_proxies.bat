@@ -56,8 +56,8 @@ REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\OCSProxy.cs
 REM %WSDL% %SERVER_URL%/esOperatingSystems.asmx /out:.\WebsitePanel.EnterpriseServer.Client\OperatingSystemsProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
 REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\OperatingSystemsProxy.cs
 
-%WSDL% %SERVER_URL%/esOrganizations.asmx /out:.\WebsitePanel.EnterpriseServer.Client\OrganizationProxy.cs /namespace:WebsitePanel.EnterpriseServer.HostedSolution /type:webClient
-%WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\OrganizationProxy.cs
+REM %WSDL% %SERVER_URL%/esOrganizations.asmx /out:.\WebsitePanel.EnterpriseServer.Client\OrganizationProxy.cs /namespace:WebsitePanel.EnterpriseServer.HostedSolution /type:webClient
+REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\OrganizationProxy.cs
 
 REM %WSDL% %SERVER_URL%/esPackages.asmx /out:.\WebsitePanel.EnterpriseServer.Client\PackagesProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
 REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\PackagesProxy.cs
@@ -65,8 +65,8 @@ REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\PackagesProxy.cs
 REM %WSDL% %SERVER_URL%/esScheduler.asmx /out:.\WebsitePanel.EnterpriseServer.Client\SchedulerProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
 REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\SchedulerProxy.cs
 
-REM %WSDL% %SERVER_URL%/esServers.asmx /out:.\WebsitePanel.EnterpriseServer.Client\ServersProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
-REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\ServersProxy.cs
+%WSDL% %SERVER_URL%/esServers.asmx /out:.\WebsitePanel.EnterpriseServer.Client\ServersProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
+%WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\ServersProxy.cs
 
 REM %WSDL% %SERVER_URL%/esSharePointServers.asmx /out:.\WebsitePanel.EnterpriseServer.Client\SharePointServersProxy.cs /namespace:WebsitePanel.EnterpriseServer /type:webClient
 REM %WSE_CLEAN% .\WebsitePanel.EnterpriseServer.Client\SharePointServersProxy.cs

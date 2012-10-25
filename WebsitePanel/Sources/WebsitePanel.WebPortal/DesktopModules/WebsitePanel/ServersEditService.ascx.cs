@@ -165,7 +165,17 @@ namespace WebsitePanel.Portal
                                                                 (resourceGroup.GroupName == ResourceGroups.Lync)|
                                                                 (resourceGroup.GroupName == ResourceGroups.Exchange)|
                                                                 (resourceGroup.GroupName == ResourceGroups.Web)|
-                                                                (resourceGroup.GroupName == ResourceGroups.Dns));
+                                                                (resourceGroup.GroupName == ResourceGroups.Dns)|
+                                                                (resourceGroup.GroupName == ResourceGroups.Ftp)|
+                                                                (resourceGroup.GroupName == ResourceGroups.MsSql2000)|
+                                                                (resourceGroup.GroupName == ResourceGroups.MsSql2005)|
+                                                                (resourceGroup.GroupName == ResourceGroups.MsSql2008)|
+                                                                (resourceGroup.GroupName == ResourceGroups.MsSql2012)|
+                                                                (resourceGroup.GroupName == ResourceGroups.MySql4)|
+                                                                (resourceGroup.GroupName == ResourceGroups.MySql5)|
+                                                                (resourceGroup.GroupName == ResourceGroups.Statistics)|
+                                                                (resourceGroup.GroupName == ResourceGroups.VPS)|
+                                                                (resourceGroup.GroupName == ResourceGroups.VPSForPC));
         }
 
 

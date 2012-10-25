@@ -475,6 +475,16 @@ namespace WebsitePanel.EnterpriseServer
                                 {
                                     ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Os, domain, "");
                                     ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Dns, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Ftp, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2000, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2005, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2008, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2012, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MySql4, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MySql5, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Statistics, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.VPS, domain, "");
+                                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.VPSForPC, domain, "");
                                 }
                             }
                             

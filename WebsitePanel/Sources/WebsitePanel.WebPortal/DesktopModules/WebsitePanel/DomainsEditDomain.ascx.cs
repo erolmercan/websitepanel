@@ -121,9 +121,18 @@ namespace WebsitePanel.Portal
 
                     // load instant alias
                     DomainInfo instantAlias = ES.Services.Servers.GetDomain(domain.InstantAliasId);
+                    WebSiteAliasPanel.Visible = false;
                     if (instantAlias != null)
                     {
-                        WebSiteAliasPanel.Visible = (instantAlias.WebSiteId > 0);
+                        DomainInfo[] Domains = ES.Services.Servers.GetDomainsByDomainId(domain.InstantAliasId);
+                        foreach (DomainInfo d in Domains)
+                        {
+                            if (d.WebSiteId > 0)
+                            {
+                                WebSiteAliasPanel.Visible = true;
+                            }
+                        }
+
                         MailDomainAliasPanel.Visible = (instantAlias.MailDomainId > 0);
                     }
 

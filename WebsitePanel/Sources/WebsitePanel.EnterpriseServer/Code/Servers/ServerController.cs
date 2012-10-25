@@ -1651,12 +1651,15 @@ namespace WebsitePanel.EnterpriseServer
 
         public static DomainInfo GetDomain(string domainName)
         {
-            // get domain by name
-            DomainInfo domain = GetDomainItem(domainName);
-
-            // return
-            return GetDomain(domain);
+            return ObjectUtils.FillObjectFromDataReader<DomainInfo>(
+                DataProvider.GetDomainByName(SecurityContext.User.UserId, domainName,false, false));
         }
+
+        public static DomainInfo GetDomain(string domainName, bool searchOnDomainPointer, bool isDomainPointer)
+        {
+            return GetDomainItem(domainName, searchOnDomainPointer, isDomainPointer);
+        }
+
 
         private static DomainInfo GetDomain(DomainInfo domain)
         {
@@ -1666,7 +1669,7 @@ namespace WebsitePanel.EnterpriseServer
 
             // get instant alias
             domain.InstantAliasName = GetDomainAlias(domain.PackageId, domain.DomainName);
-            DomainInfo instantAlias = GetDomainItem(domain.InstantAliasName);
+            DomainInfo instantAlias = GetDomainItem(domain.InstantAliasName, true, false);
             if (instantAlias != null)
                 domain.InstantAliasId = instantAlias.DomainId;
 
@@ -1681,16 +1684,15 @@ namespace WebsitePanel.EnterpriseServer
 
         public static DomainInfo GetDomainItem(string domainName)
         {
-            return ObjectUtils.FillObjectFromDataReader<DomainInfo>(
-                DataProvider.GetDomainByName(SecurityContext.User.UserId, domainName));
+            return GetDomainItem(domainName, false, false);
         }
 
-        public static DomainInfo GetDomainItem(string domainName, bool IsDomainPointer)
+
+        public static DomainInfo GetDomainItem(string domainName, bool searchOnDomainPointer, bool isDomainPointer)
         {
             return ObjectUtils.FillObjectFromDataReader<DomainInfo>(
-                DataProvider.GetDomainByNameByPointer(SecurityContext.User.UserId, domainName, IsDomainPointer));
+                DataProvider.GetDomainByName(SecurityContext.User.UserId, domainName, searchOnDomainPointer, isDomainPointer));
         }
-
 
         public static string GetDomainAlias(int packageId, string domainName)
         {
@@ -1740,6 +1742,16 @@ namespace WebsitePanel.EnterpriseServer
                 {
                     ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Os, domain, "");
                     ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Dns, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Ftp, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2000, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2005, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2008, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MsSql2012, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MySql4, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.MySql5, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.Statistics, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.VPS, domain, "");
+                    ServerController.AddServiceDNSRecords(packageId, ResourceGroups.VPSForPC, domain, "");
                 }
             }
             
@@ -1913,11 +1925,29 @@ namespace WebsitePanel.EnterpriseServer
 
         public static void AddServiceDNSRecords(int packageId, string groupName, DomainInfo domain, string serviceIP)
         {
+            AddServiceDNSRecords(packageId, groupName, domain, serviceIP, false);
+        }
+
+        public static void AddServiceDNSRecords(int packageId, string groupName, DomainInfo domain, string serviceIP, bool wildcardOnly)
+        {
             int serviceId = PackageController.GetPackageServiceId(packageId, groupName);
             if (serviceId > 0)
             {
                 List<DnsRecord> tmpZoneRecords = new List<DnsRecord>();
                 List<GlobalDnsRecord> dnsRecords = ServerController.GetDnsRecordsByService(serviceId);
+
+                if (wildcardOnly)
+                {
+                    List<GlobalDnsRecord> temp = new List<GlobalDnsRecord>();
+                    foreach (GlobalDnsRecord d in dnsRecords)
+                    {
+                        if ((d.RecordName == "*") ||
+                            (d.RecordName == "@"))
+                            temp.Add(d);
+                    }
+
+                    dnsRecords = temp;
+                }
 
                 DnsZone zone = (DnsZone)PackageController.GetPackageItem(domain.ZoneItemId);
                 tmpZoneRecords.AddRange(DnsServerController.BuildDnsResourceRecords(dnsRecords, "", domain.ZoneName, serviceIP));
@@ -1949,13 +1979,25 @@ namespace WebsitePanel.EnterpriseServer
 
 
 
-        public static void RemoveServiceDNSRecords(int packageId, string groupName, DomainInfo domain, string serviceIP)
+        public static void RemoveServiceDNSRecords(int packageId, string groupName, DomainInfo domain, string serviceIP, bool wildcardOnly)
         {
             int serviceId = PackageController.GetPackageServiceId(packageId, groupName);
             if (serviceId > 0)
             {
                 List<DnsRecord> zoneRecords = new List<DnsRecord>();
                 List<GlobalDnsRecord> dnsRecords = ServerController.GetDnsRecordsByService(serviceId);
+                if (wildcardOnly)
+                {
+                    List<GlobalDnsRecord> temp = new List<GlobalDnsRecord>();
+                    foreach (GlobalDnsRecord d in dnsRecords)
+                    {
+                        if ((d.RecordName == "*") ||
+                            (d.RecordName == "@"))
+                            temp.Add(d);
+                    }
+
+                    dnsRecords = temp;
+                }
 
                 DnsZone zone = (DnsZone)PackageController.GetPackageItem(domain.ZoneItemId);
                 zoneRecords.AddRange(DnsServerController.BuildDnsResourceRecords(dnsRecords, "", domain.ZoneName, serviceIP));
@@ -2266,6 +2308,16 @@ namespace WebsitePanel.EnterpriseServer
                                 switch (group.GroupName)
                                 {
                                     case ResourceGroups.Dns:
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Ftp, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.MsSql2000, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.MsSql2005, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.MsSql2008, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.MsSql2012, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.MySql4, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.MySql5, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Statistics, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.VPS, domain, "");
+                                        ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.VPSForPC, domain, "");
                                         ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Dns, domain, "");
                                         break;
                                     case ResourceGroups.Os:
@@ -2329,19 +2381,42 @@ namespace WebsitePanel.EnterpriseServer
                                         List<WebSite> sites = WebServerController.GetWebSites(domain.PackageId, false);
                                         foreach (WebSite w in sites)
                                         {
-                                            if (w.SiteId.ToLower().Replace("." + domain.DomainName.ToLower(), "").IndexOf('.') == -1)
+                                            if ((w.SiteId.ToLower().Replace("." + domain.DomainName.ToLower(), "").IndexOf('.') == -1) ||
+                                                (w.SiteId.ToLower() == domain.DomainName.ToLower()))
                                             {
-                                                WebServerController.AddWebSitePointer(w.Id, w.SiteId.ToLower().Replace("." + domain.DomainName.ToLower(), ""), domain.DomainId, false, true, true);
+                                                WebServerController.AddWebSitePointer(  w.Id, 
+                                                                                        (w.SiteId.ToLower() == domain.DomainName.ToLower()) ? "" : w.SiteId.ToLower().Replace("." + domain.DomainName.ToLower(), ""), 
+                                                                                        domain.DomainId, false, true, true);
                                             }
 
                                             List<DomainInfo> pointers = WebServerController.GetWebSitePointers(w.Id);
                                             foreach (DomainInfo pointer in pointers)
                                             {
-                                                if (pointer.DomainName.ToLower().Replace("." + domain.DomainName.ToLower(), "").IndexOf('.') == -1)
+                                                if ((pointer.DomainName.ToLower().Replace("." + domain.DomainName.ToLower(), "").IndexOf('.') == -1)||
+                                                    (pointer.DomainName.ToLower() == domain.DomainName.ToLower()))
                                                 {
-                                                    WebServerController.AddWebSitePointer(w.Id, pointer.DomainName.ToLower().Replace("." + domain.DomainName.ToLower(), ""), domain.DomainId, false, true, true);
+                                                    WebServerController.AddWebSitePointer(  w.Id,
+                                                                                            (pointer.DomainName.ToLower() == domain.DomainName.ToLower()) ? "" : pointer.DomainName.ToLower().Replace("." + domain.DomainName.ToLower(), ""), 
+                                                                                            domain.DomainId, false, true, true);
                                                 }
                                             }
+                                        }
+
+                                        if (sites.Count == 1)
+                                        {
+                                            // load site item
+                                            IPAddressInfo ip = ServerController.GetIPAddress(sites[0].SiteIPAddressId);
+
+                                            string serviceIp = (ip != null) ? ip.ExternalIP : null;
+
+                                            if (string.IsNullOrEmpty(serviceIp))
+                                            {
+                                                StringDictionary settings = ServerController.GetServiceSettings(sites[0].ServiceId);
+                                                if (settings["PublicSharedIP"] != null)
+                                                    serviceIp = settings["PublicSharedIP"].ToString();
+                                            }
+
+                                            ServerController.AddServiceDNSRecords(domain.PackageId, ResourceGroups.Web, domain, serviceIp, true);
                                         }
 
                                         break;
@@ -2479,7 +2554,7 @@ namespace WebsitePanel.EnterpriseServer
             try
             {
                 // load instant alias domain
-                DomainInfo instantAlias = GetDomainItem(domain.InstantAliasName, false);
+                DomainInfo instantAlias = GetDomainItem(domain.InstantAliasName, true, false);
                 if (instantAlias == null)
                     return 0;
 

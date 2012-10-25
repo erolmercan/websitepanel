@@ -785,21 +785,14 @@ namespace WebsitePanel.EnterpriseServer
                 new SqlParameter("@domainId", domainId));
         }
 
-        public static IDataReader GetDomainByName(int actorId, string domainName)
+        public static IDataReader GetDomainByName(int actorId, string domainName, bool searchOnDomainPointer, bool isDomainPointer)
         {
             return SqlHelper.ExecuteReader(ConnectionString, CommandType.StoredProcedure,
                 ObjectQualifier + "GetDomainByName",
                 new SqlParameter("@ActorId", actorId),
-                new SqlParameter("@domainName", domainName));
-        }
-
-        public static IDataReader GetDomainByNameByPointer(int actorId, string domainName, bool isDomainPointer)
-        {
-            return SqlHelper.ExecuteReader(ConnectionString, CommandType.StoredProcedure,
-                ObjectQualifier + "GetDomainByNameByPointer",
-                new SqlParameter("@ActorId", actorId),
                 new SqlParameter("@domainName", domainName),
-                new SqlParameter("@isDomainPointer", isDomainPointer));
+                new SqlParameter("@SearchOnDomainPointer", searchOnDomainPointer),
+                new SqlParameter("@IsDomainPointer", isDomainPointer));
         }
 
 

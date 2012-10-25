@@ -1564,7 +1564,7 @@ namespace WebsitePanel.EnterpriseServer
                 {
                     if (domain.ZoneItemId != 0)
                     {
-                        ServerController.RemoveServiceDNSRecords(org.PackageId, ResourceGroups.Exchange, domain, "");
+                        ServerController.RemoveServiceDNSRecords(org.PackageId, ResourceGroups.Exchange, domain, "", false);
                     }
                 }
 

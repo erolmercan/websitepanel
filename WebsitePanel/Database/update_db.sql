@@ -5922,42 +5922,6 @@ GO
 
 
 
-IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'GetDomainByNameByPointer')
-BEGIN
-EXEC sp_executesql N'CREATE PROCEDURE [dbo].[GetDomainByNameByPointer]
-(
-	@ActorID int,
-	@DomainName nvarchar(100),
-	@IsDomainPointer bit
-)
-AS
-
-SELECT
-	D.DomainID,
-	D.PackageID,
-	D.ZoneItemID,
-	D.DomainName,
-	D.HostingAllowed,
-	ISNULL(D.WebSiteID, 0) AS WebSiteID,
-	WS.ItemName AS WebSiteName,
-	ISNULL(D.MailDomainID, 0) AS MailDomainID,
-	MD.ItemName AS MailDomainName,
-	Z.ItemName AS ZoneName,
-	D.IsSubDomain,
-	D.IsInstantAlias,
-	D.IsDomainPointer
-FROM Domains AS D
-INNER JOIN Packages AS P ON D.PackageID = P.PackageID
-LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
-LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
-LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
-WHERE
-	D.DomainName = @DomainName
-	AND D.IsDomainPointer = @IsDomainPointer
-	AND dbo.CheckActorPackageRights(@ActorID, P.PackageID) = 1
-RETURN'
-END
-GO
 
 
 
@@ -6166,6 +6130,289 @@ SELECT
 FROM @Records AS TR
 INNER JOIN GlobalDnsRecords AS NR ON TR.RecordID = NR.RecordID
 LEFT OUTER JOIN IPAddresses AS IP ON NR.IPAddressID = IP.AddressID
+
+RETURN
+GO
+
+
+
+
+ALTER PROCEDURE [dbo].[GetDomainByName]
+(
+	@ActorID int,
+	@DomainName nvarchar(100),
+	@SearchOnDomainPointer bit,
+	@IsDomainPointer bit
+)
+AS
+
+IF (@SearchOnDomainPointer = 1)
+BEGIN
+	SELECT
+		D.DomainID,
+		D.PackageID,
+		D.ZoneItemID,
+		D.DomainItemID,
+		D.DomainName,
+		D.HostingAllowed,
+		ISNULL(D.WebSiteID, 0) AS WebSiteID,
+		WS.ItemName AS WebSiteName,
+		ISNULL(D.MailDomainID, 0) AS MailDomainID,
+		MD.ItemName AS MailDomainName,
+		Z.ItemName AS ZoneName,
+		D.IsSubDomain,
+		D.IsInstantAlias,
+		D.IsDomainPointer
+	FROM Domains AS D
+	INNER JOIN Packages AS P ON D.PackageID = P.PackageID
+	LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
+	LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
+	LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+	WHERE
+		D.DomainName = @DomainName
+		AND D.IsDomainPointer = @IsDomainPointer
+		AND dbo.CheckActorPackageRights(@ActorID, P.PackageID) = 1
+	RETURN
+END
+ELSE
+BEGIN
+	SELECT
+		D.DomainID,
+		D.PackageID,
+		D.ZoneItemID,
+		D.DomainItemID,
+		D.DomainName,
+		D.HostingAllowed,
+		ISNULL(D.WebSiteID, 0) AS WebSiteID,
+		WS.ItemName AS WebSiteName,
+		ISNULL(D.MailDomainID, 0) AS MailDomainID,
+		MD.ItemName AS MailDomainName,
+		Z.ItemName AS ZoneName,
+		D.IsSubDomain,
+		D.IsInstantAlias,
+		D.IsDomainPointer
+	FROM Domains AS D
+	INNER JOIN Packages AS P ON D.PackageID = P.PackageID
+	LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
+	LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
+	LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+	WHERE
+		D.DomainName = @DomainName
+		AND dbo.CheckActorPackageRights(@ActorID, P.PackageID) = 1
+	RETURN
+END
+GO
+
+
+
+ALTER PROCEDURE [dbo].[GetDomain]
+(
+	@ActorID int,
+	@DomainID int
+)
+AS
+
+SELECT
+	D.DomainID,
+	D.PackageID,
+	D.ZoneItemID,
+	D.DomainItemID,
+	D.DomainName,
+	D.HostingAllowed,
+	ISNULL(WS.ItemID, 0) AS WebSiteID,
+	WS.ItemName AS WebSiteName,
+	ISNULL(MD.ItemID, 0) AS MailDomainID,
+	MD.ItemName AS MailDomainName,
+	Z.ItemName AS ZoneName,
+	D.IsSubDomain,
+	D.IsInstantAlias,
+	D.IsDomainPointer
+FROM Domains AS D
+INNER JOIN Packages AS P ON D.PackageID = P.PackageID
+LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
+LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
+LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+WHERE
+	D.DomainID = @DomainID
+	AND dbo.CheckActorPackageRights(@ActorID, P.PackageID) = 1
+RETURN
+GO
+
+
+
+
+ALTER PROCEDURE [dbo].[GetDomains]
+(
+	@ActorID int,
+	@PackageID int,
+	@Recursive bit = 1
+)
+AS
+
+-- check rights
+IF dbo.CheckActorPackageRights(@ActorID, @PackageID) = 0
+RAISERROR('You are not allowed to access this package', 16, 1)
+
+SELECT
+	D.DomainID,
+	D.PackageID,
+	D.ZoneItemID,
+	D.DomainItemID,
+	D.DomainName,
+	D.HostingAllowed,
+	ISNULL(WS.ItemID, 0) AS WebSiteID,
+	WS.ItemName AS WebSiteName,
+	ISNULL(MD.ItemID, 0) AS MailDomainID,
+	MD.ItemName AS MailDomainName,
+	Z.ItemName AS ZoneName,
+	D.IsSubDomain,
+	D.IsInstantAlias,
+	D.IsDomainPointer
+FROM Domains AS D
+INNER JOIN PackagesTree(@PackageID, @Recursive) AS PT ON D.PackageID = PT.PackageID
+LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
+LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
+LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+RETURN
+GO
+
+
+
+
+ALTER PROCEDURE [dbo].[GetDomainsByZoneID]
+(
+	@ActorID int,
+	@ZoneID int
+)
+AS
+
+SELECT
+	D.DomainID,
+	D.PackageID,
+	D.ZoneItemID,
+	D.DomainItemID,
+	D.DomainName,
+	D.HostingAllowed,
+	ISNULL(D.WebSiteID, 0) AS WebSiteID,
+	WS.ItemName AS WebSiteName,
+	ISNULL(D.MailDomainID, 0) AS MailDomainID,
+	MD.ItemName AS MailDomainName,
+	Z.ItemName AS ZoneName,
+	D.IsSubDomain,
+	D.IsInstantAlias,
+	D.IsDomainPointer
+FROM Domains AS D
+INNER JOIN Packages AS P ON D.PackageID = P.PackageID
+LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
+LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
+LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+WHERE
+	D.ZoneItemID = @ZoneID
+	AND dbo.CheckActorPackageRights(@ActorID, P.PackageID) = 1
+RETURN
+GO
+
+
+
+
+ALTER PROCEDURE [dbo].[GetDomainsPaged]
+(
+	@ActorID int,
+	@PackageID int,
+	@ServerID int,
+	@Recursive bit,
+	@FilterColumn nvarchar(50) = '',
+	@FilterValue nvarchar(50) = '',
+	@SortColumn nvarchar(50),
+	@StartRow int,
+	@MaximumRows int
+)
+AS
+SET NOCOUNT ON
+
+-- check rights
+IF dbo.CheckActorPackageRights(@ActorID, @PackageID) = 0
+RAISERROR('You are not allowed to access this package', 16, 1)
+
+-- build query and run it to the temporary table
+DECLARE @sql nvarchar(2000)
+
+IF @SortColumn = '' OR @SortColumn IS NULL
+SET @SortColumn = 'DomainName'
+
+SET @sql = '
+DECLARE @Domains TABLE
+(
+	ItemPosition int IDENTITY(1,1),
+	DomainID int
+)
+INSERT INTO @Domains (DomainID)
+SELECT
+	D.DomainID
+FROM Domains AS D
+INNER JOIN Packages AS P ON D.PackageID = P.PackageID
+INNER JOIN UsersDetailed AS U ON P.UserID = U.UserID
+LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+LEFT OUTER JOIN Services AS S ON Z.ServiceID = S.ServiceID
+LEFT OUTER JOIN Servers AS SRV ON S.ServerID = SRV.ServerID
+WHERE (D.IsInstantAlias = 0 AND D.IsDomainPointer = 0) AND
+		((@Recursive = 0 AND D.PackageID = @PackageID)
+		OR (@Recursive = 1 AND dbo.CheckPackageParent(@PackageID, D.PackageID) = 1))
+AND (@ServerID = 0 OR (@ServerID > 0 AND S.ServerID = @ServerID))
+'
+
+IF @FilterColumn <> '' AND @FilterValue <> ''
+SET @sql = @sql + ' AND ' + @FilterColumn + ' LIKE @FilterValue '
+
+IF @SortColumn <> '' AND @SortColumn IS NOT NULL
+SET @sql = @sql + ' ORDER BY ' + @SortColumn + ' '
+
+SET @sql = @sql + ' SELECT COUNT(DomainID) FROM @Domains;SELECT
+	D.DomainID,
+	D.PackageID,
+	D.ZoneItemID,
+	D.DomainItemID,
+	D.DomainName,
+	D.HostingAllowed,
+	ISNULL(WS.ItemID, 0) AS WebSiteID,
+	WS.ItemName AS WebSiteName,
+	ISNULL(MD.ItemID, 0) AS MailDomainID,
+	MD.ItemName AS MailDomainName,
+	D.IsSubDomain,
+	D.IsInstantAlias,
+	D.IsDomainPointer,
+	
+	-- packages
+	P.PackageName,
+	
+	-- server
+	ISNULL(SRV.ServerID, 0) AS ServerID,
+	ISNULL(SRV.ServerName, '''') AS ServerName,
+	ISNULL(SRV.Comments, '''') AS ServerComments,
+	ISNULL(SRV.VirtualServer, 0) AS VirtualServer,
+	
+	-- user
+	P.UserID,
+	U.Username,
+	U.FirstName,
+	U.LastName,
+	U.FullName,
+	U.RoleID,
+	U.Email
+FROM @Domains AS SD
+INNER JOIN Domains AS D ON SD.DomainID = D.DomainID
+INNER JOIN Packages AS P ON D.PackageID = P.PackageID
+INNER JOIN UsersDetailed AS U ON P.UserID = U.UserID
+LEFT OUTER JOIN ServiceItems AS WS ON D.WebSiteID = WS.ItemID
+LEFT OUTER JOIN ServiceItems AS MD ON D.MailDomainID = MD.ItemID
+LEFT OUTER JOIN ServiceItems AS Z ON D.ZoneItemID = Z.ItemID
+LEFT OUTER JOIN Services AS S ON Z.ServiceID = S.ServiceID
+LEFT OUTER JOIN Servers AS SRV ON S.ServerID = SRV.ServerID
+WHERE SD.ItemPosition BETWEEN @StartRow + 1 AND @StartRow + @MaximumRows'
+
+exec sp_executesql @sql, N'@StartRow int, @MaximumRows int, @PackageID int, @FilterValue nvarchar(50), @ServerID int, @Recursive bit',
+@StartRow, @MaximumRows, @PackageID, @FilterValue, @ServerID, @Recursive
+
 
 RETURN
 GO
