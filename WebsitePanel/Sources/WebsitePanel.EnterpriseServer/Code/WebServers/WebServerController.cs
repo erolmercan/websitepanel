@@ -29,6 +29,7 @@
 using System;
 using System.IO;
 using System.Data;
+using System.Linq;
 using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Text;
@@ -1212,6 +1213,17 @@ namespace WebsitePanel.EnterpriseServer
                     {
                         DNSServer dns = new DNSServer();
                         ServiceProviderProxy.Init(dns, zone.ServiceId);
+
+                        DnsRecord[] domainRecords = dns.GetZoneRecords(zone.Name);
+                        var duplicateRecords = (from zoneRecord in domainRecords
+                                                from resRecord in resourceRecords
+                                                where zoneRecord.RecordName == resRecord.RecordName
+                                                where zoneRecord.RecordType == resRecord.RecordType
+                                                select zoneRecord).ToArray();
+                        if (duplicateRecords != null && duplicateRecords.Count() > 0)
+                        {
+                            dns.DeleteZoneRecords(zone.Name, duplicateRecords);
+                        }
 
                         // add new resource records
                         dns.AddZoneRecords(zone.Name, resourceRecords.ToArray());
