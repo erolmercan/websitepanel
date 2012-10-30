@@ -328,6 +328,24 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::WebsitePanel.Portal.ExchangeServer.UserControls.MailboxPlanSelector mailboxPlanSelector;
         
         /// <summary>
+        /// chkSendInstructions control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.CheckBox chkSendInstructions;
+        
+        /// <summary>
+        /// sendInstructionEmail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::WebsitePanel.Portal.UserControls.EmailControl sendInstructionEmail;
+        
+        /// <summary>
         /// btnCreate control.
         /// </summary>
         /// <remarks>
