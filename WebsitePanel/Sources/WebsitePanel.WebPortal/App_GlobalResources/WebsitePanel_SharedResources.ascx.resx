@@ -1059,6 +1059,9 @@
   <data name="Error.610" xml:space="preserve">
     <value>Invalid Global DNS entries in platform server configuration for dedicated IP address usage. Contact you platform administrator</value>
   </data>
+  <data name="Error.611" xml:space="preserve">
+    <value>Invalid public shared ip address in platform server configuration for shared IP address usage. Contact you platform administrator</value>
+  </data>
   <data name="Error.700" xml:space="preserve">
     <value>Specified mail domain already exists on the service</value>
   </data>

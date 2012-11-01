@@ -172,15 +172,20 @@ namespace WebsitePanel.EnterpriseServer
             return AddWebSite(packageId, hostName, domainId, ipAddressId, false, true);
         }
 
-        private static Regex regIP = new Regex(
-            @"(?<First>2[0-4]\d|25[0-5]|[01]?\d\d?)\.(?<Second>2[0-4]\d|25"
-            + @"[0-5]|[01]?\d\d?)\.(?<Third>2[0-4]\d|25[0-5]|[01]?\d\d?)\.(?"
-            + @"<Fourth>2[0-4]\d|25[0-5]|[01]?\d\d?)",
-            RegexOptions.IgnoreCase
-            | RegexOptions.CultureInvariant
-            | RegexOptions.IgnorePatternWhitespace
-            | RegexOptions.Compiled
-            );
+
+        private static bool IsValidIPAdddress(string addr)
+        {
+            System.Net.IPAddress ip;
+            if (System.Net.IPAddress.TryParse(addr, out ip)) 
+            {
+                return ((ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6) |
+                        (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork));
+            }
+            else 
+            {
+                return false;
+            }
+        }
 
         public static int AddWebSite(int packageId, string hostName, int domainId, int packageAddressId,
             bool addInstantAlias, bool ignoreGlobalDNSRecords)
@@ -270,14 +275,23 @@ namespace WebsitePanel.EnterpriseServer
 
                 if (dedicatedIp)
                 {
-                     foreach (GlobalDnsRecord d in dnsRecords)
+                    foreach (GlobalDnsRecord d in dnsRecords)
                     {
-                         if (!string.IsNullOrEmpty(d.ExternalIP))
-                         {
-                            if (regIP.IsMatch(d.ExternalIP)) return BusinessErrorCodes.ERROR_GLOBALDNS_FOR_DEDICATEDIP;
-                         }
+                        if (!string.IsNullOrEmpty(d.ExternalIP))
+                        {
+                            if (!IsValidIPAdddress(d.ExternalIP)) return BusinessErrorCodes.ERROR_GLOBALDNS_FOR_DEDICATEDIP;
+                        }
                     }
-                } 
+                }
+                else
+                {
+                    if (domain.ZoneItemId > 0)
+                    {
+                        StringDictionary settings = ServerController.GetServiceSettings(serviceId);
+                        if (string.IsNullOrEmpty(settings["PublicSharedIP"]))
+                            return BusinessErrorCodes.ERROR_PUBLICSHAREDIP_FOR_SHAREDIP;
+                    }
+                }
 
                 // prepare site bindings
                 List<ServerBinding> bindings = new List<ServerBinding>();
@@ -681,7 +695,7 @@ namespace WebsitePanel.EnterpriseServer
             {
                 if (!string.IsNullOrEmpty(d.ExternalIP))
                 {
-                    if (regIP.IsMatch(d.ExternalIP)) return BusinessErrorCodes.ERROR_GLOBALDNS_FOR_DEDICATEDIP;
+                    if (!IsValidIPAdddress(d.ExternalIP)) return BusinessErrorCodes.ERROR_GLOBALDNS_FOR_DEDICATEDIP;
                 }
             }
 
@@ -839,6 +853,8 @@ namespace WebsitePanel.EnterpriseServer
             if (siteItem == null)
                 return BusinessErrorCodes.ERROR_WEB_SITE_PACKAGE_ITEM_NOT_FOUND;
 
+
+
             // place log record
             TaskManager.StartTask("WEB_SITE", "SWITCH_TO_SHARED_IP", siteItem.Name);
             TaskManager.ItemId = siteItemId;
@@ -852,6 +868,15 @@ namespace WebsitePanel.EnterpriseServer
 
                 if (ZoneInfo == null)
                     throw new Exception("Parent zone not found");
+
+
+                if (ZoneInfo.ZoneItemId > 0)
+                {
+                    StringDictionary settings = ServerController.GetServiceSettings(siteItem.ServiceId);
+                    if (string.IsNullOrEmpty(settings["PublicSharedIP"]))
+                        return BusinessErrorCodes.ERROR_PUBLICSHAREDIP_FOR_SHAREDIP;
+
+                }
 
                 //cleanup certificates
                 List<SSLCertificate> certificates = GetCertificatesForSite(siteItemId);

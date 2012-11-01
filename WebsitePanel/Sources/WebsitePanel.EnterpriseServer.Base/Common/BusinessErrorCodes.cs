@@ -115,6 +115,7 @@ namespace WebsitePanel.EnterpriseServer
         public const int ERROR_WEB_SITE_SHARED_IP_ADDRESS_NOT_SPECIFIED = -608;
         public const int ERROR_WEB_SHARED_SSL_QUOTA_LIMIT = -609;
         public const int ERROR_GLOBALDNS_FOR_DEDICATEDIP = -610;
+        public const int ERROR_PUBLICSHAREDIP_FOR_SHAREDIP = -611;
         #endregion
 
         #region Mail
