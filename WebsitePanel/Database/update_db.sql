@@ -559,6 +559,17 @@ GO
 UPDATE [dbo].[ResourceGroups] SET ShowGroup=1 
 GO
 
+IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='Quotas' AND COLS.name='ShowGroup')
+BEGIN
+ALTER TABLE [dbo].[Quotas] ADD [HideQuota] [bit] NULL
+END
+GO
+
+UPDATE [dbo].[Quotas] SET [HideQuota] = 1 WHERE [QuotaName] = N'OS.DomainPointers'
+GO
+
+
+
 
 /****** Object:  Table [dbo].[ExchangeAccounts]    Extend Exchange Accounts with SubscriberNumber ******/
 IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='Users' AND COLS.name='SubscriberNumber')
@@ -3925,6 +3936,7 @@ SELECT
 	dbo.GetPackageAllocatedQuota(@PackageID, Q.QuotaID) AS ParentQuotaValue
 FROM Quotas AS Q
 LEFT OUTER JOIN HostingPlanQuotas AS HPQ ON Q.QuotaID = HPQ.QuotaID AND HPQ.PlanID = @PlanID
+WHERE Q.HideQuota IS NULL OR Q.HideQuota = 0
 ORDER BY Q.QuotaOrder
 RETURN
 GO
@@ -6424,3 +6436,6 @@ BEGIN
 INSERT [dbo].[ScheduleTaskParameters] ([TaskID], [ParameterID], [DataTypeID], [DefaultValue], [ParameterOrder]) VALUES (N'SCHEDULE_TASK_HOSTED_SOLUTION_REPORT', N'LYNC_REPORT', N'Boolean', N'true', 5)
 END
 GO
+
+
+

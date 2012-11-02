@@ -1847,8 +1847,8 @@ namespace WebsitePanel.EnterpriseServer
                 else if (isDomainPointer)
                 {
                     // domain pointer
-                    if (PackageController.GetPackageQuota(packageId, Quotas.OS_DOMAINPOINTERS).QuotaExhausted)
-                        return BusinessErrorCodes.ERROR_DOMAIN_QUOTA_LIMIT;
+                    //if (PackageController.GetPackageQuota(packageId, Quotas.OS_DOMAINPOINTERS).QuotaExhausted)
+                        //return BusinessErrorCodes.ERROR_DOMAIN_QUOTA_LIMIT;
                  }
                 else
                 {
