@@ -159,6 +159,14 @@ namespace WebsitePanel.Providers.HostedSolution
             collection.Value = value;
         }
 
+        public static void SetADObjectPropertyValue(DirectoryEntry oDE, string name, string[] values)
+        {
+            PropertyValueCollection collection = oDE.Properties[name];
+            collection.Value = values;
+        }
+
+
+
         public static void SetADObjectPropertyValue(DirectoryEntry oDE, string name, Guid value)
         {
             PropertyValueCollection collection = oDE.Properties[name];
@@ -176,6 +184,19 @@ namespace WebsitePanel.Providers.HostedSolution
         {
             return entry.Properties.Contains(name) ? entry.Properties[name][0] : null;
         }
+
+        public static string[] GetADObjectPropertyMultiValue(DirectoryEntry entry, string name)
+        {
+            if (!entry.Properties.Contains(name))
+                return null;
+
+            List<string> returnList = new List<string>();
+            for (int i = 0; i < entry.Properties[name].Count; i++)
+                returnList.Add(entry.Properties[name][i].ToString());
+
+            return returnList.ToArray();
+        }
+
 
         public static string GetADObjectStringProperty(DirectoryEntry entry, string name)
         {

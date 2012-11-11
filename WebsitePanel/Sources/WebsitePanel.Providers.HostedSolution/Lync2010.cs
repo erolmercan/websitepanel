@@ -288,11 +288,14 @@ namespace WebsitePanel.Providers.HostedSolution
                     Guid tenantId = (Guid)GetPSObjectProperty(result[0], "TenantId");
 
                     // create sip domain
-                    DeleteSipDomain(runSpace, sipDomain);
-
-                    //clear the msRTCSIP-Domains, TenantID, ObjectID
                     string path = AddADPrefix(GetOrganizationPath(organizationId));
                     DirectoryEntry ou = ActiveDirectoryUtils.GetADObject(path);
+                    string[] sipDs = (string[])ActiveDirectoryUtils.GetADObjectPropertyMultiValue(ou, "msRTCSIP-Domains");
+                    
+                    foreach (string  sipD in sipDs)
+                        DeleteSipDomain(runSpace, sipD);
+
+                    //clear the msRTCSIP-Domains, TenantID, ObjectID
                     ActiveDirectoryUtils.ClearADObjectPropertyValue(ou, "msRTCSIP-Domains");
                     ActiveDirectoryUtils.ClearADObjectPropertyValue(ou, "msRTCSIP-TenantId");
                     ActiveDirectoryUtils.ClearADObjectPropertyValue(ou, "msRTCSIP-ObjectId");
@@ -383,11 +386,56 @@ namespace WebsitePanel.Providers.HostedSolution
                 {
                     tenantId = (Guid)GetPSObjectProperty(result[0], "TenantId");
 
+                    string[] tmp = userUpn.Split('@');
+                    if (tmp.Length < 2) return false;
+
+                    // Get SipDomains and verify existence
+                    bool bSipDomainExists = false;
+                    cmd = new Command("Get-CsSipDomain");
+                    Collection<PSObject> sipDomains = ExecuteShellCommand(runSpace, cmd, false);
+
+                    foreach (PSObject domain in sipDomains)
+                    {
+                        string d = (string)GetPSObjectProperty(domain, "Name");
+                        if (d.ToLower() == tmp[1].ToLower())
+                        {
+                            bSipDomainExists = true;
+                            break;
+                        }
+                    }
+
+                    string path = string.Empty;
+
+                    if (!bSipDomainExists)
+                    {
+                        // Create Sip Domain
+                        cmd = new Command("New-CsSipDomain");
+                        cmd.Parameters.Add("Identity", tmp[1].ToLower());
+                        ExecuteShellCommand(runSpace, cmd, false);
+
+                        transaction.RegisterNewSipDomain(tmp[1].ToLower());
+
+
+                        path = AddADPrefix(GetOrganizationPath(organizationId));
+                        DirectoryEntry ou = ActiveDirectoryUtils.GetADObject(path);
+                        string[] sipDs = (string[])ActiveDirectoryUtils.GetADObjectPropertyMultiValue(ou, "msRTCSIP-Domains");
+                        List<string> listSipDs = new List<string>();
+                        listSipDs.AddRange(sipDs);
+                        listSipDs.Add(tmp[1]);
+
+                        ActiveDirectoryUtils.SetADObjectPropertyValue(ou, "msRTCSIP-Domains", listSipDs.ToArray());
+                        ou.CommitChanges();
+
+                        //Create simpleurls
+                        CreateSimpleUrl(runSpace, tmp[1].ToLower(), tenantId);
+                        transaction.RegisterNewSimpleUrl(tmp[1].ToLower(), tenantId.ToString());
+                    }
+
                     //enable for lync
                     cmd = new Command("Enable-CsUser");
                     cmd.Parameters.Add("Identity", userUpn);
                     cmd.Parameters.Add("RegistrarPool", PoolFQDN);
-                    cmd.Parameters.Add("SipAddressType", "UserPrincipalName");
+                    cmd.Parameters.Add("SipAddressType", "EmailAddress");
                     ExecuteShellCommand(runSpace, cmd);
 
                     transaction.RegisterNewCsUser(userUpn);
@@ -397,13 +445,11 @@ namespace WebsitePanel.Providers.HostedSolution
                     cmd.Parameters.Add("Identity", userUpn);
                     result = ExecuteShellCommand(runSpace, cmd);
 
-
-                    string path = AddADPrefix(GetResultObjectDN(result));
+                    path = AddADPrefix(GetResultObjectDN(result));
                     DirectoryEntry user = ActiveDirectoryUtils.GetADObject(path);
                     ActiveDirectoryUtils.SetADObjectPropertyValue(user, "msRTCSIP-GroupingID", tenantId);
                     ActiveDirectoryUtils.SetADObjectPropertyValue(user, "msRTCSIP-TenantId", tenantId);
 
-                    string[] tmp = userUpn.Split('@');
                     if (tmp.Length > 0)
                     {
                         string Url = SimpleUrlRoot + tmp[1];
