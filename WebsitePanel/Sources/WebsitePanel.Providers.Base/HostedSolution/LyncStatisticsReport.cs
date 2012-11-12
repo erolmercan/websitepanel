@@ -52,7 +52,6 @@ namespace WebsitePanel.Providers.HostedSolution
                 sb.AppendFormat("{0},", ToCsvString(item.OrganizationID));
 
                 sb.AppendFormat("{0},", ToCsvString(item.DisplayName));
-                sb.AppendFormat("{0},", ToCsvString(item.AccountCreated));
 
                 sb.AppendFormat("{0},", ToCsvString(item.SipAddress));
                 sb.AppendFormat("{0},", ToCsvString(item.PhoneNumber));
@@ -72,7 +71,7 @@ namespace WebsitePanel.Providers.HostedSolution
 
         private static void AddCSVHeader(StringBuilder sb)
         {
-            sb.Append("Top Reseller,Reseller,Customer,Customer Created,Hosting Space,Hosting Space Created,Ogranization Name,Organization Created,Organization ID,Display Name,Account Created,SipAddress,PhoneNumber,Conferencing,EnterpriseVoice,Federation,InstantMessaging,MobileAccess");
+            sb.Append("Top Reseller,Reseller,Customer,Customer Created,Hosting Space,Hosting Space Created,Ogranization Name,Organization Created,Organization ID,Display Name,SipAddress,PhoneNumber,Conferencing,EnterpriseVoice,Federation,InstantMessaging,MobileAccess");
         }
     }
 }

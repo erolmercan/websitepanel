@@ -310,18 +310,6 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                 {
                     TaskManager.WriteError(ex);
                 }
-            }            
-            
-            if (report.OrganizationReport != null)
-            {
-                try
-                {
-                    PopulateOrganizationStatisticsReport(org, report, topReseller);
-                }
-                catch(Exception ex)
-                {
-                    TaskManager.WriteError(ex);
-                }
             }
 
             if (report.LyncReport != null)
@@ -335,6 +323,19 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                     TaskManager.WriteError(ex);
                 }
             }                                    
+            
+            if (report.OrganizationReport != null)
+            {
+                try
+                {
+                    PopulateOrganizationStatisticsReport(org, report, topReseller);
+                }
+                catch(Exception ex)
+                {
+                    TaskManager.WriteError(ex);
+                }
+            }
+
 
         }
 
@@ -517,7 +518,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                         stats.InstantMessaing = plan.IM;
                         stats.MobileAccess = plan.Mobility;
                         stats.LyncUserPlan = plan.LyncUserPlanName;
-
+                        stats.DisplayName = lyncUser.DisplayName;
                     }
                     catch (Exception ex)
                     {
