@@ -52,6 +52,7 @@ namespace WebsitePanel.EnterpriseServer {
     using WebsitePanel.Providers.ResultObjects;
 
     
+    
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
@@ -685,13 +686,13 @@ namespace WebsitePanel.EnterpriseServer {
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SetLyncUserGeneralSettings", RequestNamespace="http://tempuri.org/", ResponseNamespace="http://tempuri.org/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public bool SetLyncUserGeneralSettings(int itemId, int accountId, string sipAddress, string lineUri) {
+        public LyncUserResult SetLyncUserGeneralSettings(int itemId, int accountId, string sipAddress, string lineUri) {
             object[] results = this.Invoke("SetLyncUserGeneralSettings", new object[] {
                         itemId,
                         accountId,
                         sipAddress,
                         lineUri});
-            return ((bool)(results[0]));
+            return ((LyncUserResult)(results[0]));
         }
         
         /// <remarks/>
@@ -704,9 +705,9 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public bool EndSetLyncUserGeneralSettings(System.IAsyncResult asyncResult) {
+        public LyncUserResult EndSetLyncUserGeneralSettings(System.IAsyncResult asyncResult) {
             object[] results = this.EndInvoke(asyncResult);
-            return ((bool)(results[0]));
+            return ((LyncUserResult)(results[0]));
         }
         
         /// <remarks/>
@@ -1248,10 +1249,10 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public bool Result {
+        public LyncUserResult Result {
             get {
                 this.RaiseExceptionIfNecessary();
-                return ((bool)(this.results[0]));
+                return ((LyncUserResult)(this.results[0]));
             }
         }
     }

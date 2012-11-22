@@ -2592,7 +2592,7 @@ namespace WebsitePanel.Providers.HostedSolution
 				cmd.Parameters.Add("Identity", accountName);
 				cmd.Parameters.Add("PrimarySmtpAddress", primaryEmail);
 				//cmd.Parameters.Add("UserPrincipalName", primaryEmail);
-				cmd.Parameters.Add("WindowsEmailAddress", primaryEmail);
+				//cmd.Parameters.Add("WindowsEmailAddress", primaryEmail);
 
 				ExecuteShellCommand(runSpace, cmd);
 			}

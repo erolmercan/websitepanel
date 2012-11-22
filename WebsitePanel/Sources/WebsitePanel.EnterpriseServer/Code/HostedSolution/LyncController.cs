@@ -250,7 +250,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
 
             try
             {
-                DataProvider.AddLyncUser(accountId, lyncUserPlanId);
+                DataProvider.AddLyncUser(accountId, lyncUserPlanId, user.UserPrincipalName);
             }
             catch (Exception ex)
             {
@@ -341,12 +341,11 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
 
         }
 
-        public static bool SetLyncUserGeneralSettings(int itemId, int accountId, string sipAddress, string lineUri)
+        public static LyncUserResult SetLyncUserGeneralSettings(int itemId, int accountId, string sipAddress, string lineUri)
         {
-            TaskManager.StartTask("LYNC", "SET_LYNC_USER_GENERAL_SETTINGS");
+            LyncUserResult res = TaskManager.StartResultTask<LyncUserResult>("LYNC", "SET_LYNC_USER_GENERAL_SETTINGS");
 
             LyncUser user = null;
-            bool ret = true;
 
             try
             {
@@ -376,19 +375,38 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                         user.LyncUserPlanName = plan.LyncUserPlanName;
                     }
 
-                    user.PrimaryUri = sipAddress;
-                    user.LineUri = lineUri;
+
+                    if (!string.IsNullOrEmpty(sipAddress))
+                    {
+                        if (sipAddress != usr.UserPrincipalName)
+                        {
+                            if (DataProvider.LyncUserExists(accountId, sipAddress))
+                            {
+                                TaskManager.CompleteResultTask(res, LyncErrorCodes.ADDRESS_ALREADY_USED);
+                                return res;
+                            }
+                        }
+                        
+                        user.SipAddress = sipAddress;
+
+                    }
+
+                    if (!string.IsNullOrEmpty(lineUri)) user.LineUri = lineUri;
 
                     lync.SetLyncUserGeneralSettings(org.OrganizationId, usr.UserPrincipalName, user);
+
+                    DataProvider.UpdateLyncUser(accountId, sipAddress);
                 }
             }
             catch (Exception ex)
             {
-                ret = false;
-                throw TaskManager.WriteError(ex);
+                TaskManager.CompleteResultTask(res, LyncErrorCodes.FAILED_SET_SETTINGS, ex);
+                return res;
             }
-            TaskManager.CompleteTask();
-            return ret;
+
+            res.IsSuccess = true;
+            TaskManager.CompleteResultTask();
+            return res;
 
         }
 

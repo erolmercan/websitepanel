@@ -514,8 +514,10 @@ namespace WebsitePanel.Providers.HostedSolution
                 PSObject user = result[0];
 
                 lyncUser.DisplayName = (string)GetPSObjectProperty(user, "DisplayName");
-                lyncUser.PrimaryUri = (string)GetPSObjectProperty(user, "SipAddress");
+                lyncUser.SipAddress = (string)GetPSObjectProperty(user, "SipAddress");
                 lyncUser.LineUri = (string)GetPSObjectProperty(user, "LineURI");
+
+                lyncUser.SipAddress = lyncUser.SipAddress.ToLower().Replace("sip:", "");
             }
             catch (Exception ex)
             {
@@ -538,22 +540,96 @@ namespace WebsitePanel.Providers.HostedSolution
 
             bool ret = true;
             Runspace runSpace = null;
+            Guid tenantId = Guid.Empty;
+            LyncTransaction transaction = StartTransaction();
+
             try
             {
                 runSpace = OpenRunspace();
+                Command cmd = new Command("Get-CsTenant");
+                cmd.Parameters.Add("Identity", GetOrganizationPath(organizationId));
+                Collection<PSObject> result = ExecuteShellCommand(runSpace, cmd, false);
+                if ((result != null) && (result.Count > 0))
+                {
+                    tenantId = (Guid)GetPSObjectProperty(result[0], "TenantId");
 
-                Command cmd = new Command("Set-CsUser");
+                    string[] tmp = userUpn.Split('@');
+                    if (tmp.Length < 2) return false;
+
+                    // Get SipDomains and verify existence
+                    bool bSipDomainExists = false;
+                    cmd = new Command("Get-CsSipDomain");
+                    Collection<PSObject> sipDomains = ExecuteShellCommand(runSpace, cmd, false);
+
+                    foreach (PSObject domain in sipDomains)
+                    {
+                        string d = (string)GetPSObjectProperty(domain, "Name");
+                        if (d.ToLower() == tmp[1].ToLower())
+                        {
+                            bSipDomainExists = true;
+                            break;
+                        }
+                    }
+
+                    string path = string.Empty;
+
+                    if (!bSipDomainExists)
+                    {
+                        // Create Sip Domain
+                        cmd = new Command("New-CsSipDomain");
+                        cmd.Parameters.Add("Identity", tmp[1].ToLower());
+                        ExecuteShellCommand(runSpace, cmd, false);
+
+                        transaction.RegisterNewSipDomain(tmp[1].ToLower());
+
+
+                        path = AddADPrefix(GetOrganizationPath(organizationId));
+                        DirectoryEntry ou = ActiveDirectoryUtils.GetADObject(path);
+                        string[] sipDs = (string[])ActiveDirectoryUtils.GetADObjectPropertyMultiValue(ou, "msRTCSIP-Domains");
+                        List<string> listSipDs = new List<string>();
+                        listSipDs.AddRange(sipDs);
+                        listSipDs.Add(tmp[1]);
+
+                        ActiveDirectoryUtils.SetADObjectPropertyValue(ou, "msRTCSIP-Domains", listSipDs.ToArray());
+                        ou.CommitChanges();
+
+                        //Create simpleurls
+                        CreateSimpleUrl(runSpace, tmp[1].ToLower(), tenantId);
+                        transaction.RegisterNewSimpleUrl(tmp[1].ToLower(), tenantId.ToString());
+
+                        path = AddADPrefix(GetResultObjectDN(result));
+                        DirectoryEntry user = ActiveDirectoryUtils.GetADObject(path);
+
+                        if (tmp.Length > 0)
+                        {
+                            string Url = SimpleUrlRoot + tmp[1];
+                            ActiveDirectoryUtils.SetADObjectPropertyValue(user, "msRTCSIP-BaseSimpleUrl", Url.ToLower());
+                        }
+                        user.CommitChanges();
+                    }
+                }
+
+                cmd = new Command("Set-CsUser");
                 cmd.Parameters.Add("Identity", userUpn);
-                if (!string.IsNullOrEmpty(lyncUser.PrimaryUri)) cmd.Parameters.Add("SipAddress", lyncUser.PrimaryUri);
-                if (!string.IsNullOrEmpty(lyncUser.PrimaryUri)) cmd.Parameters.Add("LineUri", lyncUser.LineUri);
+                if (!string.IsNullOrEmpty(lyncUser.SipAddress)) cmd.Parameters.Add("SipAddress", "SIP:"+lyncUser.SipAddress);
+                if (!string.IsNullOrEmpty(lyncUser.SipAddress)) cmd.Parameters.Add("LineUri", lyncUser.LineUri);
 
                 ExecuteShellCommand(runSpace, cmd, false);
+
+                //initiate addressbook generation
+                cmd = new Command("Update-CsAddressBook");
+                ExecuteShellCommand(runSpace, cmd, false);
+
+                //initiate user database replication
+                cmd = new Command("Update-CsUserDatabase");
+                ExecuteShellCommand(runSpace, cmd, false);
+
             }
             catch (Exception ex)
             {
                 ret = false;
                 HostedSolutionLog.LogError("SetLyncUserGeneralSettingsInternal", ex);
-                throw;
+                RollbackTransaction(transaction);
             }
             finally
             {

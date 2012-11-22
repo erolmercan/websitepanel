@@ -297,6 +297,13 @@
     <Compile Include="Lync\LyncUsers.ascx.designer.cs">
       <DependentUpon>LyncUsers.ascx</DependentUpon>
     </Compile>
+    <Compile Include="Lync\UserControls\LyncUserSettings.ascx.cs">
+      <DependentUpon>LyncUserSettings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Lync\UserControls\LyncUserSettings.ascx.designer.cs">
+      <DependentUpon>LyncUserSettings.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Lync\UserControls\LyncUserPlanSelector.ascx.cs">
       <DependentUpon>LyncUserPlanSelector.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3807,6 +3814,7 @@
     <Content Include="ExchangeServer\OrganizationAddDomainName.ascx" />
     <Content Include="ExchangeServer\OrganizationDomainNames.ascx" />
     <Content Include="ExchangeServer\ExchangeAddMailboxPlan.ascx" />
+    <Content Include="Lync\UserControls\LyncUserSettings.ascx" />
     <Content Include="ServersEditWebPlatformInstaller.ascx" />
     <Content Include="ExchangeServer\ExchangeMailboxPlans.ascx" />
     <Content Include="ExchangeServer\UserControls\AccountsListWithPermissions.ascx" />

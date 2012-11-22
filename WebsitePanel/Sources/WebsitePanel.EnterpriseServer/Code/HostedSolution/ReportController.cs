@@ -511,7 +511,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
 
                     try
                     {
-                        stats.SipAddress = lyncUser.PrimaryEmailAddress;
+                        stats.SipAddress = lyncUser.SipAddress;
                         if (string.IsNullOrEmpty(lyncUser.LineUri)) stats.PhoneNumber = string.Empty; else stats.PhoneNumber = lyncUser.LineUri;
                         
                         LyncUserPlan plan = LyncController.GetLyncUserPlan(org.Id, lyncUser.LyncUserPlanId);

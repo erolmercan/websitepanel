@@ -120,7 +120,7 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         [WebMethod]
-        public bool SetLyncUserGeneralSettings(int itemId, int accountId, string sipAddress, string lineUri)
+        public LyncUserResult SetLyncUserGeneralSettings(int itemId, int accountId, string sipAddress, string lineUri)
         {
             return LyncController.SetLyncUserGeneralSettings(itemId, accountId, sipAddress, lineUri);
         }

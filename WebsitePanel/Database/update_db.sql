@@ -569,6 +569,19 @@ UPDATE [dbo].[Quotas] SET [HideQuota] = 1 WHERE [QuotaName] = N'OS.DomainPointer
 GO
 
 
+/****** Object:  Table [dbo].[ExchangeAccounts]    Extend Exchange Accounts with UserPrincipalName ******/
+IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='ExchangeAccounts' AND COLS.name='UserPrincipalName')
+BEGIN
+ALTER TABLE [dbo].[ExchangeAccounts] ADD
+	[UserPrincipalName] [nvarchar] (300) COLLATE Latin1_General_CI_AS NULL
+END
+GO
+
+IF NOT EXISTS(SELECT * FROM [dbo].[ExchangeAccounts] WHERE UserPrincipalName IS NOT NULL)
+BEGIN
+	UPDATE [dbo].[ExchangeAccounts] SET [UserPrincipalName] = PrimaryEmailAddress
+END
+GO
 
 
 /****** Object:  Table [dbo].[ExchangeAccounts]    Extend Exchange Accounts with SubscriberNumber ******/
@@ -1468,7 +1481,8 @@ INSERT INTO ExchangeAccounts
 	SamAccountName,
 	AccountPassword,
 	MailboxPlanId,
-	SubscriberNumber
+	SubscriberNumber,
+	UserPrincipalName
 )
 VALUES
 (
@@ -1482,7 +1496,8 @@ VALUES
 	@SamAccountName,
 	@AccountPassword,
 	@MailboxPlanId,
-	@SubscriberNumber
+	@SubscriberNumber,
+	@PrimaryEmailAddress
 )
 
 SET @AccountID = SCOPE_IDENTITY()
@@ -2157,7 +2172,8 @@ SELECT
 	E.MailEnabledPublicFolder,
 	E.MailboxPlanId,
 	P.MailboxPlan, 
-	E.SubscriberNumber
+	E.SubscriberNumber,
+	E.UserPrincipalName
 FROM
 	ExchangeAccounts  AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId		
@@ -2242,7 +2258,8 @@ WITH Accounts AS (
 		EA.PrimaryEmailAddress,
 		EA.MailEnabledPublicFolder,
 		EA.MailboxPlanId,
-		EA.SubscriberNumber ' + @joincondition +
+		EA.SubscriberNumber,
+		EA.UserPrincipalName ' + @joincondition +
 	' WHERE ' + @condition + '
 )
 
@@ -2291,7 +2308,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber,
+	E.UserPrincipalName 
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2302,6 +2320,37 @@ RETURN'
 END
 GO
 
+
+
+ALTER PROCEDURE [dbo].[GetExchangeAccountByAccountName] 
+(
+	@ItemID int,
+	@AccountName nvarchar(300)
+)
+AS
+SELECT
+	E.AccountID,
+	E.ItemID,
+	E.AccountType,
+	E.AccountName,
+	E.DisplayName,
+	E.PrimaryEmailAddress,
+	E.MailEnabledPublicFolder,
+	E.MailboxManagerActions,
+	E.SamAccountName,
+	E.AccountPassword,
+	E.MailboxPlanId,
+	P.MailboxPlan,
+	E.SubscriberNumber,
+	E.UserPrincipalName 
+FROM
+	ExchangeAccounts AS E
+LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
+WHERE
+	E.ItemID = @ItemID AND
+	E.AccountName = @AccountName
+RETURN
+GO
 
 
 
@@ -2330,7 +2379,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber,
+	E.UserPrincipalName 
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2357,7 +2407,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber, 
+	E.UserPrincipalName
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2380,7 +2431,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber,
+	E.UserPrincipalName 
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2420,7 +2472,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber,
+	E.UserPrincipalName 
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2447,7 +2500,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber,
+	E.UserPrincipalName 
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2470,7 +2524,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber,
+	E.UserPrincipalName 
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2917,7 +2972,8 @@ SELECT
 	E.AccountPassword,
 	E.MailboxPlanId,
 	P.MailboxPlan,
-	E.SubscriberNumber 
+	E.SubscriberNumber,
+	E.UserPrincipalName 
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -2947,7 +3003,8 @@ SELECT
 	DisplayName,
 	PrimaryEmailAddress,
 	MailEnabledPublicFolder,
-	SubscriberNumber
+	SubscriberNumber,
+	UserPrincipalName
 FROM
 	ExchangeAccounts
 WHERE
@@ -3009,7 +3066,8 @@ SELECT
 	MailboxManagerActions,
 	SamAccountName,
 	AccountPassword, 
-	SubscriberNumber
+	SubscriberNumber,
+	UserPrincipalName
 FROM ExchangeAccounts
 WHERE AccountID = @AccountID
 
@@ -3078,7 +3136,8 @@ SELECT
 	EA.DisplayName,
 	EA.PrimaryEmailAddress,
 	EA.MailEnabledPublicFolder,
-	EA.SubscriberNumber
+	EA.SubscriberNumber,
+	EA.UserPrincipalName
 FROM ExchangeAccounts AS EA
 WHERE ' + @condition
 
@@ -3151,7 +3210,8 @@ SELECT
 	EA.AccountName,
 	EA.DisplayName,
 	EA.PrimaryEmailAddress,
-	EA.SubscriberNumber
+	EA.SubscriberNumber,
+	EA.UserPrincipalName
 FROM ExchangeAccounts AS EA
 WHERE ' + @condition
 
@@ -3211,7 +3271,7 @@ AS
 		ea.ItemID,
 		ea.AccountName,
 		ea.DisplayName,
-		ea.PrimaryEmailAddress,
+		ea.UserPrincipalName,
 		ea.SamAccountName,
 		ou.LyncUserPlanId,
 		lp.LyncUserPlanName
@@ -3249,7 +3309,7 @@ AS
 		ea.ItemID,
 		ea.AccountName,
 		ea.DisplayName,
-		ea.PrimaryEmailAddress,
+		ea.UserPrincipalName,
 		ea.SamAccountName,
 		ou.LyncUserPlanId,
 		lp.LyncUserPlanName
@@ -3678,6 +3738,13 @@ RETURN
 GO
 
 
+IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='LyncUsers' AND COLS.name='SipAddress')
+BEGIN
+ALTER TABLE [dbo].[LyncUsers] ADD
+	[SipAddress] [nvarchar] (300) COLLATE Latin1_General_CI_AS NULL
+END
+GO
+
 
 
 IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'GetLyncUsers')
@@ -3699,7 +3766,8 @@ CREATE TABLE #TempLyncUsers
 	[ItemID] [int] NOT NULL,
 	[AccountName] [nvarchar](300)  NOT NULL,
 	[DisplayName] [nvarchar](300)  NOT NULL,
-	[PrimaryEmailAddress] [nvarchar](300) NULL,
+	[UserPrincipalName] [nvarchar](300) NULL,
+	[SipAddress] [nvarchar](300) NULL,
 	[SamAccountName] [nvarchar](100) NULL,
 	[LyncUserPlanId] [int] NOT NULL,		
 	[LyncUserPlanName] [nvarchar] (300) NOT NULL,		
@@ -3714,10 +3782,16 @@ BEGIN
 	SET @condition = ''ORDER BY ea.DisplayName''
 END
 
-IF (@SortColumn = ''PrimaryEmailAddress'')
+IF (@SortColumn = ''UserPrincipalName'')
 BEGIN
-	SET @condition = ''ORDER BY ea.PrimaryEmailAddress''
+	SET @condition = ''ORDER BY ea.UserPrincipalName''
 END
+
+IF (@SortColumn = ''SipAddress'')
+BEGIN
+	SET @condition = ''ORDER BY ou.SipAddress''
+END
+
 
 IF (@SortColumn = ''LyncUserPlanName'')
 BEGIN
@@ -3734,7 +3808,8 @@ set @sql = ''
 		ea.ItemID,
 		ea.AccountName,
 		ea.DisplayName,
-		ea.PrimaryEmailAddress,
+		ea.UserPrincipalName,
+		ou.SipAddress,
 		ea.SamAccountName,
 		ou.LyncUserPlanId,
 		lp.LyncUserPlanName				
@@ -3770,11 +3845,17 @@ BEGIN
 			SELECT * FROM #TempLyncUsers 
 				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY DisplayName DESC
 		END
-		IF (@SortColumn = ''PrimaryEmailAddress'')
+		IF (@SortColumn = ''UserPrincipalName'')
 		BEGIN
 			SELECT * FROM #TempLyncUsers 
-				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY PrimaryEmailAddress DESC
+				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY UserPrincipalName DESC
 		END
+		IF (@SortColumn = ''SipAddress'')
+		BEGIN
+			SELECT * FROM #TempLyncUsers 
+				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY SipAddress DESC
+		END
+
 		IF (@SortColumn = ''LyncUserPlanName'')
 		BEGIN
 			SELECT * FROM #TempLyncUsers 
@@ -3784,7 +3865,7 @@ BEGIN
 	ELSE
 	BEGIN
 		SELECT * FROM #TempLyncUsers 
-			WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY PrimaryEmailAddress DESC
+			WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY UserPrincipalName DESC
 	END
 
 	
@@ -3794,6 +3875,134 @@ DROP TABLE #TempLyncUsers'
 END
 GO
 
+
+
+
+ALTER PROCEDURE [dbo].[GetLyncUsers]
+(
+	@ItemID int,
+	@SortColumn nvarchar(40),
+	@SortDirection nvarchar(20),
+	@StartRow int,
+	@Count int	
+)
+AS
+
+CREATE TABLE #TempLyncUsers 
+(	
+	[ID] [int] IDENTITY(1,1) NOT NULL,
+	[AccountID] [int],	
+	[ItemID] [int] NOT NULL,
+	[AccountName] [nvarchar](300)  NOT NULL,
+	[DisplayName] [nvarchar](300)  NOT NULL,
+	[UserPrincipalName] [nvarchar](300) NULL,
+	[SipAddress] [nvarchar](300) NULL,
+	[SamAccountName] [nvarchar](100) NULL,
+	[LyncUserPlanId] [int] NOT NULL,		
+	[LyncUserPlanName] [nvarchar] (300) NOT NULL,		
+)
+
+
+DECLARE @condition nvarchar(700)
+SET @condition = ''
+
+IF (@SortColumn = 'DisplayName')
+BEGIN
+	SET @condition = 'ORDER BY ea.DisplayName'
+END
+
+IF (@SortColumn = 'UserPrincipalName')
+BEGIN
+	SET @condition = 'ORDER BY ea.UserPrincipalName'
+END
+
+IF (@SortColumn = 'SipAddress')
+BEGIN
+	SET @condition = 'ORDER BY ou.SipAddress'
+END
+
+
+IF (@SortColumn = 'LyncUserPlanName')
+BEGIN
+	SET @condition = 'ORDER BY lp.LyncUserPlanName'
+END
+
+DECLARE @sql nvarchar(3500)
+
+set @sql = ''
+	INSERT INTO 
+		#TempLyncUsers 
+	SELECT 
+		ea.AccountID,
+		ea.ItemID,
+		ea.AccountName,
+		ea.DisplayName,
+		ea.UserPrincipalName,
+		ou.SipAddress,
+		ea.SamAccountName,
+		ou.LyncUserPlanId,
+		lp.LyncUserPlanName				
+	FROM 
+		ExchangeAccounts ea 
+	INNER JOIN 
+		LyncUsers ou
+	INNER JOIN
+		LyncUserPlans lp 
+	ON
+		ou.LyncUserPlanId = lp.LyncUserPlanId				
+	ON 
+		ea.AccountID = ou.AccountID
+	WHERE 
+		ea.ItemID = @ItemID + @condition
+
+exec sp_executesql @sql, N'@ItemID int',@ItemID
+
+DECLARE @RetCount int
+SELECT @RetCount = COUNT(ID) FROM #TempLyncUsers 
+
+IF (@SortDirection = 'ASC')
+BEGIN
+	SELECT * FROM #TempLyncUsers 
+	WHERE ID > @StartRow AND ID <= (@StartRow + @Count) 
+END
+ELSE
+BEGIN
+	IF @SortColumn <> '' AND @SortColumn IS NOT NULL
+	BEGIN
+		IF (@SortColumn = 'DisplayName')
+		BEGIN
+			SELECT * FROM #TempLyncUsers 
+				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY DisplayName DESC
+		END
+		IF (@SortColumn = 'UserPrincipalName')
+		BEGIN
+			SELECT * FROM #TempLyncUsers 
+				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY UserPrincipalName DESC
+		END
+
+		IF (@SortColumn = 'SipAddress')
+		BEGIN
+			SELECT * FROM #TempLyncUsers 
+				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY SipAddress DESC
+		END
+
+		IF (@SortColumn = 'LyncUserPlanName')
+		BEGIN
+			SELECT * FROM #TempLyncUsers 
+				WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY LyncUserPlanName DESC
+		END
+	END
+	ELSE
+	BEGIN
+		SELECT * FROM #TempLyncUsers 
+			WHERE ID >@RetCount - @Count - @StartRow AND ID <= @RetCount- @StartRow  ORDER BY UserPrincipalName DESC
+	END
+
+	
+END
+
+DROP TABLE #TempLyncUsers
+GO
 
 
 
@@ -6597,3 +6806,128 @@ exec sp_executesql @sql, N'@StartRow int, @MaximumRows int, @UserID int, @Filter
 
 RETURN
 GO
+
+
+
+
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'LyncUserExists')
+BEGIN
+EXEC sp_executesql N'
+CREATE PROCEDURE [dbo].[LyncUserExists]
+(
+	@AccountID int,
+	@SipAddress nvarchar(300),
+	@Exists bit OUTPUT
+)
+AS
+
+	SET @Exists = 0
+	IF EXISTS(SELECT * FROM [dbo].[ExchangeAccountEmailAddresses] WHERE [EmailAddress] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[ExchangeAccounts] WHERE [PrimaryEmailAddress] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[ExchangeAccounts] WHERE [UserPrincipalName] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[ExchangeAccounts] WHERE [AccountName] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[LyncUsers] WHERE [SipAddress] = @SipAddress)
+		BEGIN
+			SET @Exists = 1
+		END
+		
+
+	RETURN'
+END
+GO
+
+
+
+
+ALTER PROCEDURE [dbo].[LyncUserExists]
+(
+	@AccountID int,
+	@SipAddress nvarchar(300),
+	@Exists bit OUTPUT
+)
+AS
+
+	SET @Exists = 0
+	IF EXISTS(SELECT * FROM [dbo].[ExchangeAccountEmailAddresses] WHERE [EmailAddress] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[ExchangeAccounts] WHERE [PrimaryEmailAddress] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[ExchangeAccounts] WHERE [UserPrincipalName] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[ExchangeAccounts] WHERE [AccountName] = @SipAddress AND [AccountID] <> @AccountID)
+		BEGIN
+			SET @Exists = 1
+		END
+	ELSE IF EXISTS(SELECT * FROM [dbo].[LyncUsers] WHERE [SipAddress] = @SipAddress)
+		BEGIN
+			SET @Exists = 1
+		END
+		
+
+	RETURN
+GO
+
+
+
+
+
+ALTER PROCEDURE [dbo].[AddLyncUser]	
+	@AccountID int,
+	@LyncUserPlanID int,
+	@SipAddress nvarchar(300)
+AS
+INSERT INTO
+	dbo.LyncUsers
+	(AccountID,
+	 LyncUserPlanID,
+	 CreatedDate,
+	 ModifiedDate,
+	 SipAddress)
+VALUES
+(		
+	@AccountID,
+	@LyncUserPlanID,
+	getdate(),
+	getdate(),
+	@SipAddress
+)
+GO
+
+
+IF  NOT EXISTS (SELECT * FROM sys.objects WHERE type_desc = N'SQL_STORED_PROCEDURE' AND name = N'UpdateLyncUser')
+BEGIN
+EXEC sp_executesql N'CREATE PROCEDURE [dbo].[UpdateLyncUser] 
+(
+	@AccountID int,
+	@SipAddress nvarchar(300)
+)
+AS
+
+UPDATE LyncUsers SET
+	SipAddress = @SipAddress
+WHERE
+	AccountID = @AccountID AND AccountType IN (1,7)
+
+RETURN'
+END
+GO
+
+
