@@ -2124,7 +2124,6 @@
   <data name="ServiceItemType.HostHeader" xml:space="preserve">
     <value>Web Site Host Header</value>
   </data>
-
   <data name="AuditLogSource.APP_INSTALLER" xml:space="preserve">
     <value>Applications Installer</value>
   </data>
@@ -5242,5 +5241,11 @@
   </data>
   <data name="Success.WEB_SWITCH_TO_SHARED_IP" xml:space="preserve">
     <value>Web site has been updated to shared IP</value>
+  </data>
+  <data name="Warning.ApplyEnableHardQuotaFeature" xml:space="preserve">
+    <value>Apply Enable Hard Quota Feature</value>
+  </data>
+  <data name="WarningDescription.ApplyEnableHardQuotaFeature" xml:space="preserve">
+    <value>By clicking on the button 'Apply', you will apply the respective hard quota on each provisioned home folder. Note that this may take some time.</value>
   </data>
 </root>

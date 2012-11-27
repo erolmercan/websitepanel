@@ -27,57 +27,48 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 using System.Web;
-using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
+using WebsitePanel.EnterpriseServer;
+using WebsitePanel.EnterpriseServer.Base.Scheduling;
+using WebsitePanel.Portal.Code.Framework;
 
-namespace WebsitePanel.Portal.ProviderControls
+namespace WebsitePanel.Portal
 {
-    public partial class Windows2008_Settings : WebsitePanelControlBase, IHostingServiceProviderSettings
+    public partial class ApplyEnableHardQuotaFeature : WebsitePanelModuleBase
     {
+
+        public int PackageId
+        {
+            get { return PanelSecurity.PackageId; }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            //CO Changes
-            if (!IsPostBack)
+            messageBox.ShowWarningMessage("ApplyEnableHardQuotaFeature");
+        }
+        
+        private void Update()
+        {
+            try
             {
-                try
-                {
-                    chkEnableHardQuota.Enabled = ES.Services.OperatingSystems.CheckFileServicesInstallation(PanelRequest.ServiceId);
-                    txtLocationDrive.Enabled = chkEnableHardQuota.Enabled;
-                    valLocationDrive.Enabled = chkEnableHardQuota.Enabled;
-                    if (!chkEnableHardQuota.Enabled)
-                        lblFileServiceInfo.Visible = true;
-                }
-                catch
-                {
-                }
+                ES.Services.Files.ApplyEnableHardQuotaFeature(PackageId);
+                // redirect               
+                Response.Redirect(NavigatePageURL("SpaceHome", "SpaceID", PackageId.ToString()));
             }
-            //END
+            catch (Exception ex)
+            {
+                messageBox.ShowErrorMessage("APPLY_QUOTA", ex);
+            }
         }
+              
 
-        public void BindSettings(StringDictionary settings)
+        protected void btnUpdate_Click(object sender, EventArgs e)
         {
-            txtFolder.Text = settings["UsersHome"];
-            //CO Changes
-            txtLocationDrive.Text = settings["LocationDrive"];
-            chkEnableHardQuota.Checked = settings["EnableHardQuota"] == "true" ? true : false;
-            //END 
+			Update();
         }
-
-        public void SaveSettings(StringDictionary settings)
-        {
-            settings["UsersHome"] = txtFolder.Text;
-            //CO Changes
-            settings["LocationDrive"] = txtLocationDrive.Text;
-            settings["EnableHardQuota"] = chkEnableHardQuota.Checked.ToString().ToLower();
-            //END 
-        }
+       
     }
 }
