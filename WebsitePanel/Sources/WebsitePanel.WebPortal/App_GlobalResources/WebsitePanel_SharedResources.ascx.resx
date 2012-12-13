@@ -4868,7 +4868,7 @@
     <value>Web site "{1}" was not found</value>
   </data>
   <data name="Warning.WAG_CANNOT_INSTALL_APPLICATION" xml:space="preserve">
-    <value>Selected application cannot be installed.</value>
+    <value>Following dependencies may be missing:</value>
   </data>
   <data name="WebAppGallery.AspNet20Required" xml:space="preserve">
     <value>ASP.NET 2.0</value>
