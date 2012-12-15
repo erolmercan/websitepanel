@@ -1,5 +1,5 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
+	<PropertyGroup>
 		<Version>2.0.0</Version>
 		<FileVersion>$(BUILD_NUMBER)</FileVersion>
 		<VersionLabel>$(BUILD_NUMBER)</VersionLabel>
@@ -7,28 +7,32 @@
 		<BuildConfiguration></BuildConfiguration>
 		<RootFolder>..</RootFolder>
 		<TrunkFolder>$(RootFolder)\WebsitePanel</TrunkFolder>
+
 		<SetupTrunkFolder>$(RootFolder)\WebsitePanel.Installer</SetupTrunkFolder>
 		<SetupBuildFolder>$(SetupTrunkFolder)\Build\$(BuildConfiguration)</SetupBuildFolder>
-    <MSBuildCommunityTasksPath>$(RootFolder)\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
+		<MSBuildCommunityTasksPath>$(RootFolder)\MSBuildCommunityTasks</MSBuildCommunityTasksPath>
 
 		<BuildFolder>$(TrunkFolder)\Build\$(BuildConfiguration)</BuildFolder>
 		<DeployFolder>$(TrunkFolder)\Deploy\$(BuildConfiguration)</DeployFolder>
 
     <PreviousBuildFolder>$(RootFolder)\..\prev\$(BuildConfiguration)</PreviousBuildFolder>
-    
+
 		<DiffCmd>$(TrunkFolder)\Tools\Diff.exe</DiffCmd>
 		<!-- Lets keep all tools we need for the build together in a well-known place to avoid BUILD HELL -->
 		<SqlCmd Condition="Exists('$(RootFolder)\tools\sqlcmd\sqlcmd.exe')">"$(RootFolder)\tools\sqlcmd\sqlcmd.exe" -S (local)\SQLEXPRESS -E</SqlCmd>
-    <MSDeployPath Condition="Exists('$(RootFolder)\tools\webdeploy\msdeploy.exe')">"$(RootFolder)\tools\webdeploy\msdeploy.exe"</MSDeployPath>
+    		<MSDeployPath Condition="Exists('$(RootFolder)\tools\webdeploy\msdeploy.exe')">"$(RootFolder)\tools\webdeploy\msdeploy.exe"</MSDeployPath>
+		<ZipCmd>"C:\Program Files\7-Zip\7z.exe"</ZipCmd>
 
-		<DataBaseName>WebsitePanel_build</DataBaseName>
+    		<DataBaseName>WebsitePanel_build</DataBaseName>
 		<MSDeployConnectionString>server=(local)\SQLEXPRESS;database=$(DataBaseName);Integrated Security=true;</MSDeployConnectionString>
 
 		<PortalSrc>$(TrunkFolder)\Sources\WebsitePanel.WebPortal</PortalSrc>
 		<ServerSrc>$(TrunkFolder)\Sources\WebsitePanel.Server</ServerSrc>
 		<EnterpriseServerSrc>$(TrunkFolder)\Sources\WebsitePanel.EnterpriseServer</EnterpriseServerSrc>
 		<ImportCsvSrc>$(TrunkFolder)\Sources\Tools\WebsitePanel.Import.CsvBulk\bin\$(BuildConfiguration)</ImportCsvSrc>
-		<ImportEnterpriseSrc>$(TrunkFolder)\Sources\Tools\WebsitePanel.Import.Enterprise\bin\$(BuildConfiguration)</ImportEnterpriseSrc>
+		<HyperVUtilsSrc>$(RootFolder)\WebsitePanel.HyperV.Utils\Sources\WebsitePanel.HyperV.Utils\bin\$(BuildConfiguration)</HyperVUtilsSrc>
+		<VMConfigSrc>$(RootFolder)\WebsitePanel.VmConfig\Sources\WebsitePanel.VmConfig\bin\$(BuildConfiguration)</VMConfigSrc>    
+    <ImportEnterpriseSrc>$(TrunkFolder)\Sources\Tools\WebsitePanel.Import.Enterprise\bin\$(BuildConfiguration)</ImportEnterpriseSrc>
 		<AWStatsViewerSrc>$(TrunkFolder)\Sources\Tools\WebsitePanel.AWStats.Viewer</AWStatsViewerSrc>
 		<WSPTransportAgentSrc>$(TrunkFolder)\Sources\Tools\WSPTransportAgent</WSPTransportAgentSrc>
 
@@ -36,7 +40,9 @@
 		<EnterpriseServerBuild>$(BuildFolder)\EnterpriseServer</EnterpriseServerBuild>
 		<PortalBuild>$(BuildFolder)\Portal</PortalBuild>
 		<ImportCsvBuild>$(BuildFolder)\Import.CsvBulk</ImportCsvBuild>
-		<ImportEnterpriseBuild>$(BuildFolder)\Import.Enterprise</ImportEnterpriseBuild>
+		<HyperVUtilsBuild>$(BuildFolder)\HyperVUtils</HyperVUtilsBuild>
+		<VMConfigBuild>$(BuildFolder)\VMConfig</VMConfigBuild>
+    <ImportEnterpriseBuild>$(BuildFolder)\Import.Enterprise</ImportEnterpriseBuild>
 		<AWStatsViewerBuild>$(BuildFolder)\AWStats.Viewer</AWStatsViewerBuild>
 		<WSPTransportAgentBuild>$(BuildFolder)\WSPTransportAgent</WSPTransportAgentBuild>
 		<LocalizationToolkitBuild>$(BuildFolder)\LocalizationToolkit</LocalizationToolkitBuild>
@@ -68,6 +74,8 @@
 
 		<!-- Tools -->
 		<MSBuild Projects="$(TrunkFolder)\Sources\Tools\WebsitePanel.Import.CsvBulk.sln" Properties="Configuration=$(BuildConfiguration)" />
+		<MSBuild Projects="$(RootFolder)\WebsitePanel.HyperV.Utils\Sources\WebsitePanel.HyperV.Utils.sln" Properties="Configuration=$(BuildConfiguration)" />
+		<MSBuild Projects="$(RootFolder)\WebsitePanel.VmConfig\Sources\WebsitePanel.VmConfig.sln" Properties="Configuration=$(BuildConfiguration)" />
 		<MSBuild Projects="$(TrunkFolder)\Sources\Tools\WebsitePanel.Import.Enterprise.sln" Properties="Configuration=$(BuildConfiguration)" />
 		<MSBuild Projects="$(TrunkFolder)\Sources\Tools\WebsitePanel.AWStats.Viewer.sln" Properties="Configuration=$(BuildConfiguration)" />
 		<MSBuild Projects="$(TrunkFolder)\Sources\Tools\WSPTransportAgent.sln" Properties="Configuration=$(BuildConfiguration)" />
@@ -80,6 +88,8 @@
 		<RemoveDir Directories="$(PortalBuild)"/>
 		<RemoveDir Directories="$(ImportCsvBuild)"/>
 		<RemoveDir Directories="$(ImportEnterpriseBuild)"/>
+    <RemoveDir Directories="$(VMConfigBuild)"/>
+    <RemoveDir Directories="$(HyperVUtilsBuild)"/>
 		<RemoveDir Directories="$(AWStatsViewerBuild)"/>
 		<RemoveDir Directories="$(WSPTransportAgentBuild)"/>
 		<RemoveDir Directories="$(LocalizationToolkitBuild)"/>
@@ -90,6 +100,8 @@
 		<MakeDir Directories="$(ServerBuild)"/>
 		<MakeDir Directories="$(EnterpriseServerBuild)"/>
 		<MakeDir Directories="$(PortalBuild)"/>
+    <MakeDir Directories="$(HyperVUtilsBuild)"/>
+    <MakeDir Directories="$(VmConfigBuild)"/>
 		<MakeDir Directories="$(ImportCsvBuild)"/>
 		<MakeDir Directories="$(ImportEnterpriseBuild)"/>
 		<MakeDir Directories="$(AWStatsViewerBuild)"/>
@@ -173,7 +185,25 @@
 		<Copy SourceFiles="@(ImportCsvBuildFiles)" DestinationFolder="$(ImportCsvBuild)\%(RecursiveDir)" />
 	</Target>
 
-	<Target Name="CreateImportEnterpriseBuild" DependsOnTargets="CreateImportCsvBuild">
+  	<Target Name="CreateHyperVUtilsBuild" DependsOnTargets="CreateImportCsvBuild">
+		<ItemGroup>
+			<HyperVUtilsExclude Include="$(HyperVUtilsSrc)\**\*.pdb" Condition="'$(BuildConfiguration)' == 'Release'" />
+			<HyperVUtilsExclude Include="$(HyperVUtilsSrc)\**\*.vshost.*" />
+			<HyperVUtilsBuildFiles Include="$(HyperVUtilsSrc)\**\*.*" Exclude="@(HyperVUtilsExclude)" />
+		</ItemGroup>
+		<Copy SourceFiles="@(HyperVUtilsBuildFiles)" DestinationFolder="$(HyperVUtilsBuild)\%(RecursiveDir)" />
+	</Target>
+  
+   	<Target Name="CreateVMConfigBuild" DependsOnTargets="CreateHyperVUtilsBuild">
+		<ItemGroup>
+			<VMConfigExclude Include="$(VMConfigSrc)\**\*.pdb" Condition="'$(BuildConfiguration)' == 'Release'" />
+			<VMConfigExclude Include="$(VMConfigSrc)\**\*.vshost.*" />
+			<VMConfigBuildFiles Include="$(VMConfigSrc)\**\*.*" Exclude="@(VMConfigExclude)" />
+		</ItemGroup>
+		<Copy SourceFiles="@(VMConfigBuildFiles)" DestinationFolder="$(VMConfigBuild)\%(RecursiveDir)" />
+	</Target>
+  
+	<Target Name="CreateImportEnterpriseBuild" DependsOnTargets="CreateVMConfigBuild">
 		<ItemGroup>
 			<ImportEnterpriseExclude Include="$(ImportEnterpriseSrc)\**\*.pdb" Condition="'$(BuildConfiguration)' == 'Release'" />
 			<ImportEnterpriseExclude Include="$(ImportEnterpriseSrc)\**\*.vshost.*" />
@@ -234,8 +264,7 @@
 		<Exec Command="@(LocalizationToolkitExe) -L $(PortalSrc)"/>
 		
 		<!-- build MSI package -->
-		<MSBuild Projects="$(TrunkFolder)\Sources\Tools\WebsitePanel.LocalizationToolkit.Wix\WebsitePanel.LocalizationToolkit.Wix.wixproj" 
-             Properties="Configuration=$(BuildConfiguration);DefineSolutionProperties=false">
+		<MSBuild Projects="$(TrunkFolder)\Sources\Tools\WebsitePanel.LocalizationToolkit.Wix\WebsitePanel.LocalizationToolkit.Wix.wixproj" Properties="Configuration=$(BuildConfiguration);DefineSolutionProperties=false">
 			<Output
                 TaskParameter="TargetOutputs"
                 ItemName="LocalizationToolkitMsi" />	
@@ -264,8 +293,7 @@
 		<MSBuild Projects="$(RootFolder)\WebsitePanel.Installer\Sources\WebsitePanel.Updater\WebsitePanel.Updater.csproj" Properties="Configuration=$(BuildConfiguration)" />
     
 		<!-- build MSI package -->
-		<MSBuild Projects="$(RootFolder)\WebsitePanel.Installer\Sources\Setup.WIX\Setup.Wix.wixproj" 
-             Properties="Configuration=$(BuildConfiguration);DefineSolutionProperties=false">
+		<MSBuild Projects="$(RootFolder)\WebsitePanel.Installer\Sources\Setup.WIX\Setup.Wix.wixproj" Properties="Configuration=$(BuildConfiguration);DefineSolutionProperties=false">
 			<Output
                 TaskParameter="TargetOutputs"
                 ItemName="WebsitePanelInstallerMsi" />	
@@ -288,6 +316,8 @@
 		<!-- Tools -->
 		<ToolsFolder>$(DeployFolder)\Tools</ToolsFolder>
 		<ImportCsvInstall>$(ToolsFolder)\Import.CsvBulk</ImportCsvInstall>
+    <HyperVUtilsInstall>$(ToolsFolder)\HyperVUtils</HyperVUtilsInstall>
+    <VMConfigInstall>$(ToolsFolder)\VMconfig</VMConfigInstall>
 		<ImportEnterpriseInstall>$(ToolsFolder)\Import.Enterprise</ImportEnterpriseInstall>
 		<AWStatsViewerInstall>$(ToolsFolder)\AWStats.Viewer</AWStatsViewerInstall>
 		<WSPTransportAgentInstall>$(ToolsFolder)\WSPTransportAgent</WSPTransportAgentInstall>
@@ -348,8 +378,28 @@
 		<Copy SourceFiles="@(ImportCsvDeployFiles)" DestinationFolder="$(ImportCsvInstall)\%(RecursiveDir)" />
 		<Copy SourceFiles="$(RootFolder)\LICENSE.txt" DestinationFolder="$(ImportCsvInstall)" />
 	</Target>
+  
+  	<Target Name="CreateHyperVUtilsCsvInstall" DependsOnTargets="CreateImportCsvInstall">
+		<ItemGroup>
+			<HyperVUtilsDeployFiles Include="$(HyperVUtilsBuild)\**\*.*" />
+		</ItemGroup>
+		<RemoveDir Directories="$(HyperVUtilsInstall)"/>
+		<MakeDir Directories="$(HyperVUtilsInstall)"/>
+		<Copy SourceFiles="@(HyperVUtilsDeployFiles)" DestinationFolder="$(HyperVUtilsInstall)\%(RecursiveDir)" />
+		<Copy SourceFiles="$(RootFolder)\LICENSE.txt" DestinationFolder="$(HyperVUtilsInstall)" />
+	</Target>
+  
+  	<Target Name="CreateVMConfigInstall" DependsOnTargets="CreateHyperVUtilsCsvInstall">
+		<ItemGroup>
+			<VMConfigDeployFiles Include="$(VMConfigBuild)\**\*.*" />
+		</ItemGroup>
+		<RemoveDir Directories="$(VMConfigInstall)"/>
+		<MakeDir Directories="$(VMConfigInstall)"/>
+		<Copy SourceFiles="@(VMConfigDeployFiles)" DestinationFolder="$(VMConfigInstall)\%(RecursiveDir)" />
+		<Copy SourceFiles="$(RootFolder)\LICENSE.txt" DestinationFolder="$(VMConfigInstall)" />
+	</Target>
 
-	<Target Name="CreateImportEnterpriseInstall" DependsOnTargets="CreateImportCsvInstall">
+	<Target Name="CreateImportEnterpriseInstall" DependsOnTargets="CreateVMConfigInstall">
 		<ItemGroup>
 			<ImportEnterpriseDeployFiles Include="$(ImportEnterpriseBuild)\**\*.*" />
 		</ItemGroup>
@@ -508,10 +558,14 @@
 			<EnterpriseServerInstallFiles Include="$(EnterpriseServerInstall)\**\*.*" />
 			<ServerInstallFiles Include="$(ServerInstall)\**\*.*" />
 
+			<!--
 			<ImportCsvInstallFiles Include="$(ImportCsvInstall)\**\*.*" />
+			<HyperVUtilsInstallFiles Include="$(HyperVUtilsInstall)\**\*.*" />			
+			<VMConfigInstallFiles Include="$(VMConfigInstall)\**\*.*" />
 			<ImportEnterpriseInstallFiles Include="$(ImportEnterpriseInstall)\**\*.*" />
 			<AWStatsViewerInstallFiles Include="$(AWStatsViewerInstall)\**\*.*" />
 			<WSPTransportAgentInstallFiles Include="$(WSPTransportAgentInstall)\**\*.*" />
+			-->
 		</ItemGroup>
 
 		<!-- Assemble "Standalone" package -->
@@ -520,18 +574,26 @@
 		<Copy SourceFiles="@(ServerInstallFiles)" DestinationFolder="$(StandaloneInstall)\Server\%(RecursiveDir)" />
 
 
-		<!-- zip full distributives -->
+		<!-- zip full distributives 
 		<ItemGroup>
 			<StandaloneInstallFiles Include="$(StandaloneInstall)\**\*.*" />
 		</ItemGroup>
+		-->
 
+		<!--
 		<Zip Files="@(PortalInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Portal-$(Version).zip" WorkingDirectory="$(PortalInstall)" />
 		<Zip Files="@(EnterpriseServerInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-EnterpriseServer-$(Version).zip" WorkingDirectory="$(EnterpriseServerInstall)" />
 		<Zip Files="@(ServerInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Server-$(Version).zip" WorkingDirectory="$(ServerInstall)" />
 		<Zip Files="@(StandaloneInstallFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-StandaloneServerSetup-$(Version).zip" WorkingDirectory="$(StandaloneInstall)" />
+		-->
+		
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-Portal-$(Version).zip&quot; &quot;$(PortalInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-EnterpriseServer-$(Version).zip&quot; &quot;$(EnterpriseServerInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-Server-$(Version).zip&quot; &quot;$(ServerInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-StandaloneServerSetup-$(Version).zip&quot; &quot;$(StandaloneInstall)\*&quot;" />
 
 
-		<!-- zip updates -->
+		<!-- zip updates
 		<ItemGroup>
 			<PortalUpdateFiles Include="$(PortalUpdate)\**\*.*" />
 			<EnterpriseServerUpdateFiles Include="$(EnterpriseServerUpdate)\**\*.*" />
@@ -540,20 +602,40 @@
 			<InstallerUpdateFiles Include="$(InstallerBuild)\**\*.*" />
 		</ItemGroup>
 
+
 		<Zip Files="@(PortalUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Portal-$(Version)-Update.zip" WorkingDirectory="$(PortalUpdate)" />
 		<Zip Files="@(EnterpriseServerUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-EnterpriseServer-$(Version)-Update.zip" WorkingDirectory="$(EnterpriseServerUpdate)" />
 		<Zip Files="@(ServerUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Server-$(Version)-Update.zip" WorkingDirectory="$(ServerUpdate)" />
 		<Zip Files="@(ManualUpdateFiles)" ZipFileName="$(DeployFolder)\Manual-Update.zip" WorkingDirectory="$(UpdateFolder)" />
 		<Zip Files="@(InstallerUpdateFiles)" ZipFileName="$(DeployFolder)\WebsitePanel-Installer-$(Version)-Update.zip" WorkingDirectory="$(InstallerBuild)" />
+		-->
+		
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-Portal-$(Version)-Update.zip&quot; &quot;$(PortalUpdate)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-EnterpriseServer-$(Version)-Update.zip&quot; &quot;$(EnterpriseServerUpdate)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-Server-$(Version)-Update.zip&quot; &quot;$(ServerUpdate)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\Manual-Update.zip&quot; &quot;$(UpdateFolder)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(DeployFolder)\WebsitePanel-Installer-$(Version)-Update.zip&quot; &quot;$(InstallerBuild)\*&quot;" />
 
-		<!-- zip tools -->
+		<!-- zip tools 
 		<Zip Files="@(ImportCsvInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-Import-CsvBulk-$(Version).zip" WorkingDirectory="$(ImportCsvInstall)" />
+		<Zip Files="@(HyperVUtilsInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-HyperVUtils-$(Version).zip" WorkingDirectory="$(HyperVUtilsInstall)" />
+		<Zip Files="@(VMConfigInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-VMConfig-$(Version).zip" WorkingDirectory="$(VMConfigInstall)" />    
 		<Zip Files="@(ImportEnterpriseInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-Import-Enterprise-$(Version).zip" WorkingDirectory="$(ImportEnterpriseInstall)" />
 		<Zip Files="@(AWStatsViewerInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-AWStatsViewer-$(Version).zip" WorkingDirectory="$(AWStatsViewerInstall)" />
 		<Zip Files="@(WSPTransportAgentInstallFiles)" ZipFileName="$(ToolsFolder)\WebsitePanel-WSPTransportAgent-$(Version).zip" WorkingDirectory="$(WSPTransportAgentInstall)" />
+		-->
+		
+		<Exec Command="$(ZipCmd) a &quot;$(ToolsFolder)\WebsitePanel-Import-CsvBulk-$(Version).zip&quot; &quot;$(ImportCsvInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(ToolsFolder)\WebsitePanel-HyperVUtils-$(Version).zip&quot; &quot;$(HyperVUtilsInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(ToolsFolder)\WebsitePanel-VMConfig-$(Version).zip&quot; &quot;$(VMConfigInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(ToolsFolder)\WebsitePanel-Import-Enterprise-$(Version).zip&quot; &quot;$(ImportEnterpriseInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(ToolsFolder)\WebsitePanel-AWStatsViewer-$(Version).zip&quot; &quot;$(AWStatsViewerInstall)\*&quot;" />
+		<Exec Command="$(ZipCmd) a &quot;$(ToolsFolder)\WebsitePanel-WSPTransportAgent-$(Version).zip&quot; &quot;$(WSPTransportAgentInstall)\*&quot;" />
+
   </Target>
 
 	<Target Name="uploadtoftp">
+
 		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanel-Portal-$(Version).zip" LocalFile="$(DeployFolder)\WebsitePanel-Portal-$(Version).zip" />
 		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanel-EnterpriseServer-$(Version).zip" LocalFile="$(DeployFolder)\WebsitePanel-EnterpriseServer-$(Version).zip" />
 		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanel-Server-$(Version).zip" LocalFile="$(DeployFolder)\WebsitePanel-Server-$(Version).zip" />
@@ -568,6 +650,9 @@
 		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanel-WSPTransportAgent-$(Version).zip" LocalFile="$(ToolsFolder)\WebsitePanel-WSPTransportAgent-$(Version).zip" />
 		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanel.LocalizationToolkit.msi" LocalFile="$(ToolsFolder)\WebsitePanel.LocalizationToolkit.msi" />
 		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanelInstaller.msi" LocalFile="$(DeployFolder)\WebsitePanelInstaller.msi" />
+		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanel-HyperVUtils-$(Version).zip" LocalFile="$(ToolsFolder)\WebsitePanel-HyperVUtils-$(Version).zip" />
+		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/WebsitePanel-VMConfig-$(Version).zip" LocalFile="$(ToolsFolder)\WebsitePanel-VMConfig-$(Version).zip" />
+		<FtpUpload Username="$(ftpUsername)" password="$(ftpPassword)" RemoteUri="ftp://$(ftphost)/Manual-Update-$(Version).zip" LocalFile="$(DeployFolder)\Manual-Update.zip" />
 	</Target>
 
   <Target Name="BuildWebPlatformInstallerFeed" DependsOnTargets="Deploy">
@@ -630,6 +715,5 @@
   </Target>
 
   <Import Project="$(RootFolder)\tools\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/>
-	<UsingTask TaskName="UploadFiles" AssemblyFile="$(RootFolder)\tools\CodePlex\CodePlex.WebServices.Client.dll" />
   
 </Project>
