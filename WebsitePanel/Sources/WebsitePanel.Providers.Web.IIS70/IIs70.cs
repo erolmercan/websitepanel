@@ -1165,6 +1165,7 @@ namespace WebsitePanel.Providers.Web
                 HeliconApeStatus heliconApeStatus = GetHeliconApeStatus(srvman, siteId);
                 site.HeliconApeInstalled = heliconApeStatus.IsInstalled;
                 site.HeliconApeEnabled = heliconApeStatus.IsEnabled;
+                site.HeliconApeStatus = heliconApeStatus;
 
                 //
                 site.SiteState = GetSiteState(srvman, siteId);
