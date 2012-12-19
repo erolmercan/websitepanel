@@ -1230,7 +1230,15 @@ GO
 
 
 
-
+-- Remove ExchangeHostedEdition Quotas
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 340
+GO
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 341
+GO
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 342
+GO
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 343
+GO
 
 
 -- Remove ExchangeHostedEdition Quotas
