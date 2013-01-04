@@ -224,9 +224,7 @@
     <Content Include="App_Data\ModulesData.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="App_Data\SiteSettings.config">
-      <SubType>Designer</SubType>
-    </Content>
+    <Content Include="App_Data\SiteSettings.config" />
     <None Include="App_Data\SupportedThemes.config" />
     <None Include="App_Data\Countries.config" />
     <None Include="App_Data\CountryStates.config" />
