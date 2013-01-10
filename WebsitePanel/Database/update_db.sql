@@ -1,4 +1,4 @@
-﻿USE [${install.database}]
+USE [${install.database}]
 GO
 
 -- update database version
@@ -1230,7 +1230,15 @@ GO
 
 
 
-
+-- Remove ExchangeHostedEdition Quotas
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 340
+GO
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 341
+GO
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 342
+GO
+DELETE FROM HostingPlanQuotas WHERE QuotaID = 343
+GO
 
 
 -- Remove ExchangeHostedEdition Quotas
@@ -1243,6 +1251,8 @@ GO
 DELETE FROM Quotas WHERE QuotaID = 343
 GO
 
+DELETE FROM HostingPlanResources WHERE GroupID = 33
+GO
 
 -- Remove ExchangeHostedEdition ServiceItemType
 DELETE FROM ServiceItemTypes WHERE ItemTypeID = 40
@@ -6117,6 +6127,8 @@ BEGIN
 
 	UPDATE Domains SET IsDomainPointer=0,WebSiteID=NULL, DomainItemID=NULL WHERE WebSiteID IS NOT NULL
 
+	UPDATE Domains SET IsDomainPointer=0, DomainItemID=NULL WHERE MailDomainID IS NOT NULL AND isDomainPointer=1
+	
 	INSERT INTO Domains SELECT PackageID,
 	ZoneItemID,
 	DomainName,
@@ -6992,3 +7004,102 @@ BEGIN
 	UPDATE LyncUsers  SET SipAddress=EA.PrimaryEmailAddress FROM ExchangeAccounts AS EA WHERE LyncUsers.SipAddress IS NULL AND LyncUsers.AccountID = EA.AccountID
 END
 GO
+
+
+ALTER PROCEDURE [dbo].[GetPackageQuotas]
+(
+	@ActorID int,
+	@PackageID int
+)
+AS
+
+-- check rights
+IF dbo.CheckActorPackageRights(@ActorID, @PackageID) = 0
+RAISERROR('You are not allowed to access this package', 16, 1)
+
+DECLARE @PlanID int, @ParentPackageID int
+SELECT @PlanID = PlanID, @ParentPackageID = ParentPackageID FROM Packages
+WHERE PackageID = @PackageID
+
+-- get resource groups
+SELECT
+	RG.GroupID,
+	RG.GroupName,
+	ISNULL(HPR.CalculateDiskSpace, 0) AS CalculateDiskSpace,
+	ISNULL(HPR.CalculateBandwidth, 0) AS CalculateBandwidth,
+	dbo.GetPackageAllocatedResource(@ParentPackageID, RG.GroupID, 0) AS ParentEnabled
+FROM ResourceGroups AS RG
+LEFT OUTER JOIN HostingPlanResources AS HPR ON RG.GroupID = HPR.GroupID AND HPR.PlanID = @PlanID
+WHERE dbo.GetPackageAllocatedResource(@PackageID, RG.GroupID, 0) = 1
+ORDER BY RG.GroupOrder
+
+
+-- return quotas
+SELECT
+	Q.QuotaID,
+	Q.GroupID,
+	Q.QuotaName,
+	Q.QuotaDescription,
+	Q.QuotaTypeID,
+	dbo.GetPackageAllocatedQuota(@PackageID, Q.QuotaID) AS QuotaValue,
+	dbo.GetPackageAllocatedQuota(@ParentPackageID, Q.QuotaID) AS ParentQuotaValue,
+	ISNULL(dbo.CalculateQuotaUsage(@PackageID, Q.QuotaID), 0) AS QuotaUsedValue
+FROM Quotas AS Q
+WHERE Q.HideQuota IS NULL OR Q.HideQuota = 0
+ORDER BY Q.QuotaOrder
+RETURN
+
+GO
+
+
+
+
+
+
+
+ALTER PROCEDURE [dbo].[UpdateServiceProperties]
+(
+	@ServiceID int,
+	@Xml ntext
+)
+AS
+
+-- delete old properties
+BEGIN TRAN
+DECLARE @idoc int
+--Create an internal representation of the XML document.
+EXEC sp_xml_preparedocument @idoc OUTPUT, @xml
+
+-- Execute a SELECT statement that uses the OPENXML rowset provider.
+DELETE FROM ServiceProperties
+WHERE ServiceID = @ServiceID 
+AND PropertyName COLLATE Latin1_General_CI_AS IN
+(
+	SELECT PropertyName
+	FROM OPENXML(@idoc, '/properties/property', 1)
+	WITH (PropertyName nvarchar(50) '@name')
+)
+
+INSERT INTO ServiceProperties
+(
+	ServiceID,
+	PropertyName,
+	PropertyValue
+)
+SELECT
+	@ServiceID,
+	PropertyName,
+	PropertyValue
+FROM OPENXML(@idoc, '/properties/property',1) WITH 
+(
+	PropertyName nvarchar(50) '@name',
+	PropertyValue nvarchar(1000) '@value'
+) as PV
+
+-- remove document
+exec sp_xml_removedocument @idoc
+
+COMMIT TRAN
+RETURN 
+GO
+
