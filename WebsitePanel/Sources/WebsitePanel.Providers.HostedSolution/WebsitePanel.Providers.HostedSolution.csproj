@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -62,6 +62,9 @@
     <Reference Include="Microsoft.Crm.Admin.AdminService">
       <HintPath>..\..\Lib\References\Microsoft\Microsoft.Crm.Admin.AdminService.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="microsoft.crm.sdk.proxy">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.crm.sdk.proxy.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Crm.Setup.Common">
       <HintPath>..\..\Lib\References\Microsoft\Microsoft.Crm.Setup.Common.dll</HintPath>
@@ -118,6 +121,27 @@
     <Reference Include="Microsoft.SharePoint">
       <HintPath>..\..\Lib\References\Microsoft\Microsoft.SharePoint.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="microsoft.xrm.client">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.xrm.client.dll</HintPath>
+    </Reference>
+    <Reference Include="microsoft.xrm.client.codegeneration">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.xrm.client.codegeneration.dll</HintPath>
+    </Reference>
+    <Reference Include="microsoft.xrm.portal">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.xrm.portal.dll</HintPath>
+    </Reference>
+    <Reference Include="microsoft.xrm.portal.files">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.xrm.portal.files.dll</HintPath>
+    </Reference>
+    <Reference Include="microsoft.xrm.sdk">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.xrm.sdk.dll</HintPath>
+    </Reference>
+    <Reference Include="microsoft.xrm.sdk.deployment">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.xrm.sdk.deployment.dll</HintPath>
+    </Reference>
+    <Reference Include="microsoft.xrm.sdk.workflow">
+      <HintPath>..\..\..\..\..\Projects\websitepanel_v2.0.0.CRM2011.Patch\WebsitePanel\Sources\WebsitePanel.Server\bin\microsoft.xrm.sdk.workflow.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
