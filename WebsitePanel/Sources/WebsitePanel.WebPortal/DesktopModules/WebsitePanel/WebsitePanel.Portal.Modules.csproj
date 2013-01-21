@@ -320,6 +320,7 @@
     </Compile>
     <Compile Include="ProviderControls\CRM2011_Settings.ascx.cs">
       <DependentUpon>CRM2011_Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ProviderControls\CRM2011_Settings.ascx.designer.cs">
       <DependentUpon>CRM2011_Settings.ascx</DependentUpon>

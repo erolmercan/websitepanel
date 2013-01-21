@@ -2563,8 +2563,8 @@ namespace WebsitePanel.EnterpriseServer
                 new SqlParameter("@HideFromAddressBook", hideFromAddressBook),
                 new SqlParameter("@MailboxPlanType", mailboxPlanType),
 	            new SqlParameter("@AllowLitigationHold",enabledLitigationHold),
-                new SqlParameter("@RecoverableItemsWarningPct", recoverabelItemsSpace),
-                new SqlParameter("@RecoverableItemsSpace",recoverabelItemsWarning)
+                new SqlParameter("@RecoverableItemsWarningPct", recoverabelItemsWarning),
+                new SqlParameter("@RecoverableItemsSpace",recoverabelItemsSpace)
             );
 
             return Convert.ToInt32(outParam.Value);
@@ -2600,8 +2600,8 @@ namespace WebsitePanel.EnterpriseServer
                 new SqlParameter("@HideFromAddressBook", hideFromAddressBook),
                 new SqlParameter("@MailboxPlanType", mailboxPlanType),
                 new SqlParameter("@AllowLitigationHold", enabledLitigationHold),
-                new SqlParameter("@RecoverableItemsWarningPct", recoverabelItemsSpace),
-                new SqlParameter("@RecoverableItemsSpace", recoverabelItemsWarning)
+                new SqlParameter("@RecoverableItemsWarningPct", recoverabelItemsWarning),
+                new SqlParameter("@RecoverableItemsSpace", recoverabelItemsSpace)
             );
         }
 

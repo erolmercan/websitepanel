@@ -102,7 +102,7 @@ namespace WebsitePanel.Portal.ExchangeServer
 
                 secCalendarSettings.Visible = ((account.AccountType == ExchangeAccountType.Equipment) | (account.AccountType == ExchangeAccountType.Room));
 
-                chkEnableLitigationHold.Checked = mailbox.EnableLitigationHold;
+                secLitigationHoldSettings.Visible = mailbox.EnableLitigationHold;
 
                 litigationHoldSpace.QuotaUsedValue = Convert.ToInt32(stats.LitigationHoldTotalSize / 1024 / 1024);
                 litigationHoldSpace.QuotaValue = (stats.LitigationHoldMaxSize == -1) ? -1 : (int)Math.Round((double)(stats.LitigationHoldMaxSize / 1024 / 1024));

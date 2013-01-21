@@ -192,6 +192,7 @@ namespace WebsitePanel.EnterpriseServer
                     stats.CreatedDomains = tempStats.CreatedDomains;
                     stats.CreatedPublicFolders = tempStats.CreatedPublicFolders;
                     stats.UsedDiskSpace = tempStats.UsedDiskSpace;
+                    stats.UsedLitigationHoldSpace = tempStats.UsedLitigationHoldSpace;
                 }
                 else
                 {
@@ -218,6 +219,7 @@ namespace WebsitePanel.EnterpriseServer
                                     stats.CreatedDomains += tempStats.CreatedDomains;
                                     stats.CreatedPublicFolders += tempStats.CreatedPublicFolders;
                                     stats.UsedDiskSpace += tempStats.UsedDiskSpace;
+                                    stats.UsedLitigationHoldSpace += tempStats.UsedLitigationHoldSpace;
                                 }
                             }
                         }
@@ -235,6 +237,7 @@ namespace WebsitePanel.EnterpriseServer
                 stats.AllocatedDistributionLists = cntx.Quotas[Quotas.EXCHANGE2007_DISTRIBUTIONLISTS].QuotaAllocatedValue;
                 stats.AllocatedPublicFolders = cntx.Quotas[Quotas.EXCHANGE2007_PUBLICFOLDERS].QuotaAllocatedValue;
                 stats.AllocatedDiskSpace = cntx.Quotas[Quotas.EXCHANGE2007_DISKSPACE].QuotaAllocatedValue;
+                stats.AllocatedLitigationHoldSpace = cntx.Quotas[Quotas.EXCHANGE2007_RECOVERABLEITEMSSPACE].QuotaAllocatedValue;
 
                 return stats;
             }

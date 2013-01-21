@@ -5073,6 +5073,12 @@
   <data name="Quota.Exchange2007.EnablePlansEditing" xml:space="preserve">
     <value>Enable Mailbox Plans Editing</value>
   </data>
+  <data name="Quota.Exchange2007.AllowLitigationHold" xml:space="preserve">
+    <value>Allow Litigation Hold</value>
+  </data>
+  <data name="Quota.Exchange2007.RecoverableItemsSpace" xml:space="preserve">
+    <value>Recoverable Items Storage, MB</value>
+  </data>
   <data name="Error.LYNC_DELETE_DOMAIN" xml:space="preserve">
     <value>Error deleting organization domain name. See audit log for more details.</value>
   </data>

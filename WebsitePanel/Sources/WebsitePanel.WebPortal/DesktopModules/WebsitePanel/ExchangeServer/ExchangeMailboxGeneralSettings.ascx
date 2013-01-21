@@ -69,11 +69,12 @@
 						</asp:UpdatePanel>
 					</asp:Panel>
 
-                    <wsp:CollapsiblePanel id="secLitigationHoldSettings" runat="server" TargetControlID="LitigationHoldSettings" meta:resourcekey="secGeneral" Text="General"></wsp:CollapsiblePanel>
+                    <wsp:CollapsiblePanel id="secLitigationHoldSettings" runat="server" TargetControlID="LitigationHoldSettings" meta:resourcekey="secLitigationHoldSettings" Text="Litigation Hold"></wsp:CollapsiblePanel>
                     <asp:Panel ID="LitigationHoldSettings" runat="server" Height="0" style="overflow:hidden;">
 						<asp:UpdatePanel ID="LitigationHoldUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
 							<ContentTemplate>
 					            <table>
+<!--
 						            <tr>
 						                <td></td>
 						                <td>
@@ -82,6 +83,7 @@
 						                    <br />
 						                </td>
 						            </tr>
+-->
                                     <tr>
                                         <td class="FormLabel150"><asp:Localize ID="locLitigationHoldSpace" runat="server" meta:resourcekey="locLitigationHoldSpace" Text="Litigation Hold Space:"></asp:Localize></td>
 					                    <td>                                

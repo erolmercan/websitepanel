@@ -163,9 +163,9 @@
     <value>Enable Litigation Hold</value>
   </data>
   <data name="locLitigationHoldSpace.Text" xml:space="preserve">
-    <value>Litigation Hold Space:</value>
+    <value>Litigation Hold Storage:</value>
   </data>
   <data name="secLitigationHoldSettings.Text" xml:space="preserve">
-    <value>Litigation Hold Settings</value>
+    <value>Litigation Hold</value>
   </data>
 </root>

@@ -2110,7 +2110,7 @@ namespace WebsitePanel.Providers.HostedSolution
             return cn;
         }
 
-        private ExchangeAccount GetManager(DirectoryEntry entry)
+        internal virtual ExchangeAccount GetManager(DirectoryEntry entry)
         {
             ExchangeAccount retUser = null;
             string path = ActiveDirectoryUtils.GetADObjectStringProperty(entry, ADAttributes.Manager);
@@ -2129,7 +2129,7 @@ namespace WebsitePanel.Providers.HostedSolution
             return retUser;
         }
 
-        private ExchangeMailbox GetMailboxGeneralSettingsInternal(string accountName)
+        internal virtual ExchangeMailbox GetMailboxGeneralSettingsInternal(string accountName)
         {
             ExchangeLog.LogStart("GetMailboxGeneralSettingsInternal");
             ExchangeLog.DebugInfo("Account: {0}", accountName);

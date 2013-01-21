@@ -78,6 +78,74 @@ namespace WebsitePanel.Providers.HostedSolution
         }
 
 
+        internal override ExchangeMailbox GetMailboxGeneralSettingsInternal(string accountName)
+        {
+            ExchangeLog.LogStart("GetMailboxGeneralSettingsInternal");
+            ExchangeLog.DebugInfo("Account: {0}", accountName);
+
+            ExchangeMailbox info = new ExchangeMailbox();
+            info.AccountName = accountName;
+            Runspace runSpace = null;
+            try
+            {
+                runSpace = OpenRunspace();
+
+                Collection<PSObject> result = GetMailboxObject(runSpace, accountName);
+                PSObject mailbox = result[0];
+
+                string id = GetResultObjectDN(result);
+                string path = AddADPrefix(id);
+                DirectoryEntry entry = GetADObject(path);
+
+
+                //ADAccountOptions userFlags = (ADAccountOptions)entry.Properties["userAccountControl"].Value;
+                //info.Disabled = ((userFlags & ADAccountOptions.UF_ACCOUNTDISABLE) != 0);
+                info.Disabled = (bool)entry.InvokeGet("AccountDisabled");
+
+                info.DisplayName = (string)GetPSObjectProperty(mailbox, "DisplayName");
+                info.HideFromAddressBook = (bool)GetPSObjectProperty(mailbox, "HiddenFromAddressListsEnabled");
+                info.EnableLitigationHold = (bool)GetPSObjectProperty(mailbox, "LitigationHoldEnabled");
+
+                Command cmd = new Command("Get-User");
+                cmd.Parameters.Add("Identity", accountName);
+                result = ExecuteShellCommand(runSpace, cmd);
+                PSObject user = result[0];
+
+                info.FirstName = (string)GetPSObjectProperty(user, "FirstName");
+                info.Initials = (string)GetPSObjectProperty(user, "Initials");
+                info.LastName = (string)GetPSObjectProperty(user, "LastName");
+
+                info.Address = (string)GetPSObjectProperty(user, "StreetAddress");
+                info.City = (string)GetPSObjectProperty(user, "City");
+                info.State = (string)GetPSObjectProperty(user, "StateOrProvince");
+                info.Zip = (string)GetPSObjectProperty(user, "PostalCode");
+                info.Country = CountryInfoToString((CountryInfo)GetPSObjectProperty(user, "CountryOrRegion"));
+                info.JobTitle = (string)GetPSObjectProperty(user, "Title");
+                info.Company = (string)GetPSObjectProperty(user, "Company");
+                info.Department = (string)GetPSObjectProperty(user, "Department");
+                info.Office = (string)GetPSObjectProperty(user, "Office");
+
+
+                info.ManagerAccount = GetManager(entry); //GetExchangeAccount(runSpace, ObjToString(GetPSObjectProperty(user, "Manager")));
+                info.BusinessPhone = (string)GetPSObjectProperty(user, "Phone");
+                info.Fax = (string)GetPSObjectProperty(user, "Fax");
+                info.HomePhone = (string)GetPSObjectProperty(user, "HomePhone");
+                info.MobilePhone = (string)GetPSObjectProperty(user, "MobilePhone");
+                info.Pager = (string)GetPSObjectProperty(user, "Pager");
+                info.WebPage = (string)GetPSObjectProperty(user, "WebPage");
+                info.Notes = (string)GetPSObjectProperty(user, "Notes");
+
+            }
+            finally
+            {
+
+                CloseRunspace(runSpace);
+            }
+            ExchangeLog.LogEnd("GetMailboxGeneralSettingsInternal");
+            return info;
+        }
+
+
         internal override ExchangeMailbox GetMailboxAdvancedSettingsInternal(string accountName)
         {
             ExchangeLog.LogStart("GetMailboxAdvancedSettingsInternal");
@@ -237,11 +305,11 @@ namespace WebsitePanel.Providers.HostedSolution
                     if (result.Count > 0)
                     {
                         PSObject statistics = result[0];
-                        Unlimited<ByteQuantifiedSize> totalItemSize = (Unlimited<ByteQuantifiedSize>)GetPSObjectProperty(statistics, "FolderAndSubfolderSize");
-                        info.LitigationHoldTotalSize = ConvertUnlimitedToBytes(totalItemSize);
+                        ByteQuantifiedSize totalItemSize = (ByteQuantifiedSize)GetPSObjectProperty(statistics, "FolderAndSubfolderSize");
+                        info.LitigationHoldTotalSize = (totalItemSize == null) ? 0 : ConvertUnlimitedToBytes(totalItemSize);
 
-                        uint? itemCount = (uint?)GetPSObjectProperty(statistics, "ItemsInFolder");
-                        info.LitigationHoldTotalItems = ConvertNullableToInt32(itemCount);
+                        Int32 itemCount = (Int32)GetPSObjectProperty(statistics, "ItemsInFolder");
+                        info.LitigationHoldTotalItems = (itemCount == null) ? 0 : itemCount;
                     }
                 }
                 else
@@ -287,7 +355,8 @@ namespace WebsitePanel.Providers.HostedSolution
 
                 cmd.Parameters.Add("LitigationHoldEnabled", enabledLitigationHold);
                 cmd.Parameters.Add("RecoverableItemsQuota", ConvertKBToUnlimited(recoverabelItemsSpace));
-                cmd.Parameters.Add("RecoverableItemsWarningQuota", ConvertKBToUnlimited(recoverabelItemsWarning));
+
+                if (recoverabelItemsSpace != -1) cmd.Parameters.Add("RecoverableItemsWarningQuota", ConvertKBToUnlimited(recoverabelItemsWarning));
 
                 ExecuteShellCommand(runSpace, cmd);
 
