@@ -2132,6 +2132,7 @@ namespace WebsitePanel.EnterpriseServer
             catch(Exception ex)
             {
                 TaskManager.WriteError(ex);
+                res.IsSuccess = false;
             }
             return res;
         }
