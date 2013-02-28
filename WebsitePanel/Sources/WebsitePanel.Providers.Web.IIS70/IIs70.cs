@@ -104,8 +104,11 @@ namespace WebsitePanel.Providers.Web
         public const string HeliconApeModulePrevName = "Helicon Ape";
         // true module name
         public const string HeliconApeModule  = "Helicon.Ape";
+        public const string HeliconApeModuleType = "Helicon.Ape.ApeModule";
         // true handler name
         public const string HeliconApeHandler = "Helicon.Ape Handler";
+        public const string HeliconApeHandlerType = "Helicon.Ape.Handler";
+        
         public const string HeliconApeHandlerPath = "*.apehandler";
         
 		public const string IsapiModule = "IsapiModule";
@@ -2330,57 +2333,102 @@ namespace WebsitePanel.Providers.Web
 
             using (var srvman = webObjectsSvc.GetServerManager())
             {
+                bool alterConfiguration = false;
                 //
                 Configuration appConfig = srvman.GetApplicationHostConfiguration();
+
+
+
                 
                 // remove Helicon.Ape module
                 ConfigurationSection modulesSection = appConfig.GetSection(Constants.ModulesSection, siteId);
                 ConfigurationElementCollection modulesCollection = modulesSection.GetCollection();
-                List<ConfigurationElement> heliconApeModuleEntriesList = new List<ConfigurationElement>();
-                foreach (ConfigurationElement moduleEntry in modulesCollection)
+                //List<ConfigurationElement> heliconApeModuleEntriesList = new List<ConfigurationElement>();
+                //foreach (ConfigurationElement moduleEntry in modulesCollection)
+                //{
+                //    if (
+                //        String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase)
+                //        ||
+                //        String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModulePrevName, StringComparison.InvariantCultureIgnoreCase)
+                //    )
+                //    {
+                //        heliconApeModuleEntriesList.Add(moduleEntry);
+                //    }
+                //}
+                //foreach (ConfigurationElement heliconApeElement in heliconApeModuleEntriesList)
+                //{
+                //    modulesCollection.Remove(heliconApeElement);
+                //}
+
+                for (int i = 0; i < modulesCollection.Count; )
                 {
-                    if (
-                        String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase)
-                        ||
-                        String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModulePrevName, StringComparison.InvariantCultureIgnoreCase)
-                    )
+                    ConfigurationElement moduleEntry = modulesCollection[i];
+
+                    string type = moduleEntry["type"].ToString();
+
+                    if (type.IndexOf(Constants.HeliconApeModuleType, StringComparison.Ordinal) >= 0)
                     {
-                        heliconApeModuleEntriesList.Add(moduleEntry);
+                        modulesCollection.RemoveAt(i);
+                        alterConfiguration = true;
                     }
-                }
-                foreach (ConfigurationElement heliconApeElement in heliconApeModuleEntriesList)
-                {
-                    modulesCollection.Remove(heliconApeElement);
+                    else
+                    {
+                        ++i;
+                    }
+
                 }
 
                 // remove Helicon.Ape handler
                 ConfigurationSection handlersSection = appConfig.GetSection(Constants.HandlersSection, siteId);
                 ConfigurationElementCollection handlersCollection = handlersSection.GetCollection();
-                List<ConfigurationElement> heliconApeHandlerEntriesList = new List<ConfigurationElement>();
-                foreach (ConfigurationElement handlerEntry in handlersCollection)
+                //List<ConfigurationElement> heliconApeHandlerEntriesList = new List<ConfigurationElement>();
+                //foreach (ConfigurationElement handlerEntry in handlersCollection)
+                //{
+                //    if (
+                //        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase)
+                //        ||
+                //        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeModulePrevName, StringComparison.InvariantCultureIgnoreCase)
+                //        ||
+                //        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeHandler, StringComparison.InvariantCultureIgnoreCase)
+                //    )
+                //    {
+                //        heliconApeHandlerEntriesList.Add(handlerEntry);
+                //    }
+                //}
+                ////
+                //foreach (ConfigurationElement heliconApeHandlerEntry in heliconApeHandlerEntriesList)
+                //{
+                //    handlersCollection.Remove(heliconApeHandlerEntry);
+                //}
+
+                //// commit changes to metabase
+                //if (heliconApeModuleEntriesList.Count > 0 || heliconApeHandlerEntriesList.Count > 0)
+                //{
+                //    srvman.CommitChanges();
+                //}
+
+                for (int i = 0; i < handlersCollection.Count; )
                 {
-                    if (
-                        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase)
-                        ||
-                        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeModulePrevName, StringComparison.InvariantCultureIgnoreCase)
-                        ||
-                        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeHandler, StringComparison.InvariantCultureIgnoreCase)
-                    )
+
+                    string type = handlersCollection[i]["type"].ToString();
+
+                    if (type.IndexOf(Constants.HeliconApeHandlerType, StringComparison.Ordinal) >= 0)
                     {
-                        heliconApeHandlerEntriesList.Add(handlerEntry);
+                        handlersCollection.RemoveAt(i);
+                        alterConfiguration = true;
                     }
-                }
-				//
-                foreach (ConfigurationElement heliconApeHandlerEntry in heliconApeHandlerEntriesList)
-                {
-                    handlersCollection.Remove(heliconApeHandlerEntry);
+                    else
+                    {
+                        ++i;
+                    }
+
                 }
 
-                // commit changes to metabase
-                if (heliconApeModuleEntriesList.Count > 0 || heliconApeHandlerEntriesList.Count > 0)
+                if (alterConfiguration)
                 {
-                    srvman.CommitChanges();
+                    srvman.CommitChanges();    
                 }
+                
 
             }
         }
