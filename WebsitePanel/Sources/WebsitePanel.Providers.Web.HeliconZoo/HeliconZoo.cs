@@ -70,8 +70,18 @@ namespace WebsitePanel.Providers.Web.HeliconZoo
             {
                 Configuration appConfig = srvman.GetApplicationHostConfiguration();
 
-                ConfigurationSection heliconZooServer = appConfig.GetSection("system.webServer/heliconZooServer");
-                
+                ConfigurationSection heliconZooServer;
+                try
+                {
+                    heliconZooServer = appConfig.GetSection("system.webServer/heliconZooServer");
+                }
+                catch(Exception)
+                {
+                    // heliconZooServer is not found
+                    // looks like zoo is not installed
+                    return result.ToArray();
+                }
+
                 ConfigurationElement engines = heliconZooServer.GetChildElement("engines");
                 ConfigurationElementCollection enginesCollection = engines.GetCollection();
 
@@ -278,7 +288,18 @@ namespace WebsitePanel.Providers.Web.HeliconZoo
             using (var srvman = new ServerManager())
             {
                 Configuration appConfig = srvman.GetApplicationHostConfiguration();
-                ConfigurationSection zooServer = appConfig.GetSection("system.webServer/heliconZooServer", siteId);
+                ConfigurationSection zooServer;
+                try
+                {
+                    zooServer = appConfig.GetSection("system.webServer/heliconZooServer", siteId);
+                }
+                catch(Exception)
+                {
+                    // heliconZooServer is not found
+                    // looks like zoo is not installed
+                    return engines.ToArray();
+
+                }
                 ConfigurationElement switchboard = zooServer.GetChildElement("switchboard");
                 ConfigurationElementCollection switchboardCollection = switchboard.GetCollection();
 

@@ -1914,22 +1914,27 @@ namespace WebsitePanel.Providers.Web
 
         private bool IsHeliconApeEnabled(ServerManager srvman, string siteId)
         {
-            WebSite webSite = null;
-            webSite = webObjectsSvc.GetWebSiteFromIIS(srvman, siteId);
-            if (webSite == null)
-                throw new ApplicationException(
-                    String.Format("Could not find a web site with the following identifier: {0}.", siteId));
-
-            // Fill ASP.NET settings
-            FillAspNetSettingsFromIISObject(srvman, webSite);
-
-            var aphl = new WebAppPoolHelper(ProviderSettings);
-            var currentPool = aphl.match_webapp_pool(webSite);
-
-            if (aphl.pipeline(currentPool.Mode) != SiteAppPoolMode.Integrated)
+            if (!string.IsNullOrEmpty(siteId))
             {
-                // Ape is not working in not Integrated pipeline mode
-                return false;
+                // Check the web site app pool in integrated pipeline mode
+
+                WebSite webSite = null;
+                webSite = webObjectsSvc.GetWebSiteFromIIS(srvman, siteId);
+                if (webSite == null)
+                    throw new ApplicationException(
+                        String.Format("Could not find a web site with the following identifier: {0}.", siteId));
+
+                // Fill ASP.NET settings
+                FillAspNetSettingsFromIISObject(srvman, webSite);
+
+                var aphl = new WebAppPoolHelper(ProviderSettings);
+                var currentPool = aphl.match_webapp_pool(webSite);
+
+                if (aphl.pipeline(currentPool.Mode) != SiteAppPoolMode.Integrated)
+                {
+                    // Ape is not working in not Integrated pipeline mode
+                    return false;
+                }
             }
 
 
