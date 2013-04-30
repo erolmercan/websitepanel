@@ -450,12 +450,12 @@ namespace WebsitePanel.EnterpriseServer
             get { return TopTask.Parameters; }
         }
 
-        internal static int GetTasksNumber()
+        public static int GetTasksNumber()
         {
             return tasks.Count;
         }
 
-        internal static List<BackgroundTask> GetUserTasks(int userId)
+        public static List<BackgroundTask> GetUserTasks(int userId)
         {
             List<BackgroundTask> list = new List<BackgroundTask>();
 
@@ -473,7 +473,7 @@ namespace WebsitePanel.EnterpriseServer
             return list;
         }
 
-        internal static List<BackgroundTask> GetUserCompletedTasks(int userId)
+        public static List<BackgroundTask> GetUserCompletedTasks(int userId)
         {
             // get user tasks
             List<BackgroundTask> list = GetUserTasks(userId);

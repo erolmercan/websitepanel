@@ -763,7 +763,7 @@ namespace WebsitePanel.Ecommerce.EnterpriseServer
             return EcommerceProvider.DeleteTaxation(SecurityContext.User.UserId, userId, taxationId);
         }
 
-        internal static void SetPaymentProfile(string contractId, CheckoutDetails newProfile)
+        public static void SetPaymentProfile(string contractId, CheckoutDetails newProfile)
         {
             try
             {
@@ -864,7 +864,7 @@ namespace WebsitePanel.Ecommerce.EnterpriseServer
             return details;
         }
 
-        internal static bool PaymentProfileExists(string contractId)
+        public static bool PaymentProfileExists(string contractId)
         {
             return EcommerceProvider.PaymentProfileExists(SecurityContext.User.UserId, contractId);
         }

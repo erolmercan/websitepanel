@@ -248,7 +248,7 @@ namespace WebsitePanel.Ecommerce.EnterpriseServer
                 invoiceNumber, dueDate, total, subTotal, taxationId, taxAmount, currency);
         }
 
-        internal static Invoice GetCustomerInvoiceInternally(int invoiceId)
+        public static Invoice GetCustomerInvoiceInternally(int invoiceId)
         {
             return ES.ObjectUtils.FillObjectFromDataReader<Invoice>(
                 EcommerceProvider.GetCustomerInvoice(ES.SecurityContext.User.UserId, invoiceId));
@@ -260,7 +260,7 @@ namespace WebsitePanel.Ecommerce.EnterpriseServer
                 EcommerceProvider.GetCustomerInvoiceItems(ES.SecurityContext.User.UserId, invoiceId));
         }
 
-        internal static string GetCustomerInvoiceFormattedInternally(int invoiceId, string cultureName)
+        public static string GetCustomerInvoiceFormattedInternally(int invoiceId, string cultureName)
         {
             Invoice invoice = GetCustomerInvoiceInternally(invoiceId);
             //

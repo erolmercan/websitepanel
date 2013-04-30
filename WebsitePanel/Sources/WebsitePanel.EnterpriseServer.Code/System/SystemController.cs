@@ -119,7 +119,7 @@ namespace WebsitePanel.EnterpriseServer
 			return 0;
 		}
 
-		internal static bool GetSystemSetupMode()
+		public static bool GetSystemSetupMode()
 		{
 			var scpaSystemSettings = GetSystemSettings(SystemSettings.SETUP_SETTINGS);
 			// Flag either not found or empty
@@ -131,7 +131,7 @@ namespace WebsitePanel.EnterpriseServer
 			return true;
 		}
 
-		internal static int SetupControlPanelAccounts(string passwordA, string passwordB, string ip)
+		public static int SetupControlPanelAccounts(string passwordA, string passwordB, string ip)
 		{
 			try
 			{

@@ -252,7 +252,7 @@ namespace WebsitePanel.Ecommerce.EnterpriseServer
 				EcommerceProvider.GetSupportedPluginById(pluginId));
 		}
 
-		internal static CheckoutFormParams GetCheckoutFormParams(string contractId, int invoiceId, 
+		public static CheckoutFormParams GetCheckoutFormParams(string contractId, int invoiceId, 
 			string methodName, KeyValueBunch options)
 		{
 			Contract contractInfo = ContractSystem.ContractController.GetContract(contractId);
