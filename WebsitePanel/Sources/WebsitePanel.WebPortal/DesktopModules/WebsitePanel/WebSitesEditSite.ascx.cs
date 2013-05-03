@@ -291,6 +291,9 @@ namespace WebsitePanel.Portal
 
 			// bind state
 			BindSiteState(site.SiteState);
+            // AppPool
+            AppPoolState appPoolState = ES.Services.WebServers.GetAppPoolState(PanelRequest.ItemID);
+            BindAppPoolState(appPoolState);
 
 			// bind pointers
 			BindPointers();
@@ -988,6 +991,42 @@ namespace WebsitePanel.Portal
 				return;
 			}
 		}
+
+        // AppPool
+        private void BindAppPoolState(AppPoolState state)
+        {
+            litAppPoolStatus.Text = state.ToString();
+
+            cmdAppPoolStart.Visible = (state == AppPoolState.Stop);
+            cmdAppPoolStop.Visible = (state == AppPoolState.Start);
+            cmdAppPoolRecycle.Visible = (state == AppPoolState.Start);
+        }
+
+
+        protected void cmdAppPoolChangeState_Click(object sender, EventArgs e)
+        {
+            string stateName = ((LinkButton)sender).CommandName;
+            AppPoolState state = (AppPoolState)Enum.Parse(typeof(AppPoolState), stateName, true);
+
+            try
+            {
+                int result = ES.Services.WebServers.ChangeAppPoolState(PanelRequest.ItemID, state);
+                if (result < 0)
+                {
+                    ShowResultMessage(result);
+                    return;
+                }
+
+                state = ES.Services.WebServers.GetAppPoolState(PanelRequest.ItemID);
+                BindAppPoolState(state);
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage("WEB_CHANGE_SITE_STATE", ex);
+                return;
+            }
+        }
+
 		#endregion
 
 		#region Pointers

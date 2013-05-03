@@ -1524,6 +1524,27 @@ namespace WebsitePanel.Providers.Web
 			}
 		}
 
+        // AppPool
+        public void ChangeAppPoolState(string siteId, AppPoolState state)
+        {
+            webObjectsSvc.ChangeAppPoolState(siteId, state);
+        }
+
+        public AppPoolState GetAppPoolState(string siteId)
+        {
+            using (ServerManager srvman = webObjectsSvc.GetServerManager())
+            {
+                return GetAppPoolState(srvman, siteId);
+            }
+        }
+
+        public AppPoolState GetAppPoolState(ServerManager srvman, string siteId)
+        {
+            return webObjectsSvc.GetAppPoolState(srvman, siteId);
+        }
+
+
+
 		/// <summary>
 		/// Checks whether virtual iisDirObject with supplied name under specified site exists.
 		/// </summary>

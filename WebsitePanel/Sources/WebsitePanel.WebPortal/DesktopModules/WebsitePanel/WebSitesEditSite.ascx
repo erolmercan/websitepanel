@@ -169,6 +169,13 @@
                         <td class="MediumBold" align="center">
                             <asp:Literal ID="litStatus" runat="server"></asp:Literal>
                         </td>
+
+                <%-- AppPool --%>
+						<td class="MediumBold" align="center">
+							App Pool : <asp:Literal ID="litAppPoolStatus" runat="server"></asp:Literal>
+						</td>
+                <%-- AppPool --%>
+
                     </tr>
                     <tr>
                         <td align="center">
@@ -181,6 +188,15 @@
                             <asp:ImageButton ID="cmdStop" runat="server" SkinID="StopMedium" meta:resourcekey="cmdStop"
                                 CommandName="Stopped" OnClick="cmdChangeState_Click" />
                         </td>
+
+                <%-- AppPool --%>
+						<td align="center">
+                            <asp:LinkButton ID="cmdAppPoolStart" runat="server" CommandName="Start" OnClick="cmdAppPoolChangeState_Click">Start</asp:LinkButton><br />
+                            <asp:LinkButton ID="cmdAppPoolStop" runat="server" CommandName="Stop" OnClick="cmdAppPoolChangeState_Click">Stop</asp:LinkButton><br />
+                            <asp:LinkButton ID="cmdAppPoolRecycle" runat="server" CommandName="Recycle" OnClick="cmdAppPoolChangeState_Click">Recycle</asp:LinkButton>
+						</td>
+                <%-- AppPool --%>
+
                     </tr>
                 </table>
             </td>
