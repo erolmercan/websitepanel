@@ -265,6 +265,8 @@ namespace WebsitePanel.Portal
 				ToggleFrontPageControls(site.FrontPageInstalled);
 			}
 
+            AppPoolRestartPanel.Visible = Utils.CheckQouta(Quotas.WEB_APPPOOLSRESTART, cntx);
+
 			// bind controls
 			webSitesHomeFolderControl.BindWebItem(PackageId, site);
 			webSitesSecuredFoldersControl.BindSecuredFolders(site);

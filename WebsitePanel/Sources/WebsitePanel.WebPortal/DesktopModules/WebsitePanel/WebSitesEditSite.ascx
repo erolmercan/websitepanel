@@ -191,12 +191,14 @@
 							<asp:Literal ID="litAppPoolStatus" runat="server"></asp:Literal>
 						</td>
 						<td align="center">
-                            <asp:ImageButton ID="cmdAppPoolStart" runat="server" SkinID="StartMedium" meta:resourcekey="cmdStart"
-                                CommandName="Started" OnClick="cmdAppPoolChangeState_Click" />
-                            <asp:ImageButton ID="cmdAppPoolRecycle" runat="server" SkinID="RecycleMedium" meta:resourcekey="cmdRecycle"
-                                CommandName="Recycle" OnClick="cmdAppPoolChangeState_Click" />
-                            <asp:ImageButton ID="cmdAppPoolStop" runat="server" SkinID="StopMedium" meta:resourcekey="cmdStop"
-                                CommandName="Stopped" OnClick="cmdAppPoolChangeState_Click" />
+                            <asp:Panel runat="server" ID="AppPoolRestartPanel">
+                                <asp:ImageButton ID="cmdAppPoolStart" runat="server" SkinID="StartMedium" meta:resourcekey="cmdStart"
+                                    CommandName="Started" OnClick="cmdAppPoolChangeState_Click" />
+                                <asp:ImageButton ID="cmdAppPoolRecycle" runat="server" SkinID="RecycleMedium" meta:resourcekey="cmdRecycle"
+                                    CommandName="Recycle" OnClick="cmdAppPoolChangeState_Click" />
+                                <asp:ImageButton ID="cmdAppPoolStop" runat="server" SkinID="StopMedium" meta:resourcekey="cmdStop"
+                                    CommandName="Stopped" OnClick="cmdAppPoolChangeState_Click" />
+                            </asp:Panel>
 						</td>
                     </tr>
                 </table>
