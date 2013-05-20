@@ -65,7 +65,8 @@ order by rg.groupOrder
 		public const string WEB_SECURITY = "Web.Security";  // Custom Security Settings
 		public const string WEB_DEFAULTDOCS = "Web.DefaultDocs";  // Custom Default Documents
 		public const string WEB_APPPOOLS = "Web.AppPools";  // Dedicated Application Pools
-		public const string WEB_HEADERS = "Web.Headers";  // Custom Headers
+        public const string WEB_APPPOOLSRESTART = "Web.AppPoolsRestart";  // Application Pools Restart
+        public const string WEB_HEADERS = "Web.Headers";  // Custom Headers
 		public const string WEB_ERRORS = "Web.Errors";  // Custom Errors
 		public const string WEB_MIME = "Web.Mime";  // Custom MIME Types
 		public const string WEB_CGIBIN = "Web.CgiBin";  // CGI-BIN Folder
@@ -114,6 +115,8 @@ order by rg.groupOrder
         public const string EXCHANGE2007_MAXRECEIVEMESSAGESIZEKB = "Exchange2007.MaxReceiveMessageSizeKB";  // Max Receive Message Size
         public const string EXCHANGE2007_ISCONSUMER = "Exchange2007.IsConsumer";  // Is Consumer Organization
         public const string EXCHANGE2007_ENABLEDPLANSEDITING = "Exchange2007.EnablePlansEditing";  // Enabled plans editing
+        public const string EXCHANGE2007_ALLOWLITIGATIONHOLD = "Exchange2007.AllowLitigationHold";
+        public const string EXCHANGE2007_RECOVERABLEITEMSSPACE = "Exchange2007.RecoverableItemsSpace";
 		public const string MSSQL2000_DATABASES = "MsSQL2000.Databases";  // Databases
 		public const string MSSQL2000_USERS = "MsSQL2000.Users";  // Users
 		public const string MSSQL2000_MAXDATABASESIZE = "MsSQL2000.MaxDatabaseSize";  // Max Database Size
@@ -224,7 +227,9 @@ order by rg.groupOrder
         public const string LYNC_EVNATIONAL = "Lync.EVNational";
         public const string LYNC_EVMOBILE = "Lync.EVMobile";
         public const string LYNC_EVINTERNATIONAL = "Lync.EVInternational";
-        public const string LYNC_ENABLEDPLANSEDITING = "Lync.EnablePlansEditing";  
-        
+        public const string LYNC_ENABLEDPLANSEDITING = "Lync.EnablePlansEditing";
+
+        public const string HELICON_ZOO = "HeliconZoo.*";
+
     }
 }

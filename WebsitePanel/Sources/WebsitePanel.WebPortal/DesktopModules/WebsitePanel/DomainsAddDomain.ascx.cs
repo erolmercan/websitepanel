@@ -64,11 +64,14 @@ namespace WebsitePanel.Portal
 				ShowErrorMessage("DOMAIN_GET_DOMAIN", ex);
 			}
 
-            if (PanelSecurity.LoggedUser.Role == UserRole.User)
+            DomainType type = GetDomainType(Request["DomainType"]);
+
+            if ((PanelSecurity.LoggedUser.Role == UserRole.User) & (type != DomainType.SubDomain))
             {
                 if (!PackagesHelper.CheckGroupQuotaEnabled(PanelSecurity.PackageId, ResourceGroups.Dns, Quotas.DNS_EDITOR))
                     this.DisableControls = true;
             }
+
 		}
 
 		private void BindControls()
@@ -99,14 +102,14 @@ namespace WebsitePanel.Portal
 			// load package context
 			PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
 
-			if ((type == DomainType.DomainPointer || (type == DomainType.Domain && !cntx.Quotas[Quotas.OS_DOMAINPOINTERS].QuotaExhausted)) && !IsPostBack)
+			if ((type == DomainType.DomainPointer || (type == DomainType.Domain)) && !IsPostBack)
 			{
                 // bind web sites
                 WebSitesList.DataSource = ES.Services.WebServers.GetWebSites(PanelSecurity.PackageId, false);
                 WebSitesList.DataBind();
 			}
 
-            if ((type == DomainType.DomainPointer || (type == DomainType.Domain && !cntx.Quotas[Quotas.OS_DOMAINPOINTERS].QuotaExhausted)) && !IsPostBack)
+            if ((type == DomainType.DomainPointer || (type == DomainType.Domain)) && !IsPostBack)
             {
                 // bind mail domains
                 MailDomainsList.DataSource = ES.Services.MailServers.GetMailDomains(PanelSecurity.PackageId, false);
@@ -130,12 +133,12 @@ namespace WebsitePanel.Portal
             }
 
             // point Web site
-            PointWebSitePanel.Visible = (type == DomainType.DomainPointer || (type == DomainType.Domain && !cntx.Quotas[Quotas.OS_DOMAINPOINTERS].QuotaExhausted))
+            PointWebSitePanel.Visible = (type == DomainType.DomainPointer || (type == DomainType.Domain))
                 && cntx.Groups.ContainsKey(ResourceGroups.Web) && WebSitesList.Items.Count > 0;
             WebSitesList.Enabled = PointWebSite.Checked;
 
 			// point mail domain
-            PointMailDomainPanel.Visible = (type == DomainType.DomainPointer || (type == DomainType.Domain && !cntx.Quotas[Quotas.OS_DOMAINPOINTERS].QuotaExhausted))
+            PointMailDomainPanel.Visible = (type == DomainType.DomainPointer || (type == DomainType.Domain))
 				&& cntx.Groups.ContainsKey(ResourceGroups.Mail) && MailDomainsList.Items.Count > 0;
 			MailDomainsList.Enabled = PointMailDomain.Checked;
 
@@ -205,14 +208,14 @@ namespace WebsitePanel.Portal
 			// load package context
 			PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
 
-			if (type == DomainType.DomainPointer || (type == DomainType.Domain && !cntx.Quotas[Quotas.OS_DOMAINPOINTERS].QuotaExhausted))
+			if (type == DomainType.DomainPointer || (type == DomainType.Domain))
 			{
 
                 if (PointWebSite.Checked && WebSitesList.Items.Count > 0)
                     pointWebSiteId = Utils.ParseInt(WebSitesList.SelectedValue, 0);
 			}
 
-            if (type == DomainType.DomainPointer || (type == DomainType.Domain && !cntx.Quotas[Quotas.OS_DOMAINPOINTERS].QuotaExhausted))
+            if (type == DomainType.DomainPointer || (type == DomainType.Domain))
             {
                 if (PointMailDomain.Checked && MailDomainsList.Items.Count > 0)
                     pointMailDomainId = Utils.ParseInt(MailDomainsList.SelectedValue, 0);
