@@ -101,6 +101,7 @@
     <Compile Include="HostedSolution\LyncUsersPaged.cs" />
     <Compile Include="HostedSolution\LyncVoicePolicyType.cs" />
     <Compile Include="HostedSolution\TransactionAction.cs" />
+    <Compile Include="RemoteDesktopServices\IRemoteDesktopServices.cs" />
     <Compile Include="ResultObjects\HeliconApe.cs" />
     <Compile Include="HostedSolution\ExchangeMobileDevice.cs" />
     <Compile Include="HostedSolution\IOCSEdgeServer.cs" />
