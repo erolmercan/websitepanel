@@ -83,6 +83,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="esRemoteDesktopServices.asmx" />
     <Content Include="esHeliconZoo.asmx" />
     <Content Include="esLync.asmx" />
     <Content Include="esVirtualizationServerForPrivateCloud.asmx" />
@@ -142,6 +143,7 @@
     <Compile Include="Code\HeliconZoo\HeliconZooController.cs" />
     <Compile Include="Code\HostedSolution\LyncController.cs" />
     <Compile Include="Code\HostedSolution\LyncControllerAsync.cs" />
+    <Compile Include="Code\RemoteDesktopServices\RemoteDesktopServicesController.cs" />
     <Compile Include="Code\VirtualizationForPrivateCloud\CreateAsyncVMfromVM.cs" />
     <Compile Include="Code\VirtualizationForPrivateCloud\CreateServerAsyncWorkerForPrivateCloud.cs" />
     <Compile Include="Code\VirtualizationForPrivateCloud\VirtualizationServerControllerForPrivateCloud.cs" />
@@ -247,6 +249,10 @@
     <Compile Include="Code\WebServers\WebServerController.cs" />
     <Compile Include="Code\Wizards\UserCreationWizard.cs" />
     <Compile Include="Code\Wizards\WebApplicationsInstaller.cs" />
+    <Compile Include="esRemoteDesktopServices.asmx.cs">
+      <DependentUpon>esRemoteDesktopServices.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="esHeliconZoo.asmx.cs">
       <DependentUpon>esHeliconZoo.asmx</DependentUpon>
       <SubType>Component</SubType>

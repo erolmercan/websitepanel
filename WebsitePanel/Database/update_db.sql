@@ -454,3 +454,21 @@ GO
 -- add Application Pools Restart Quota
 INSERT [dbo].[Quotas] ([QuotaID], [GroupID], [QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID], [HideQuota]) VALUES (411, 2, 13, N'Web.AppPoolsRestart', N'Application Pools Restart', 1, 0, NULL, NULL)
 GO
+
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ResourceGroups] WHERE [GroupName] = 'Remote Desktop Services')
+BEGIN
+INSERT [dbo].[ResourceGroups] ([GroupID], [GroupName], [GroupOrder], [GroupController], [ShowGroup]) VALUES (43, N'RemoteDesktopServices', 24, N'WebsitePanel.EnterpriseServer.RemoteDesktopServicesController', 1)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE [DisplayName] = 'Remote Desktop Windows 2012')
+BEGIN
+INSERT [dbo].[Providers] ([ProviderId], [GroupId], [ProviderName], [DisplayName], [ProviderType], [EditorControl], [DisableAutoDiscovery]) VALUES(500, 43, N'RemoteDesktop2012', N'Remote Desktop Services Windows 2012', N'WebsitePanel.Providers.RemoteDesktopServices.Windows2012, WebsitePanel.Providers.RemoteDesktopServices.Windows2012', N'RemoteDesktopServices',	1)
+END
+ELSE
+BEGIN
+UPDATE [dbo].[Providers] SET [DisableAutoDiscovery] = NULL WHERE [DisplayName] = 'Remote Desktop Windows 2012'
+END
+GO
+

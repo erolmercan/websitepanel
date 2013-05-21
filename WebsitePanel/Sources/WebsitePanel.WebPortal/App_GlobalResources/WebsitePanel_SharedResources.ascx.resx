@@ -1890,11 +1890,14 @@
   <data name="ResourceGroup.MsSQL2008" xml:space="preserve">
     <value>SQL Server 2008</value>
   </data>
-  <data name="ResourceGroup.MsSQL2012" xml:space="preserve">
-    <value>SQL Server 2012</value>
+  <data name="ResourceGroup.RemoteDesktopServices" xml:space="preserve">
+    <value>Remote Desktop Services</value>
   </data>
   <data name="ResourceGroup.MySQL5" xml:space="preserve">
     <value>MySQL 5</value>
+  </data>
+  <data name="ResourceGroup.MsSQL2012" xml:space="preserve">
+    <value>SQL Server 2012</value>
   </data>
   <data name="Quota.OS.MinimumTaskInterval" xml:space="preserve">
     <value>Minimum Tasks Interval, minutes</value>
