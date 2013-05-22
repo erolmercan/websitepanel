@@ -5262,6 +5262,12 @@
   <data name="Success.EXCHANGE_UPDATEPLANS" xml:space="preserve">
     <value>Mailbox plan updated</value>
   </data>
+  <data name="Error.LYNC_UPDATEPLANS" xml:space="preserve">
+    <value>Lync plan update failed</value>
+  </data>
+  <data name="Success.LYNC_UPDATEPLANS" xml:space="preserve">
+    <value>Lync plan updated</value>
+  </data>
   <data name="Error.LYNC_APPLYPLANTEMPLATE" xml:space="preserve">
     <value>Failed to apply plans template</value>
   </data>

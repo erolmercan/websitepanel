@@ -40,6 +40,40 @@ namespace WebsitePanel.Portal.Lync
         {
             if (!IsPostBack)
                 BindItems();
+        }
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            bool EnterpriseVoice = false;
+
+            WebsitePanel.Providers.HostedSolution.LyncUserPlan plan = planSelector.plan;
+            if (plan != null)
+                EnterpriseVoice = plan.EnterpriseVoice;
+
+            pnEnterpriseVoice.Visible = EnterpriseVoice;
+
+            if (!EnterpriseVoice)
+            {
+                tbPhoneNumber.Text = "";
+                tbPin.Text = "";
+            }
+
+            if (EnterpriseVoice)
+            {
+                string[] pinPolicy = ES.Services.Lync.GetPolicyList(PanelRequest.ItemID, LyncPolicyType.Pin, "MinPasswordLength");
+                if (pinPolicy != null)
+                {
+                    if (pinPolicy.Length > 0)
+                    {
+                        int MinPasswordLength = -1;
+                        if (int.TryParse(pinPolicy[0], out MinPasswordLength))
+                        {
+                            PinRegularExpressionValidator.ValidationExpression = "^([0-9]){" + MinPasswordLength.ToString() + ",}$";
+                            PinRegularExpressionValidator.ErrorMessage = "Must contain only numbers. Min. length " + MinPasswordLength.ToString();
+                        }
+                    }
+                }
+            }
 
         }
 
@@ -54,6 +88,7 @@ namespace WebsitePanel.Portal.Lync
             planSelector.planId = lyncUser.LyncUserPlanId.ToString();
             lyncUserSettings.sipAddress = lyncUser.SipAddress;
 
+            tbPhoneNumber.Text = lyncUser.LineUri;
         }
 
         protected void btnSave_Click(object sender, EventArgs e)
@@ -65,7 +100,7 @@ namespace WebsitePanel.Portal.Lync
                 LyncUserResult res =  ES.Services.Lync.SetUserLyncPlan(PanelRequest.ItemID, PanelRequest.AccountID, Convert.ToInt32(planSelector.planId));
                 if (res.IsSuccess && res.ErrorCodes.Count == 0)
                 {
-                    res = ES.Services.Lync.SetLyncUserGeneralSettings(PanelRequest.ItemID, PanelRequest.AccountID, lyncUserSettings.sipAddress, string.Empty);
+                    res = ES.Services.Lync.SetLyncUserGeneralSettings(PanelRequest.ItemID, PanelRequest.AccountID, lyncUserSettings.sipAddress, tbPhoneNumber.Text + ":" + tbPin.Text);
                 }
 
                 if (res.IsSuccess && res.ErrorCodes.Count == 0)

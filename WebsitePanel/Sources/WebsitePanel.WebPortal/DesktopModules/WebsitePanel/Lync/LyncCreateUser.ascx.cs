@@ -30,6 +30,9 @@
 using WebsitePanel.Providers.ResultObjects;
 using WebsitePanel.EnterpriseServer;
 
+using WebsitePanel.Providers.HostedSolution;
+
+
 namespace WebsitePanel.Portal.Lync
 {
     public partial class CreateLyncUser : WebsitePanelModuleBase
@@ -43,7 +46,41 @@ namespace WebsitePanel.Portal.Lync
                 if (plans.Length == 0)
                     btnCreate.Enabled = false;
             }
+        }
 
+
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            bool EnterpriseVoice = false;
+
+            WebsitePanel.Providers.HostedSolution.LyncUserPlan plan = planSelector.plan;
+            if (plan != null)
+                EnterpriseVoice = plan.EnterpriseVoice;
+
+            pnEnterpriseVoice.Visible = EnterpriseVoice;
+
+            if (!EnterpriseVoice)
+            {
+                tbPhoneNumber.Text = ""; 
+                tbPin.Text = "";
+            }
+
+            if (EnterpriseVoice)
+            {
+                string[] pinPolicy = ES.Services.Lync.GetPolicyList(PanelRequest.ItemID, LyncPolicyType.Pin, "MinPasswordLength");
+                if (pinPolicy != null)
+                {
+                    if (pinPolicy.Length > 0)
+                    {
+                        int MinPasswordLength = -1;
+                        if (int.TryParse(pinPolicy[0], out MinPasswordLength))
+                        {
+                            PinRegularExpressionValidator.ValidationExpression = "^([0-9]){" + MinPasswordLength.ToString() + ",}$";
+                            PinRegularExpressionValidator.ErrorMessage = "Must contain only numbers. Min. length " + MinPasswordLength.ToString();
+                        }
+                    }
+                }
+            }
 
         }
 
@@ -53,6 +90,11 @@ namespace WebsitePanel.Portal.Lync
             LyncUserResult res = ES.Services.Lync.CreateLyncUser(PanelRequest.ItemID, accountId, Convert.ToInt32(planSelector.planId));
             if (res.IsSuccess && res.ErrorCodes.Count == 0)
             {
+
+                //#1
+                LyncUser lyncUser = ES.Services.Lync.GetLyncUserGeneralSettings(PanelRequest.ItemID, accountId);
+                ES.Services.Lync.SetLyncUserGeneralSettings(PanelRequest.ItemID, accountId, lyncUser.SipAddress, tbPhoneNumber.Text + ":" + tbPin.Text);
+
                 Response.Redirect(EditUrl("AccountID", accountId.ToString(), "edit_lync_user",
                     "SpaceID=" + PanelSecurity.PackageId,
                     "ItemID=" + PanelRequest.ItemID));
