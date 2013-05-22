@@ -306,13 +306,13 @@ namespace WebsitePanel.Providers.HostedSolution
 
             try
             {
-                Type type = typeof (HostedSharePointServer2013Impl);
-                var info = new AppDomainSetup {ApplicationBase = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), PrivateBinPath = "bin; bin/debug"};
+                Type type = typeof(HostedSharePointServer2013Impl);
+                var info = new AppDomainSetup { ApplicationBase = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory), PrivateBinPath = string.Join(Path.PathSeparator.ToString(), new string[]{"bin", "bin/debug", "bin/SharePoint2013"}) };
                 domain = AppDomain.CreateDomain("WSS30", null, info);
-                var impl = (HostedSharePointServer2013Impl) domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName);
+                var impl = (HostedSharePointServer2013Impl)domain.CreateInstanceAndUnwrap(type.Assembly.FullName, type.FullName);
 
                 return action(impl);
-            }
+            }            
             finally
             {
                 if (domain != null)
@@ -320,6 +320,8 @@ namespace WebsitePanel.Providers.HostedSolution
                     AppDomain.Unload(domain);
                 }
             }
+
+            throw new ArgumentNullException("action");
         }
 
         #endregion
