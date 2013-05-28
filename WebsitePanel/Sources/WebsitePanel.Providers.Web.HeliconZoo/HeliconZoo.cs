@@ -100,12 +100,17 @@ namespace WebsitePanel.Providers.Web.HeliconZoo
                     }
                 }
 
+                //main engines
+
                 foreach (ConfigurationElement item in enginesCollection)
                 {
                     HeliconZooEngine newItem = ConvertElementToHeliconZooEngine(item);
                     newItem.disabled = switchboardDisabledDefault;
                     result.Add(newItem);
                 }
+
+
+                //userEngines
 
                 ConfigurationElement userEngines = heliconZooServer.GetChildElement("userEngines");
                 ConfigurationElementCollection userEnginesCollection = userEngines.GetCollection();
@@ -125,6 +130,17 @@ namespace WebsitePanel.Providers.Web.HeliconZoo
                     newItem.disabled = switchboardDisabledDefault;
                     result.Add(newItem);
                 }
+
+
+                //Web console
+                HeliconZooEngine webConsole = new HeliconZooEngine
+                    {
+                        displayName = "Web console", 
+                        name = "console"
+                        
+                    };
+
+                result.Add(webConsole);
 
               
 
@@ -350,6 +366,69 @@ namespace WebsitePanel.Providers.Web.HeliconZoo
                 srvman.CommitChanges();
             }
 
+        }
+
+
+        public bool IsWebCosoleEnabled()
+        {
+            bool isEnginesEnabled = true;
+
+            using (var srvman = new ServerManager())
+            {
+                Configuration appConfig = srvman.GetApplicationHostConfiguration();
+
+                ConfigurationSection heliconZooServer = appConfig.GetSection("system.webServer/heliconZooServer");
+
+                //switchboard
+                ConfigurationElement switchboard = heliconZooServer.GetChildElement("switchboard");
+                ConfigurationElementCollection switchboardCollection = switchboard.GetCollection();
+
+
+                foreach (ConfigurationElement switchboardElement in switchboardCollection)
+                {
+                    if ((string)switchboardElement.GetAttributeValue("name") == "console")
+                    {
+                        isEnginesEnabled = (bool)switchboardElement.GetAttributeValue("enabled");
+                        break;
+                    }
+                }
+            }
+
+            return isEnginesEnabled;
+        }
+
+        public void SetWebCosoleEnabled(bool enabled)
+        {
+            using (var srvman = new ServerManager())
+            {
+                Configuration appConfig = srvman.GetApplicationHostConfiguration();
+
+                ConfigurationSection heliconZooServer = appConfig.GetSection("system.webServer/heliconZooServer");
+
+                ConfigurationElement switchboard = heliconZooServer.GetChildElement("switchboard");
+                ConfigurationElementCollection switchboardCollection = switchboard.GetCollection();
+
+                bool found = false;
+                foreach (ConfigurationElement switchboardElement in switchboardCollection)
+                {
+                    if ((string)switchboardElement.GetAttributeValue("name") == "console")
+                    {
+                        switchboardElement.SetAttributeValue("enabled", enabled ? "true" : "false");
+                        found = true;
+                        break;
+                    }
+                }
+
+                if (!found)
+                {
+                    ConfigurationElement element = switchboardCollection.CreateElement();
+                    element.SetAttributeValue("name", "console");
+                    element.SetAttributeValue("enabled", enabled ? "true" : "false");
+                    switchboardCollection.Add(element);
+                }
+
+                srvman.CommitChanges();
+            }
         }
 
         #region private methods

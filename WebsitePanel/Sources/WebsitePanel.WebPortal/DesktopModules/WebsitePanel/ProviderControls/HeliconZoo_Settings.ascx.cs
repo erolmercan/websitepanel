@@ -114,6 +114,8 @@ public partial class HeliconZoo_Settings : WebsitePanelControlBase, IHostingServ
             // bind 'Enable quotas' checkbox
             bool enabled = ES.Services.HeliconZoo.IsEnginesEnabled(PanelRequest.ServiceId);
             QuotasEnabled.Checked = !enabled;
+
+            WebCosoleEnabled.Checked = ES.Services.HeliconZoo.IsWebCosoleEnabled(PanelRequest.ServiceId);
         }
         else
         {
@@ -139,6 +141,8 @@ public partial class HeliconZoo_Settings : WebsitePanelControlBase, IHostingServ
 
         // save switcher
         ES.Services.HeliconZoo.SwithEnginesEnabled(PanelRequest.ServiceId, !QuotasEnabled.Checked);
+
+        ES.Services.HeliconZoo.SetWebCosoleEnabled(PanelRequest.ServiceId, WebCosoleEnabled.Checked);
     }
 
     protected void ClearEngineForm()

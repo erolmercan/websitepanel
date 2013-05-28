@@ -32,6 +32,7 @@ namespace WebsitePanel.Portal
             ViewState["WebSitePackageId"] = site.PackageId;
 
             BindEngines(site);
+            BindInstalledApplications();
             BindApplications();
         }
 
@@ -42,12 +43,17 @@ namespace WebsitePanel.Portal
                 ES.Services.HeliconZoo.GetAllowedHeliconZooQuotasForPackage(site.PackageId);
             Array.Sort(allowedEngineArray, new ShortHeliconZooEngineComparer());
 
-            // get enabled engines for this site
+
+            
+
+            // get enabled engines for this site from applicationHost.config
             string[] enabledEngineNames = ES.Services.HeliconZoo.GetEnabledEnginesForSite(site.SiteId, site.PackageId);
             ViewState["EnabledEnginesNames"] = enabledEngineNames;
+
+            //console allowed in applicationHost.config
+            ViewState["IsZooWebConsoleEnabled"] = enabledEngineNames.Contains("console", StringComparer.OrdinalIgnoreCase);
+    
             
-            //EnabledEnginesList.DataSource = enabledEngineNames;
-            //EnabledEnginesList.DataBind();
 
 
             List<ShortHeliconZooEngine> allowedEngines = new List<ShortHeliconZooEngine>(allowedEngineArray);
@@ -55,18 +61,41 @@ namespace WebsitePanel.Portal
             foreach (ShortHeliconZooEngine engine in allowedEngines)
             {
                 engine.Name = engine.Name.Replace("HeliconZoo.", "");
-                engine.Enabled = enabledEngineNames.Contains(engine.Name, StringComparer.OrdinalIgnoreCase);
+                //engine.Enabled = enabledEngineNames.Contains(engine.Name, StringComparer.OrdinalIgnoreCase);
+
+                if (engine.Name == "console")
+                {
+                    //console allowed in hosting plan
+                    ViewState["IsZooWebConsoleEnabled"] = engine.Enabled;
+                }
+   
             }
 
             ViewState["AllowedEngines"] = allowedEngines;
 
-            //AllowedEnginesList.DataSource = allowedEngines;
-            //AllowedEnginesList.DataBind();
+        }
+
+        private void BindInstalledApplications()
+        {
+            if ((bool) ViewState["IsZooWebConsoleEnabled"])
+            {
+                gvInstalledApplications.DataSource = ES.Services.WebServers.GetZooApplications(PanelRequest.ItemID);
+                gvInstalledApplications.DataBind();
+            }
+            else
+            {
+                gvInstalledApplications.Visible = false;
+                lblConsole.Visible = false;
+            }
+
         }
 
         private void BindApplications()
         {
+
+
             WebAppGalleryHelpers helper = new WebAppGalleryHelpers();
+
             GalleryApplicationsResult result = helper.GetGalleryApplications("ZooTemplate", PanelSecurity.PackageId);
 
             List<GalleryApplication> applications = result.Value as List<GalleryApplication>;
@@ -77,18 +106,33 @@ namespace WebsitePanel.Portal
             {
                 foreach (GalleryApplication application in applications)
                 {
+                    
+
                     foreach (string keyword in application.Keywords)
                     {
+                        bool appAlreadyAdded = false;
                         if (keyword.StartsWith("ZooEngine", StringComparison.OrdinalIgnoreCase))
                         {
                             string appEngine = keyword.Substring("ZooEngine".Length);
+                            
                             foreach (ShortHeliconZooEngine engine in allowedEngines)
                             {
+                                if (!engine.Enabled)
+                                {
+                                    continue; //skip
+                                }
+
                                 if (string.Equals(appEngine, engine.KeywordedName, StringComparison.OrdinalIgnoreCase))
                                 {
+                                    
                                     filteredApplications.Add(application);
+                                    appAlreadyAdded = true;
                                     break;
                                 }
+                            }
+                            if (appAlreadyAdded)
+                            {
+                                break;
                             }
                         }
                     }
@@ -194,6 +238,45 @@ namespace WebsitePanel.Portal
             url.Add("ReturnUrl=" + Server.UrlEncode(Request.RawUrl));
 
             return "~/Default.aspx?" + String.Join("&", url.ToArray());
+        }
+
+        protected void gvInstalledApplications_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "EnableConsole")
+            {
+                UpdatedAllowedEngines();
+
+                string appName = e.CommandArgument.ToString();
+
+                ES.Services.WebServers.SetZooConsoleEnabled(PanelRequest.ItemID, appName);
+
+                BindInstalledApplications();
+            }
+
+            if (e.CommandName == "DisableConsole")
+            {
+                UpdatedAllowedEngines();
+
+                string appName = e.CommandArgument.ToString();
+
+                ES.Services.WebServers.SetZooConsoleDisabled(PanelRequest.ItemID, appName);
+
+                BindInstalledApplications();
+            }
+
+          
+        }
+
+
+        protected bool IsNullOrEmpty(string value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
+
+        protected string GetConsoleFullUrl(string consoleUrl)
+        {
+            WebSite site = ES.Services.WebServers.GetWebSite(PanelRequest.ItemID);
+            return "http://" + site.Name + consoleUrl;
         }
     }
 }
