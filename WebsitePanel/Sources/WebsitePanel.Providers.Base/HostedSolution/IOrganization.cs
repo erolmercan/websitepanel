@@ -54,7 +54,7 @@ namespace WebsitePanel.Providers.HostedSolution
         void SetUserPassword(string organizationId, string accountName, string password);
 
         void SetUserPrincipalName(string organizationId, string accountName, string userPrincipalName);
-
+        
         bool OrganizationExists(string organizationId);
 
         void DeleteOrganizationDomain(string organizationDistinguishedName, string domain);
@@ -64,5 +64,7 @@ namespace WebsitePanel.Providers.HostedSolution
         PasswordPolicyResult GetPasswordPolicy();
 
         string GetSamAccountNameByUserPrincipalName(string organizationId, string userPrincipalName);
+
+        bool DoesSamAccountNameExist(string accountName);
     }
 }

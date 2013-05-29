@@ -26,33 +26,27 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE)  ARISING  IN  ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-using System;
-using System.Data;
-using System.Configuration;
-using System.Collections;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-
 using WebsitePanel.EnterpriseServer;
 
 namespace WebsitePanel.Portal
 {
-	public partial class SettingsExchangePolicy : WebsitePanelControlBase, IUserSettingsEditorControl
+    public partial class SettingsExchangePolicy : WebsitePanelControlBase, IUserSettingsEditorControl
     {
+        #region IUserSettingsEditorControl Members
+
         public void BindSettings(UserSettings settings)
         {
             // mailbox
-			mailboxPasswordPolicy.Value = settings["MailboxPasswordPolicy"];
+            mailboxPasswordPolicy.Value = settings["MailboxPasswordPolicy"];
+            orgIdPolicy.Value = settings["OrgIdPolicy"];
         }
 
         public void SaveSettings(UserSettings settings)
         {
-			// mailbox
-			settings["MailboxPasswordPolicy"] = mailboxPasswordPolicy.Value;
+            settings["MailboxPasswordPolicy"] = mailboxPasswordPolicy.Value;
+            settings["OrgIdPolicy"] = orgIdPolicy.Value;
         }
-	}
+
+        #endregion
+    }
 }

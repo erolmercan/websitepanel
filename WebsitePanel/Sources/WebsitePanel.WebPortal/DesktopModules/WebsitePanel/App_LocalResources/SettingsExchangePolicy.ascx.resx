@@ -120,4 +120,7 @@
   <data name="secMailboxPassword.Text" xml:space="preserve">
     <value>User Password Policy</value>
   </data>
+  <data name="secOrg.Text" xml:space="preserve">
+    <value>Organization Id Policy</value>
+  </data>
 </root>

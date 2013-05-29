@@ -34,6 +34,7 @@ using System.Text.RegularExpressions;
 using WebsitePanel.Providers.HostedSolution;
 using Microsoft.ApplicationBlocks.Data;
 using System.Collections.Generic;
+using Microsoft.Win32;
 
 namespace WebsitePanel.EnterpriseServer
 {
@@ -42,11 +43,31 @@ namespace WebsitePanel.EnterpriseServer
     /// </summary>
     public static class DataProvider
     {
+        
+        static string EnterpriseServerRegistryPath = "SOFTWARE\\WebsitePanel\\EnterpriseServer";
+        
         private static string ConnectionString
         {
             get
             {
-                return ConfigurationManager.ConnectionStrings["EnterpriseServer"].ConnectionString;
+                string ConnectionKey = ConfigurationManager.AppSettings["WebsitePanel.AltConnectionString"];
+                string value = string.Empty;
+
+                if (!string.IsNullOrEmpty(ConnectionKey))
+                {
+                    RegistryKey root = Registry.LocalMachine;
+                    RegistryKey rk = root.OpenSubKey(EnterpriseServerRegistryPath);
+                    if (rk != null)
+                    {
+                        value = (string)rk.GetValue(ConnectionKey, null);
+                        rk.Close();
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(value))
+                    return value;
+                else
+                    return ConfigurationManager.ConnectionStrings["EnterpriseServer"].ConnectionString;
             }
         }
 
@@ -2512,7 +2533,8 @@ namespace WebsitePanel.EnterpriseServer
         #region Exchange Mailbox Plans
         public static int AddExchangeMailboxPlan(int itemID, string mailboxPlan, bool enableActiveSync, bool enableIMAP, bool enableMAPI, bool enableOWA, bool enablePOP,
                                                     bool isDefault, int issueWarningPct, int keepDeletedItemsDays, int mailboxSizeMB, int maxReceiveMessageSizeKB, int maxRecipients,
-                                                    int maxSendMessageSizeKB, int prohibitSendPct, int prohibitSendReceivePct, bool hideFromAddressBook, int mailboxPlanType)
+                                                    int maxSendMessageSizeKB, int prohibitSendPct, int prohibitSendReceivePct, bool hideFromAddressBook, int mailboxPlanType,
+                                                    bool enabledLitigationHold, long recoverabelItemsSpace, long recoverabelItemsWarning, string litigationHoldUrl, string litigationHoldMsg)
         {
             SqlParameter outParam = new SqlParameter("@MailboxPlanId", SqlDbType.Int);
             outParam.Direction = ParameterDirection.Output;
@@ -2539,7 +2561,12 @@ namespace WebsitePanel.EnterpriseServer
                 new SqlParameter("@ProhibitSendPct", prohibitSendPct),
                 new SqlParameter("@ProhibitSendReceivePct", prohibitSendReceivePct),
                 new SqlParameter("@HideFromAddressBook", hideFromAddressBook),
-                new SqlParameter("@MailboxPlanType", mailboxPlanType)
+                new SqlParameter("@MailboxPlanType", mailboxPlanType),
+	            new SqlParameter("@AllowLitigationHold",enabledLitigationHold),
+                new SqlParameter("@RecoverableItemsWarningPct", recoverabelItemsWarning),
+                new SqlParameter("@RecoverableItemsSpace",recoverabelItemsSpace),
+                new SqlParameter("@LitigationHoldUrl",litigationHoldUrl),
+                new SqlParameter("@LitigationHoldMsg",litigationHoldMsg)
             );
 
             return Convert.ToInt32(outParam.Value);
@@ -2549,7 +2576,8 @@ namespace WebsitePanel.EnterpriseServer
 
         public static void UpdateExchangeMailboxPlan(int mailboxPlanID, string mailboxPlan, bool enableActiveSync, bool enableIMAP, bool enableMAPI, bool enableOWA, bool enablePOP,
                                             bool isDefault, int issueWarningPct, int keepDeletedItemsDays, int mailboxSizeMB, int maxReceiveMessageSizeKB, int maxRecipients,
-                                            int maxSendMessageSizeKB, int prohibitSendPct, int prohibitSendReceivePct, bool hideFromAddressBook, int mailboxPlanType)
+                                            int maxSendMessageSizeKB, int prohibitSendPct, int prohibitSendReceivePct, bool hideFromAddressBook, int mailboxPlanType,
+                                        bool enabledLitigationHold, long recoverabelItemsSpace, long recoverabelItemsWarning, string litigationHoldUrl, string litigationHoldMsg)
         {
             SqlHelper.ExecuteNonQuery(
                 ConnectionString,
@@ -2572,7 +2600,13 @@ namespace WebsitePanel.EnterpriseServer
                 new SqlParameter("@ProhibitSendPct", prohibitSendPct),
                 new SqlParameter("@ProhibitSendReceivePct", prohibitSendReceivePct),
                 new SqlParameter("@HideFromAddressBook", hideFromAddressBook),
-                new SqlParameter("@MailboxPlanType", mailboxPlanType)
+                new SqlParameter("@MailboxPlanType", mailboxPlanType),
+                new SqlParameter("@AllowLitigationHold", enabledLitigationHold),
+                new SqlParameter("@RecoverableItemsWarningPct", recoverabelItemsWarning),
+                new SqlParameter("@RecoverableItemsSpace", recoverabelItemsSpace),
+                new SqlParameter("@LitigationHoldUrl",litigationHoldUrl),
+                new SqlParameter("@LitigationHoldMsg",litigationHoldMsg)
+
             );
         }
 
@@ -3544,5 +3578,123 @@ namespace WebsitePanel.EnterpriseServer
             return -1;
         }
 
+        #region Helicon Zoo
+
+        public static void GetHeliconZooProviderAndGroup(string providerName, out int providerId, out int groupId)
+        {
+            IDataReader reader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text,
+                @"SELECT TOP 1 
+                    ProviderID, GroupID
+                  FROM Providers
+                  WHERE ProviderName = @ProviderName",
+                new SqlParameter("@ProviderName", providerName));
+            
+            reader.Read();
+
+            providerId = (int) reader["ProviderID"];
+            groupId = (int) reader["GroupID"];
+
+        }
+
+        public static IDataReader GetHeliconZooQuotas(int providerId)
+        {
+            IDataReader reader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text,
+                @"SELECT
+	                Q.QuotaID,
+	                Q.GroupID,
+	                Q.QuotaName,
+	                Q.QuotaDescription,
+	                Q.QuotaTypeID,
+	                Q.ServiceQuota
+                FROM Providers AS P
+                INNER JOIN Quotas AS Q ON P.GroupID = Q.GroupID
+                WHERE P.ProviderID = @ProviderID",
+                new SqlParameter("@ProviderID", providerId));
+
+            return reader;
+        }
+
+        public static void RemoveHeliconZooQuota(int groupId, string engineName)
+        {
+            int quotaId;
+
+            // find quota id
+            IDataReader reader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text,
+                @"SELECT TOP 1 
+                    QuotaID
+                  FROM Quotas
+                  WHERE QuotaName = @QuotaName AND GroupID = @GroupID",
+                new SqlParameter("@QuotaName", engineName),
+                new SqlParameter("@GroupID", groupId));
+
+            reader.Read();
+            quotaId = (int)reader["QuotaID"];
+
+            // delete references from HostingPlanQuotas
+            SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text,
+                "DELETE FROM HostingPlanQuotas WHERE QuotaID = @QuotaID",
+                new SqlParameter("@QuotaID", quotaId)
+            );
+
+            // delete from Quotas
+            SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text,
+                "DELETE FROM Quotas WHERE QuotaID = @QuotaID",
+                new SqlParameter("@QuotaID", quotaId)
+            );
+
+        }
+
+        public static void AddHeliconZooQuota(int groupId, int quotaId, string engineName, string engineDescription, int quotaOrder)
+        {
+            SqlHelper.ExecuteNonQuery(ConnectionString, CommandType.Text,
+                    @"INSERT INTO Quotas (QuotaID, GroupID, QuotaOrder, QuotaName, QuotaDescription, QuotaTypeID, ServiceQuota)
+                    VALUES (@QuotaID, @GroupID, @QuotaOrder, @QuotaName, @QuotaDescription, 1, 0)",
+                    new SqlParameter("@QuotaID", quotaId),
+                    new SqlParameter("@GroupID", groupId),
+                    new SqlParameter("@QuotaOrder", quotaOrder),
+                    new SqlParameter("@QuotaName", engineName),
+                    new SqlParameter("@QuotaDescription", engineDescription)
+                );
+        }
+
+        public static IDataReader GetEnabledHeliconZooQuotasForPackage(int packageId)
+        {
+            int providerId, groupId;
+
+            GetHeliconZooProviderAndGroup("HeliconZoo", out providerId, out groupId);
+
+            IDataReader reader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text, 
+                @"SELECT     HostingPlanQuotas.QuotaID, Quotas.QuotaName, Quotas.QuotaDescription
+                FROM         HostingPlanQuotas 
+                    INNER JOIN Packages ON HostingPlanQuotas.PlanID = Packages.PlanID 
+                        INNER JOIN Quotas ON HostingPlanQuotas.QuotaID = Quotas.QuotaID
+                WHERE     
+                    (Packages.PackageID = @PackageID) AND (Quotas.GroupID = @GroupID) AND (HostingPlanQuotas.QuotaValue = 1)",
+                new SqlParameter("@PackageID", packageId),
+                new SqlParameter("@GroupID", groupId)
+            );
+
+            return reader;
+        }
+
+        public static int GetServerIdForPackage(int packageId)
+        {
+            IDataReader reader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text,
+                @"SELECT TOP 1 
+                    ServerID
+                  FROM Packages
+                  WHERE PackageID = @PackageID",
+                new SqlParameter("@PackageID", packageId)
+            );
+
+            if (reader.Read())
+            {
+                return (int)reader["ServerID"];
+            }
+
+            return -1;
+        }
+
+        #endregion
     }
 }

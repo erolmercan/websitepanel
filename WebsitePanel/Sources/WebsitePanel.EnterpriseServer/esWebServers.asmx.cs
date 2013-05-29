@@ -152,9 +152,9 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         [WebMethod]
-        public int DeleteWebSite(int siteItemId)
+        public int DeleteWebSite(int siteItemId, bool deleteWebsiteDirectory)
         {
-            return WebServerController.DeleteWebSite(siteItemId);
+            return WebServerController.DeleteWebSite(siteItemId, deleteWebsiteDirectory);
         }
 
         [WebMethod]
@@ -180,6 +180,20 @@ namespace WebsitePanel.EnterpriseServer
         {
             return WebServerController.ChangeSiteState(siteItemId, state);
         }
+
+        // AppPool
+        [WebMethod]
+        public int ChangeAppPoolState(int siteItemId, AppPoolState state)
+        {
+            return WebServerController.ChangeAppPoolState(siteItemId, state);
+        }
+
+        [WebMethod]
+        public AppPoolState GetAppPoolState(int siteItemId)
+        {
+            return WebServerController.GetAppPoolState(siteItemId);
+        }
+
 
         #region Shared SSL Folders
         [WebMethod]
@@ -376,6 +390,18 @@ namespace WebsitePanel.EnterpriseServer
         public int DisableHeliconApe(int siteItemId)
         {
             return WebServerController.DisableHeliconApe(siteItemId);
+        }
+
+        [WebMethod]
+        public int EnableHeliconApeGlobally(int serviceId)
+        {
+            return WebServerController.EnableHeliconApeGlobally(serviceId);
+        }
+
+        [WebMethod]
+        public int DisableHeliconApeGlobally(int serviceId)
+        {
+            return WebServerController.DisableHeliconApeGlobally(serviceId);
         }
 
         [WebMethod]
