@@ -51,9 +51,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebsitePanel.Common.Utils">
-      <HintPath>..\..\Bin\WebsitePanel.Common.Utils.dll</HintPath>
-    </Reference>
     <Reference Include="WebsitePanel.EnterpriseServer.Base, Version=2.1.0.1, Culture=neutral, PublicKeyToken=da8782a6fc4d0081, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Bin\WebsitePanel.EnterpriseServer.Base.dll</HintPath>
@@ -178,6 +175,10 @@
     <Compile Include="Wizards\WebApplicationsInstaller.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\WebsitePanel.Common.Utils\WebsitePanel.Common.Utils.csproj">
+      <Project>{53D22D35-4013-415F-BA09-F67A0DBBB0C1}</Project>
+      <Name>WebsitePanel.Common.Utils</Name>
+    </ProjectReference>
     <ProjectReference Include="..\WebsitePanel.Templates\WebsitePanel.Templates.csproj">
       <Project>{387FA0EF-3927-45FF-8F8F-BCCD735540C6}</Project>
       <Name>WebsitePanel.Templates</Name>
