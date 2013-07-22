@@ -7,10 +7,10 @@
 // </автоматически создаваемое>
 //------------------------------------------------------------------------------
 
-namespace WebsitePanel.Portal.ExchangeServer {
+namespace WebsitePanel.Portal.HostedSolution {
     
     
-    public partial class ExchangeDisclaimerGeneralSettings {
+    public partial class UserMemberOf {
         
         /// <summary>
         /// asyncTasks элемент управления.
@@ -67,6 +67,24 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::System.Web.UI.WebControls.Literal litDisplayName;
         
         /// <summary>
+        /// UserTabsId элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.UserTabs UserTabsId;
+        
+        /// <summary>
+        /// MailboxTabsId элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.MailboxTabs MailboxTabsId;
+        
+        /// <summary>
         /// messageBox элемент управления.
         /// </summary>
         /// <remarks>
@@ -76,49 +94,40 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::WebsitePanel.Portal.UserControls.SimpleMessageBox messageBox;
         
         /// <summary>
-        /// locDisplayName элемент управления.
+        /// secDistributionLists элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Localize locDisplayName;
+        protected global::WebsitePanel.Portal.CollapsiblePanel secDistributionLists;
         
         /// <summary>
-        /// txtDisplayName элемент управления.
+        /// DistributionLists элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtDisplayName;
+        protected global::System.Web.UI.WebControls.Panel DistributionLists;
         
         /// <summary>
-        /// valRequireDisplayName элемент управления.
+        /// GeneralUpdatePanel элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator valRequireDisplayName;
+        protected global::System.Web.UI.UpdatePanel GeneralUpdatePanel;
         
         /// <summary>
-        /// locNotes элемент управления.
+        /// distrlists элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Localize locNotes;
-        
-        /// <summary>
-        /// txtNotes элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически создаваемое поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNotes;
+        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.AccountsList distrlists;
         
         /// <summary>
         /// btnSave элемент управления.

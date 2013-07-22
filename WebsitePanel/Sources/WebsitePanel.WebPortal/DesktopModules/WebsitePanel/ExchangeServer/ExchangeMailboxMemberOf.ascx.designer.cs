@@ -10,7 +10,7 @@
 namespace WebsitePanel.Portal.ExchangeServer {
     
     
-    public partial class ExchangeDisclaimerGeneralSettings {
+    public partial class ExchangeMailboxMemberOf {
         
         /// <summary>
         /// asyncTasks элемент управления.
@@ -67,6 +67,15 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::System.Web.UI.WebControls.Literal litDisplayName;
         
         /// <summary>
+        /// tabs элемент управления.
+        /// </summary>
+        /// <remarks>
+        /// Автоматически создаваемое поле.
+        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
+        /// </remarks>
+        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.MailboxTabs tabs;
+        
+        /// <summary>
         /// messageBox элемент управления.
         /// </summary>
         /// <remarks>
@@ -76,49 +85,40 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::WebsitePanel.Portal.UserControls.SimpleMessageBox messageBox;
         
         /// <summary>
-        /// locDisplayName элемент управления.
+        /// secDistributionLists элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Localize locDisplayName;
+        protected global::WebsitePanel.Portal.CollapsiblePanel secDistributionLists;
         
         /// <summary>
-        /// txtDisplayName элемент управления.
+        /// DistributionLists элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtDisplayName;
+        protected global::System.Web.UI.WebControls.Panel DistributionLists;
         
         /// <summary>
-        /// valRequireDisplayName элемент управления.
+        /// GeneralUpdatePanel элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator valRequireDisplayName;
+        protected global::System.Web.UI.UpdatePanel GeneralUpdatePanel;
         
         /// <summary>
-        /// locNotes элемент управления.
+        /// distrlists элемент управления.
         /// </summary>
         /// <remarks>
         /// Автоматически создаваемое поле.
         /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Localize locNotes;
-        
-        /// <summary>
-        /// txtNotes элемент управления.
-        /// </summary>
-        /// <remarks>
-        /// Автоматически создаваемое поле.
-        /// Для изменения переместите объявление поля из файла конструктора в файл кода программной части.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNotes;
+        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.AccountsList distrlists;
         
         /// <summary>
         /// btnSave элемент управления.
