@@ -1640,6 +1640,20 @@ namespace WebsitePanel.EnterpriseServer
             return account;
         }
 
+        /*public static OrganizationUser GetAccount(int itemId, string samAccountName)
+        {
+            OrganizationUser account = ObjectUtils.FillObjectFromDataReader<OrganizationUser>(
+                DataProvider.GetExchangeAccount(itemId, userId));
+
+            if (account == null)
+                return null;
+
+            // decrypt password
+            account.AccountPassword = CryptoUtils.Decrypt(account.AccountPassword);
+
+            return account;
+        }*/
+
         public static OrganizationUser GetAccountByAccountName(int itemId, string AccountName)
         {
             OrganizationUser account = ObjectUtils.FillObjectFromDataReader<OrganizationUser>(
@@ -1717,7 +1731,62 @@ namespace WebsitePanel.EnterpriseServer
 
             return (account);
         }
-       
+
+
+        private static OrganizationSecurityGroup GetDemoSecurityGroupGeneralSettings()
+        {
+            OrganizationSecurityGroup c = new OrganizationSecurityGroup();
+            c.DisplayName = "Fabrikam Sales";
+            c.AccountName = "sales_fabrikam";
+
+            return c;
+        }
+
+        public static OrganizationSecurityGroup GetSecurityGroupGeneralSettings(int itemId, int accountId)
+        {
+            #region Demo Mode
+            if (IsDemoMode)
+            {
+                return GetDemoSecurityGroupGeneralSettings();
+            }
+            #endregion
+
+            // place log record
+            TaskManager.StartTask("ORGANIZATION", "GET_SECURITY_GROUP_GENERAL", itemId);
+
+            try
+            {
+                // load organization
+                Organization org = GetOrganization(itemId);
+                if (org == null)
+                    return null;
+
+                OrganizationUser account = GetAccount(itemId, accountId);
+
+                // get mailbox settings
+                Organizations orgProxy = GetOrganizationProxy(org.ServiceId);
+
+                OrganizationSecurityGroup securityGroup = orgProxy.GetSecurityGroupGeneralSettings("test2.com"/*account.AccountName*/, org.OrganizationId);
+
+                return securityGroup;
+
+                /*foreach (OrganizationUser user in securityGroup.MembersAccounts)
+                {
+                    OrganizationUser userAccount = GetAccount(itemId, user.SamAccountName);
+
+                    user.AccountId = user
+                }*/
+            }
+            catch (Exception ex)
+            {
+                throw TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                TaskManager.CompleteTask();
+            }
+        }
+
         public static int SetUserGeneralSettings(int itemId, int accountId, string displayName,
             string password, bool hideAddressBook, bool disabled, bool locked, string firstName, string initials,
             string lastName, string address, string city, string state, string zip, string country,
@@ -2196,6 +2265,100 @@ namespace WebsitePanel.EnterpriseServer
             return ocs;
         }
 
+        public static int CreateSecurityGroup(int itemId, string displayName, string managedBy)
+        {
+            if (string.IsNullOrEmpty(displayName))
+                throw new ArgumentNullException("displayName");
+
+            // check account
+            int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive);
+            if (accountCheck < 0) return accountCheck;
+
+
+            // place log record
+            TaskManager.StartTask("ORGANIZATION", "CREATE_SECURITY_GROUP", itemId);
+
+            TaskManager.Write("Organization ID :" + itemId);
+            TaskManager.Write("display name :" + displayName);
+
+            int userId = -1;
+
+            try
+            {
+                /*displayName = displayName.Trim();
+                name = name.Trim();
+                domain = domain.Trim();
+
+                // e-mail
+                string email = name + "@" + domain;
+
+                if (EmailAddressExists(email))
+                    return BusinessErrorCodes.ERROR_EXCHANGE_EMAIL_EXISTS;
+
+                // load organization
+                Organization org = GetOrganization(itemId);
+
+                if (org == null)
+                {
+                    return -1;
+                }
+
+                StringDictionary serviceSettings = ServerController.GetServiceSettings(org.ServiceId);
+
+                if (serviceSettings == null)
+                {
+                    return -1;
+                }
+
+                // check package
+                int packageCheck = SecurityContext.CheckPackage(org.PackageId, DemandPackage.IsActive);
+                if (packageCheck < 0) return packageCheck;
+
+                int errorCode;
+                if (!CheckUserQuota(org.Id, out errorCode))
+                    return errorCode;
+
+
+                Organizations orgProxy = GetOrganizationProxy(org.ServiceId);
+
+                string upn = string.Format("{0}@{1}", name, domain);
+                string sAMAccountName = AppendOrgId(serviceSettings) ? BuildAccountNameWithOrgId(org.OrganizationId, name, org.ServiceId) : BuildAccountName(org.OrganizationId, name, org.ServiceId);
+
+                TaskManager.Write("accountName :" + sAMAccountName);
+                TaskManager.Write("upn :" + upn);
+
+                if (orgProxy.CreateUser(org.OrganizationId, sAMAccountName, displayName, upn, password, enabled) == 0)
+                {
+                    accountName = sAMAccountName;
+                    OrganizationUser retUser = orgProxy.GetUserGeneralSettings(sAMAccountName, org.OrganizationId);
+                    TaskManager.Write("sAMAccountName :" + retUser.DomainUserName);
+
+                    userId = AddOrganizationUser(itemId, sAMAccountName, displayName, email, retUser.DomainUserName, password, subscriberNumber);
+
+                    // register email address
+                    AddAccountEmailAddress(userId, email);
+
+                    if (sendNotification)
+                    {
+                        SendSummaryLetter(org.Id, userId, true, to, "");
+                    }
+                }
+                else
+                {
+                    TaskManager.WriteError("Failed to create user");
+                }*/
+            }
+            catch (Exception ex)
+            {
+                TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                TaskManager.CompleteTask();
+            }
+
+            return userId;
+        }
     }
     
 }

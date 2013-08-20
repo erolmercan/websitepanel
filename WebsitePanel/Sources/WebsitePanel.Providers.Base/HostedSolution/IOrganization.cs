@@ -42,6 +42,8 @@ namespace WebsitePanel.Providers.HostedSolution
 
         OrganizationUser GetUserGeneralSettings(string loginName, string organizationId);
 
+        OrganizationSecurityGroup GetSecurityGroupGeneralSettings(string groupName, string organizationId);
+
         void SetUserGeneralSettings(string organizationId, string accountName, string displayName, string password,
                                     bool hideFromAddressBook, bool disabled, bool locked, string firstName, string initials,
                                     string lastName,

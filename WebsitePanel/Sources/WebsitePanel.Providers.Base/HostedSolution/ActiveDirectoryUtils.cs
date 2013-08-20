@@ -44,6 +44,35 @@ namespace WebsitePanel.Providers.HostedSolution
             return de;
         }
 
+        public static string[] GetUsersGroup(string group)
+        {
+            List<string> rets = new List<string>();
+
+            DirectorySearcher deSearch = new DirectorySearcher
+            {
+                Filter =
+                    ("(&(objectClass=user))")
+            };
+
+            SearchResultCollection srcUsers = deSearch.FindAll();
+
+            foreach (SearchResult srcUser in srcUsers)
+            {
+                DirectoryEntry de = srcUser.GetDirectoryEntry();
+                PropertyValueCollection props = de.Properties["memberOf"];
+
+                foreach (string str in props)
+                {
+                    if (str.IndexOf(group) != -1)
+                    {
+                        rets.Add(de.Path);
+                    }
+                }
+            }
+
+            return rets.ToArray();
+        }
+
         public static bool IsUserInGroup(string samAccountName, string group)
         {
             bool res = false;

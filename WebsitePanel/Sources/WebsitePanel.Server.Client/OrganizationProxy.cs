@@ -77,6 +77,8 @@ namespace WebsitePanel.Providers.HostedSolution
 
         private System.Threading.SendOrPostCallback GetUserGeneralSettingsOperationCompleted;
 
+        private System.Threading.SendOrPostCallback GetSecurityGroupGeneralSettingsOperationCompleted;
+
         private System.Threading.SendOrPostCallback SetUserGeneralSettingsOperationCompleted;
 
         private System.Threading.SendOrPostCallback SetUserPasswordOperationCompleted;
@@ -116,6 +118,9 @@ namespace WebsitePanel.Providers.HostedSolution
 
         /// <remarks/>
         public event GetUserGeneralSettingsCompletedEventHandler GetUserGeneralSettingsCompleted;
+
+        /// <remarks/>
+        public event GetSecurityGroupGeneralSettingsCompletedEventHandler GetSecurityGroupGeneralSettingsCompleted;
 
         /// <remarks/>
         public event SetUserGeneralSettingsCompletedEventHandler SetUserGeneralSettingsCompleted;
@@ -455,6 +460,59 @@ namespace WebsitePanel.Providers.HostedSolution
             {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.GetUserGeneralSettingsCompleted(this, new GetUserGeneralSettingsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/GetSecurityGroupGeneralSettings", RequestNamespace = "http://tempuri.org/", ResponseNamespace = "http://tempuri.org/", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public OrganizationSecurityGroup GetSecurityGroupGeneralSettings(string groupName, string organizationId)
+        {
+            object[] results = this.Invoke("GetSecurityGroupGeneralSettings", new object[] {
+                    groupName,
+                    organizationId});
+            return ((OrganizationSecurityGroup)(results[0]));
+        }
+
+        /// <remarks/>
+        public System.IAsyncResult BeginGetSecurityGroupGeneralSettings(string groupName, string organizationId, System.AsyncCallback callback, object asyncState)
+        {
+            return this.BeginInvoke("GetSecurityGroupGeneralSettings", new object[] {
+                    groupName,
+                    organizationId}, callback, asyncState);
+        }
+
+        /// <remarks/>
+        public OrganizationSecurityGroup EndGetSecurityGroupGeneralSettings(System.IAsyncResult asyncResult)
+        {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((OrganizationSecurityGroup)(results[0]));
+        }
+
+        /// <remarks/>
+        public void GetSecurityGroupGeneralSettingsAsync(string groupName, string organizationId)
+        {
+            this.GetSecurityGroupGeneralSettingsAsync(groupName, organizationId, null);
+        }
+
+        /// <remarks/>
+        public void GetSecurityGroupGeneralSettingsAsync(string groupName, string organizationId, object userState)
+        {
+            if ((this.GetSecurityGroupGeneralSettingsOperationCompleted == null))
+            {
+                this.GetSecurityGroupGeneralSettingsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetSecurityGroupGeneralSettingsOperationCompleted);
+            }
+            this.InvokeAsync("GetSecurityGroupGeneralSettings", new object[] {
+                    groupName,
+                    organizationId}, this.GetSecurityGroupGeneralSettingsOperationCompleted, userState);
+        }
+
+        private void OnGetSecurityGroupGeneralSettingsOperationCompleted(object arg)
+        {
+            if ((this.GetSecurityGroupGeneralSettingsCompleted != null))
+            {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetSecurityGroupGeneralSettingsCompleted(this, new GetSecurityGroupGeneralSettingsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
 
@@ -1193,6 +1251,36 @@ namespace WebsitePanel.Providers.HostedSolution
             {
                 this.RaiseExceptionIfNecessary();
                 return ((OrganizationUser)(this.results[0]));
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void GetSecurityGroupGeneralSettingsCompletedEventHandler(object sender, GetSecurityGroupGeneralSettingsCompletedEventArgs e);
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetSecurityGroupGeneralSettingsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+    {
+
+        private object[] results;
+
+        internal GetSecurityGroupGeneralSettingsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) :
+            base(exception, cancelled, userState)
+        {
+            this.results = results;
+        }
+
+        /// <remarks/>
+        public OrganizationSecurityGroup Result
+        {
+            get
+            {
+                this.RaiseExceptionIfNecessary();
+                return ((OrganizationSecurityGroup)(this.results[0]));
             }
         }
     }

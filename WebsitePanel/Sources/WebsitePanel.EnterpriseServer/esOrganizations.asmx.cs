@@ -242,5 +242,15 @@ namespace WebsitePanel.EnterpriseServer
 
         #endregion
 
+        #region Security Groups
+
+        [WebMethod]
+        public OrganizationSecurityGroup GetSecurityGroupGeneralSettings(int itemId, int accountId)
+        {
+            return OrganizationController.GetSecurityGroupGeneralSettings(itemId, accountId);
+        }
+
+        #endregion
+
     }
 }
