@@ -27,72 +27,35 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Data;
+using System.Web;
+using System.Collections;
+using System.Web.Services;
+using System.Web.Services.Protocols;
+using System.ComponentModel;
+using Microsoft.Web.Services3;
 
-namespace WebsitePanel.Providers.OS
+using WebsitePanel.Providers;
+using WebsitePanel.Providers.RemoteDesktopServices;
+using WebsitePanel.Server.Utils;
+
+namespace WebsitePanel.Server
 {
     /// <summary>
-    /// Summary description for FileSystemItem.
+    /// Summary description for RemoteDesktopServices
     /// </summary>
-    [Serializable]
-    public class SystemFile : ServiceProviderItem
+    [WebService(Namespace = "http://smbsaas/websitepanel/server/")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [Policy("ServerPolicy")]
+    [ToolboxItem(false)]
+    public class RemoteDesktopServices : HostingServiceProviderWebService, IRemoteDesktopServices
     {
-        private string fullName;
-        private DateTime created;
-        private DateTime changed;
-        private bool isDirectory;
-        private long size;
-        private long quota;
-        private bool isEmpty;
-
-        public SystemFile()
+        private IRemoteDesktopServices RDSProvider
         {
+            get { return (IRemoteDesktopServices)Provider; }
         }
 
-        public SystemFile(string name, string fullName, bool isDirectory, long size,
-            DateTime created, DateTime changed)
-        {
-            this.Name = name;
-            this.fullName = fullName;
-            this.isDirectory = isDirectory;
-            this.size = size;
-            this.created = created;
-            this.changed = changed;
-        }
 
-        public string FullName
-        {
-            get { return fullName; }
-            set { fullName = value; }
-        }
-
-        public DateTime Created
-        {
-            get { return created; }
-            set { created = value; }
-        }
-
-        public DateTime Changed
-        {
-            get { return changed; }
-            set { changed = value; }
-        }
-
-        public bool IsDirectory
-        {
-            get { return isDirectory; }
-            set { isDirectory = value; }
-        }
-
-        public long Size
-        {
-            get { return size; }
-            set { size = value; }
-        }
-
-        public bool IsEmpty
-        {
-            get { return this.isEmpty; }
-            set { this.isEmpty = value; }
-        }
     }
+
 }

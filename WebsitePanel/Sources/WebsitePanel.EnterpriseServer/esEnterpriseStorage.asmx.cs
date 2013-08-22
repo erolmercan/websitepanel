@@ -27,72 +27,62 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Data;
+using System.Web;
+using System.Collections;
+using System.Collections.Generic;
+using System.Web.Services;
+using System.Web.Services.Protocols;
+using System.ComponentModel;
 
-namespace WebsitePanel.Providers.OS
+using Microsoft.Web.Services3;
+
+using WebsitePanel.Providers.Common;
+using WebsitePanel.Providers.HostedSolution;
+using WebsitePanel.Providers.EnterpriseStorage;
+using WebsitePanel.Providers.ResultObjects;
+using WebsitePanel.Providers.OS;
+
+namespace WebsitePanel.EnterpriseServer
 {
     /// <summary>
-    /// Summary description for FileSystemItem.
+    /// Summary description for esEnterpriseStorage
     /// </summary>
-    [Serializable]
-    public class SystemFile : ServiceProviderItem
+    [WebService(Namespace = "http://smbsaas/websitepanel/enterpriseserver")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [Policy("ServerPolicy")]
+    [ToolboxItem(false)]
+    public class esEnterpriseStorage : WebService
     {
-        private string fullName;
-        private DateTime created;
-        private DateTime changed;
-        private bool isDirectory;
-        private long size;
-        private long quota;
-        private bool isEmpty;
-
-        public SystemFile()
+        [WebMethod]
+        public SystemFile[] GetEnterpriseFolders(int itemId)
         {
+            return EnterpriseStorageController.GetFolders(itemId);
         }
 
-        public SystemFile(string name, string fullName, bool isDirectory, long size,
-            DateTime created, DateTime changed)
+        [WebMethod]
+        public SystemFile GetEnterpriseFolder(int itemId, string folderName)
         {
-            this.Name = name;
-            this.fullName = fullName;
-            this.isDirectory = isDirectory;
-            this.size = size;
-            this.created = created;
-            this.changed = changed;
+            return EnterpriseStorageController.GetFolder(itemId, folderName);
         }
 
-        public string FullName
+        [WebMethod]
+        public ResultObject CreateEnterpriseFolder(int itemId, string folderName, long quota)
         {
-            get { return fullName; }
-            set { fullName = value; }
+            return EnterpriseStorageController.CreateFolder(itemId, folderName, quota);
+        }
+       
+
+        [WebMethod]
+        public ResultObject DeleteEnterpriseFolder(int itemId, string folderName)
+        {
+            return EnterpriseStorageController.DeleteFolder(itemId, folderName);
         }
 
-        public DateTime Created
+        [WebMethod]
+        public ResultObject SetEnterpriseFolderQuota(int itemId, string folderName, long quota)
         {
-            get { return created; }
-            set { created = value; }
-        }
-
-        public DateTime Changed
-        {
-            get { return changed; }
-            set { changed = value; }
-        }
-
-        public bool IsDirectory
-        {
-            get { return isDirectory; }
-            set { isDirectory = value; }
-        }
-
-        public long Size
-        {
-            get { return size; }
-            set { size = value; }
-        }
-
-        public bool IsEmpty
-        {
-            get { return this.isEmpty; }
-            set { this.isEmpty = value; }
+            return EnterpriseStorageController.SetFolderQuota(itemId, folderName, quota);
         }
     }
 }

@@ -27,72 +27,37 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Data;
+using System.Web;
+using System.Collections;
+using System.Collections.Generic;
+using System.Web.Services;
+using System.Web.Services.Protocols;
+using System.ComponentModel;
 
-namespace WebsitePanel.Providers.OS
+using Microsoft.Web.Services3;
+
+using WebsitePanel.Providers.RemoteDesktopServices;
+
+namespace WebsitePanel.EnterpriseServer
 {
     /// <summary>
-    /// Summary description for FileSystemItem.
+    /// Summary description for esApplicationsInstaller
     /// </summary>
-    [Serializable]
-    public class SystemFile : ServiceProviderItem
+    [WebService(Namespace = "http://smbsaas/websitepanel/enterpriseserver")]
+    [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
+    [Policy("ServerPolicy")]
+    [ToolboxItem(false)]
+    public class esRemoteDesktopServices : System.Web.Services.WebService
     {
-        private string fullName;
-        private DateTime created;
-        private DateTime changed;
-        private bool isDirectory;
-        private long size;
-        private long quota;
-        private bool isEmpty;
-
-        public SystemFile()
+        /*
+        [WebMethod]
+        public DataSet GetRawOdbcSourcesPaged(int packageId,
+            string filterColumn, string filterValue, string sortColumn, int startRow, int maximumRows)
         {
+            return OperatingSystemController.GetRawOdbcSourcesPaged(packageId, filterColumn,
+                filterValue, sortColumn, startRow, maximumRows);
         }
-
-        public SystemFile(string name, string fullName, bool isDirectory, long size,
-            DateTime created, DateTime changed)
-        {
-            this.Name = name;
-            this.fullName = fullName;
-            this.isDirectory = isDirectory;
-            this.size = size;
-            this.created = created;
-            this.changed = changed;
-        }
-
-        public string FullName
-        {
-            get { return fullName; }
-            set { fullName = value; }
-        }
-
-        public DateTime Created
-        {
-            get { return created; }
-            set { created = value; }
-        }
-
-        public DateTime Changed
-        {
-            get { return changed; }
-            set { changed = value; }
-        }
-
-        public bool IsDirectory
-        {
-            get { return isDirectory; }
-            set { isDirectory = value; }
-        }
-
-        public long Size
-        {
-            get { return size; }
-            set { size = value; }
-        }
-
-        public bool IsEmpty
-        {
-            get { return this.isEmpty; }
-            set { this.isEmpty = value; }
-        }
+        */
     }
 }

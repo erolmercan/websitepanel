@@ -27,72 +27,20 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Xml;
+using System.Data;
+using System.Collections.Specialized;
+using System.Collections.Generic;
+using System.Text;
 
-namespace WebsitePanel.Providers.OS
+namespace WebsitePanel.EnterpriseServer
 {
-    /// <summary>
-    /// Summary description for FileSystemItem.
-    /// </summary>
-    [Serializable]
-    public class SystemFile : ServiceProviderItem
-    {
-        private string fullName;
-        private DateTime created;
-        private DateTime changed;
-        private bool isDirectory;
-        private long size;
-        private long quota;
-        private bool isEmpty;
+	public class RemoteDesktopServicesController
+	{
+        private RemoteDesktopServicesController()
+		{
+		}
 
-        public SystemFile()
-        {
-        }
-
-        public SystemFile(string name, string fullName, bool isDirectory, long size,
-            DateTime created, DateTime changed)
-        {
-            this.Name = name;
-            this.fullName = fullName;
-            this.isDirectory = isDirectory;
-            this.size = size;
-            this.created = created;
-            this.changed = changed;
-        }
-
-        public string FullName
-        {
-            get { return fullName; }
-            set { fullName = value; }
-        }
-
-        public DateTime Created
-        {
-            get { return created; }
-            set { created = value; }
-        }
-
-        public DateTime Changed
-        {
-            get { return changed; }
-            set { changed = value; }
-        }
-
-        public bool IsDirectory
-        {
-            get { return isDirectory; }
-            set { isDirectory = value; }
-        }
-
-        public long Size
-        {
-            get { return size; }
-            set { size = value; }
-        }
-
-        public bool IsEmpty
-        {
-            get { return this.isEmpty; }
-            set { this.isEmpty = value; }
-        }
-    }
+	
+	}
 }

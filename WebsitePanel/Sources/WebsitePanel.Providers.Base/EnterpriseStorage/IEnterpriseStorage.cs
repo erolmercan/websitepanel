@@ -27,72 +27,20 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Collections;
+using WebsitePanel.Providers.OS;
 
-namespace WebsitePanel.Providers.OS
+namespace WebsitePanel.Providers.EnterpriseStorage
 {
     /// <summary>
-    /// Summary description for FileSystemItem.
+    /// Summary description for IEnterpriseStorage.
     /// </summary>
-    [Serializable]
-    public class SystemFile : ServiceProviderItem
+    public interface IEnterpriseStorage
     {
-        private string fullName;
-        private DateTime created;
-        private DateTime changed;
-        private bool isDirectory;
-        private long size;
-        private long quota;
-        private bool isEmpty;
-
-        public SystemFile()
-        {
-        }
-
-        public SystemFile(string name, string fullName, bool isDirectory, long size,
-            DateTime created, DateTime changed)
-        {
-            this.Name = name;
-            this.fullName = fullName;
-            this.isDirectory = isDirectory;
-            this.size = size;
-            this.created = created;
-            this.changed = changed;
-        }
-
-        public string FullName
-        {
-            get { return fullName; }
-            set { fullName = value; }
-        }
-
-        public DateTime Created
-        {
-            get { return created; }
-            set { created = value; }
-        }
-
-        public DateTime Changed
-        {
-            get { return changed; }
-            set { changed = value; }
-        }
-
-        public bool IsDirectory
-        {
-            get { return isDirectory; }
-            set { isDirectory = value; }
-        }
-
-        public long Size
-        {
-            get { return size; }
-            set { size = value; }
-        }
-
-        public bool IsEmpty
-        {
-            get { return this.isEmpty; }
-            set { this.isEmpty = value; }
-        }
+        SystemFile[] GetFolders(string organizationId);
+        SystemFile GetFolder(string organizationId, string folder);
+        void CreateFolder(string organizationId, string folder);
+        void DeleteFolder(string organizationId, string folder);
+        void SetFolderQuota(string organizationId, string folder, long quota);
     }
 }
