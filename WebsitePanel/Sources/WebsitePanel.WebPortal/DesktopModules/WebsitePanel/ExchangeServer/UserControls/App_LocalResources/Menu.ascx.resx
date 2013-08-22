@@ -202,6 +202,6 @@
     <value>Lync Federation Domains</value>
   </data>
   <data name="Text.SecurityGroups" xml:space="preserve">
-    <value>Security Groups</value>
+    <value>Groups</value>
   </data>
 </root>

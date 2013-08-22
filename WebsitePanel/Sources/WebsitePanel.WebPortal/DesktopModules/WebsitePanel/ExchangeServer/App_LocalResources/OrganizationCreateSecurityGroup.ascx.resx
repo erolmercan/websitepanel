@@ -139,7 +139,7 @@
     <value>Create New Group</value>
   </data>
   <data name="Text.PageName" xml:space="preserve">
-    <value>Security Groups</value>
+    <value>Groups</value>
   </data>
   <data name="valManager.ErrorMessage" xml:space="preserve">
     <value>Please specify a manager</value>

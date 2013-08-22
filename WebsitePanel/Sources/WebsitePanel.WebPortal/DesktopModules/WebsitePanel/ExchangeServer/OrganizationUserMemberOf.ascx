@@ -58,7 +58,7 @@
 						</asp:UpdatePanel>
 					</asp:Panel>
 					
-                    <wsp:CollapsiblePanel id="secSecurityGroups" runat="server" TargetControlID="SecurityGroupsPanel" meta:resourcekey="secSecurityGroups" Text="Security Groups"></wsp:CollapsiblePanel>
+                    <wsp:CollapsiblePanel id="secSecurityGroups" runat="server" TargetControlID="SecurityGroupsPanel" meta:resourcekey="secSecurityGroups" Text="Groups"></wsp:CollapsiblePanel>
                     <asp:Panel ID="SecurityGroupsPanel" runat="server" Height="0" style="overflow:hidden;">
 						<asp:UpdatePanel ID="SCGeneralUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
 							<ContentTemplate>
