@@ -214,7 +214,7 @@ namespace WebsitePanel.EnterpriseServer
         {
             return OrganizationController.SetUserPassword(itemId, accountId, password);
         }
-        
+
 
 
         [WebMethod]
@@ -290,15 +290,17 @@ namespace WebsitePanel.EnterpriseServer
         [WebMethod]
         public ExchangeAccount[] GetSecurityGroupsByMember(int itemId, int accountId)
         {
-            return OrganizationController.GetSecurityGroupsByMember(itemId, accountId); 
+            return OrganizationController.GetSecurityGroupsByMember(itemId, accountId);
         }
 
         [WebMethod]
-        public List<ExchangeAccount> SearchSecurityGroups(int itemId, string filterColumn, string filterValue, string sortColumn)
+        public List<ExchangeAccount> SearchOrganizationAccounts(int itemId, string filterColumn, string filterValue,
+            string sortColumn, bool includeOnlySecurityGroups)
         {
-            return OrganizationController.SearchSecurityGroups(itemId, filterColumn, filterValue, sortColumn);
+            return OrganizationController.SearchOrganizationAccounts(itemId, filterColumn, filterValue, sortColumn,
+                includeOnlySecurityGroups);
         }
-       
+
         #endregion
 
     }

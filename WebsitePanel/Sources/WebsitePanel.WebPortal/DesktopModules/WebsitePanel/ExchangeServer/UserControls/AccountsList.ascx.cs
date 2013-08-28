@@ -67,6 +67,12 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 			set { ViewState["DistributionListsEnabled"] = value; }
 		}
 
+        public bool SecurityGroupsEnabled
+        {
+            get { return ViewState["SecurityGroupsEnabled"] != null ? (bool)ViewState["SecurityGroupsEnabled"] : false; }
+            set { ViewState["SecurityGroupsEnabled"] = value; }
+        }
+
 		public int ExcludeAccountId
 		{
 			get { return PanelRequest.AccountID; }
@@ -109,6 +115,9 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 				chkIncludeContacts.Checked = ContactsEnabled;
 				chkIncludeLists.Visible = DistributionListsEnabled;
 				chkIncludeLists.Checked = DistributionListsEnabled;
+
+                chkIncludeGroups.Visible = SecurityGroupsEnabled;
+                chkIncludeGroups.Checked = SecurityGroupsEnabled;
 			}
 
 			// register javascript
@@ -131,14 +140,16 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 		{
 			ExchangeAccountType accountType = (ExchangeAccountType)accountTypeId;
 			string imgName = "mailbox_16.gif";
-			if (accountType == ExchangeAccountType.Contact)
-				imgName = "contact_16.gif";
-			else if (accountType == ExchangeAccountType.DistributionList)
-				imgName = "dlist_16.gif";
+            if (accountType == ExchangeAccountType.Contact)
+                imgName = "contact_16.gif";
+            else if (accountType == ExchangeAccountType.DistributionList)
+                imgName = "dlist_16.gif";
             else if (accountType == ExchangeAccountType.Room)
                 imgName = "room_16.gif";
             else if (accountType == ExchangeAccountType.Equipment)
                 imgName = "equipment_16.gif";
+            else if (accountType == ExchangeAccountType.Equipment)
+                imgName = "dlist_16.gif";
 
 			return GetThemedImage("Exchange/" + imgName);
 		}
@@ -174,7 +185,7 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
 		{
 			ExchangeAccount[] accounts = ES.Services.ExchangeServer.SearchAccounts(PanelRequest.ItemID,
 				chkIncludeMailboxes.Checked, chkIncludeContacts.Checked, chkIncludeLists.Checked,
-                chkIncludeRooms.Checked, chkIncludeEquipment.Checked,
+                chkIncludeRooms.Checked, chkIncludeEquipment.Checked, chkIncludeGroups.Checked,
 				ddlSearchColumn.SelectedValue, txtSearchValue.Text + "%", "");
 
 			if (ExcludeAccountId > 0)

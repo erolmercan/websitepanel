@@ -133,7 +133,7 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
 
         private System.Threading.SendOrPostCallback GetSecurityGroupsByMemberOperationCompleted;
 
-        private System.Threading.SendOrPostCallback SearchSecurityGroupsOperationCompleted;
+        private System.Threading.SendOrPostCallback SearchOrganizationAccountsOperationCompleted;
 
         /// <remarks/>
         public esOrganizations()
@@ -244,7 +244,7 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
         public event GetSecurityGroupsByMemberCompletedEventHandler GetSecurityGroupsByMemberCompleted;
 
         /// <remarks/>
-        public event SearchSecurityGroupsCompletedEventHandler SearchSecurityGroupsCompleted;
+        public event SearchOrganizationAccountsCompletedEventHandler SearchOrganizationAccountsCompleted;
 
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/CheckOrgIdExists", RequestNamespace = "http://tempuri.org/", ResponseNamespace = "http://tempuri.org/", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -2328,60 +2328,63 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
         }
 
         /// <remarks/>
-        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SearchSecurityGroups", RequestNamespace = "http://tempuri.org/", ResponseNamespace = "http://tempuri.org/", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public ExchangeAccount[] SearchSecurityGroups(int itemId, string filterColumn, string filterValue, string sortColumn)
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SearchOrganizationAccounts", RequestNamespace = "http://tempuri.org/", ResponseNamespace = "http://tempuri.org/", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public ExchangeAccount[] SearchOrganizationAccounts(int itemId, string filterColumn, string filterValue, string sortColumn, bool includeOnlySecurityGroups)
         {
-            object[] results = this.Invoke("SearchSecurityGroups", new object[] {
+            object[] results = this.Invoke("SearchOrganizationAccounts", new object[] {
                     itemId,
                     filterColumn,
                     filterValue,
-                    sortColumn});
+                    sortColumn,
+                    includeOnlySecurityGroups});
             return ((ExchangeAccount[])(results[0]));
         }
 
         /// <remarks/>
-        public System.IAsyncResult BeginSearchSecurityGroups(int itemId, string filterColumn, string filterValue, string sortColumn, System.AsyncCallback callback, object asyncState)
+        public System.IAsyncResult BeginSearchOrganizationAccounts(int itemId, string filterColumn, string filterValue, string sortColumn, bool includeOnlySecurityGroups, System.AsyncCallback callback, object asyncState)
         {
-            return this.BeginInvoke("SearchSecurityGroups", new object[] {
+            return this.BeginInvoke("SearchOrganizationAccounts", new object[] {
                     itemId,
                     filterColumn,
                     filterValue,
-                    sortColumn}, callback, asyncState);
+                    sortColumn,
+                    includeOnlySecurityGroups}, callback, asyncState);
         }
 
         /// <remarks/>
-        public ExchangeAccount[] EndSearchSecurityGroups(System.IAsyncResult asyncResult)
+        public ExchangeAccount[] EndSearchOrganizationAccounts(System.IAsyncResult asyncResult)
         {
             object[] results = this.EndInvoke(asyncResult);
             return ((ExchangeAccount[])(results[0]));
         }
 
         /// <remarks/>
-        public void SearchSecurityGroupsAsync(int itemId, string filterColumn, string filterValue, string sortColumn)
+        public void SearchOrganizationAccountsAsync(int itemId, string filterColumn, string filterValue, string sortColumn, bool includeOnlySecurityGroups)
         {
-            this.SearchSecurityGroupsAsync(itemId, filterColumn, filterValue, sortColumn, null);
+            this.SearchOrganizationAccountsAsync(itemId, filterColumn, filterValue, sortColumn, includeOnlySecurityGroups, null);
         }
 
         /// <remarks/>
-        public void SearchSecurityGroupsAsync(int itemId, string filterColumn, string filterValue, string sortColumn, object userState)
+        public void SearchOrganizationAccountsAsync(int itemId, string filterColumn, string filterValue, string sortColumn, bool includeOnlySecurityGroups, object userState)
         {
-            if ((this.SearchSecurityGroupsOperationCompleted == null))
+            if ((this.SearchOrganizationAccountsOperationCompleted == null))
             {
-                this.SearchSecurityGroupsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSearchSecurityGroupsOperationCompleted);
+                this.SearchOrganizationAccountsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSearchOrganizationAccountsOperationCompleted);
             }
-            this.InvokeAsync("SearchSecurityGroups", new object[] {
+            this.InvokeAsync("SearchOrganizationAccounts", new object[] {
                     itemId,
                     filterColumn,
                     filterValue,
-                    sortColumn}, this.SearchSecurityGroupsOperationCompleted, userState);
+                    sortColumn,
+                    includeOnlySecurityGroups}, this.SearchOrganizationAccountsOperationCompleted, userState);
         }
 
-        private void OnSearchSecurityGroupsOperationCompleted(object arg)
+        private void OnSearchOrganizationAccountsOperationCompleted(object arg)
         {
-            if ((this.SearchSecurityGroupsCompleted != null))
+            if ((this.SearchOrganizationAccountsCompleted != null))
             {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
-                this.SearchSecurityGroupsCompleted(this, new SearchSecurityGroupsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+                this.SearchOrganizationAccountsCompleted(this, new SearchOrganizationAccountsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
 
@@ -3414,18 +3417,18 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
-    public delegate void SearchSecurityGroupsCompletedEventHandler(object sender, SearchSecurityGroupsCompletedEventArgs e);
+    public delegate void SearchOrganizationAccountsCompletedEventHandler(object sender, SearchOrganizationAccountsCompletedEventArgs e);
 
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
-    public partial class SearchSecurityGroupsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+    public partial class SearchOrganizationAccountsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
     {
 
         private object[] results;
 
-        internal SearchSecurityGroupsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) :
+        internal SearchOrganizationAccountsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) :
             base(exception, cancelled, userState)
         {
             this.results = results;

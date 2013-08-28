@@ -1977,6 +1977,7 @@ ALTER PROCEDURE [dbo].[SearchExchangeAccounts]
 	@IncludeDistributionLists bit,
 	@IncludeRooms bit,
 	@IncludeEquipment bit,
+	@IncludeSecurityGroups bit,
 	@FilterColumn nvarchar(50) = '',
 	@FilterValue nvarchar(50) = '',
 	@SortColumn nvarchar(50)
@@ -1998,7 +1999,7 @@ OR (@IncludeContacts = 1 AND EA.AccountType = 2)
 OR (@IncludeDistributionLists = 1 AND EA.AccountType = 3)
 OR (@IncludeRooms = 1 AND EA.AccountType = 5)
 OR (@IncludeEquipment = 1 AND EA.AccountType = 6)
-OR (@IncludeEquipment = 0 AND @IncludeContacts = 0 AND @IncludeDistributionLists = 0 AND @IncludeRooms = 0 AND @IncludeEquipment = 0 AND EA.AccountType = 8))
+OR (@IncludeSecurityGroups = 1 AND EA.AccountType = 8))
 AND EA.ItemID = @ItemID
 '
 
@@ -2028,8 +2029,71 @@ WHERE ' + @condition
 print @sql
 
 exec sp_executesql @sql, N'@ItemID int, @IncludeMailboxes int, @IncludeContacts int,
-    @IncludeDistributionLists int, @IncludeRooms bit, @IncludeEquipment bit',
-@ItemID, @IncludeMailboxes, @IncludeContacts, @IncludeDistributionLists, @IncludeRooms, @IncludeEquipment
+    @IncludeDistributionLists int, @IncludeRooms bit, @IncludeEquipment bit, @IncludeSecurityGroups bit',
+@ItemID, @IncludeMailboxes, @IncludeContacts, @IncludeDistributionLists, @IncludeRooms, @IncludeEquipment, @IncludeSecurityGroups
+
+RETURN
+GO
+
+CREATE PROCEDURE [dbo].[SearchExchangeAccountsByTypes]
+(
+	@ActorID int,
+	@ItemID int,
+	@AccountTypes nvarchar(30),
+	@FilterColumn nvarchar(50) = '',
+	@FilterValue nvarchar(50) = '',
+	@SortColumn nvarchar(50)
+)
+AS
+
+DECLARE @PackageID int
+SELECT @PackageID = PackageID FROM ServiceItems
+WHERE ItemID = @ItemID
+
+-- check rights
+IF dbo.CheckActorPackageRights(@ActorID, @PackageID) = 0
+RAISERROR('You are not allowed to access this package', 16, 1)
+
+DECLARE @condition nvarchar(700)
+SET @condition = 'EA.ItemID = @ItemID AND EA.AccountType IN (' + @AccountTypes + ')'
+
+IF @FilterColumn <> '' AND @FilterColumn IS NOT NULL
+AND @FilterValue <> '' AND @FilterValue IS NOT NULL
+BEGIN
+	IF @FilterColumn = 'PrimaryEmailAddress' AND @AccountTypes <> '2'
+	BEGIN		
+		SET @condition = @condition + ' AND EA.AccountID IN (SELECT EAEA.AccountID FROM ExchangeAccountEmailAddresses EAEA WHERE EAEA.EmailAddress LIKE ''' + @FilterValue + ''')'
+	END
+	ELSE
+	BEGIN		
+		SET @condition = @condition + ' AND ' + @FilterColumn + ' LIKE ''' + @FilterValue + ''''
+	END
+END
+
+IF @SortColumn IS NULL OR @SortColumn = ''
+SET @SortColumn = 'EA.DisplayName ASC'
+
+DECLARE @sql nvarchar(3500)
+SET @sql = '
+SELECT
+	EA.AccountID,
+	EA.ItemID,
+	EA.AccountType,
+	EA.AccountName,
+	EA.DisplayName,
+	EA.PrimaryEmailAddress,
+	EA.MailEnabledPublicFolder,
+	EA.MailboxPlanId,
+	P.MailboxPlan, 
+	EA.SubscriberNumber,
+	EA.UserPrincipalName
+FROM
+	ExchangeAccounts  AS EA
+LEFT OUTER JOIN ExchangeMailboxPlans AS P ON EA.MailboxPlanId = P.MailboxPlanId
+	WHERE ' + @condition
+	+ ' ORDER BY ' + @SortColumn
+
+EXEC sp_executesql @sql, N'@ItemID int', @ItemID
 
 RETURN
 GO

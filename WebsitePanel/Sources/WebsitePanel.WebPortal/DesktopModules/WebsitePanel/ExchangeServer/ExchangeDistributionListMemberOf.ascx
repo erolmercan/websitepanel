@@ -39,7 +39,8 @@
                                             MailboxesEnabled="false" 
                                             EnableMailboxOnly="true" 
 										    ContactsEnabled="false"
-										    DistributionListsEnabled="true"  />
+										    DistributionListsEnabled="true"
+                                            SecurityGroupsEnabled="true"  />
 
 							</ContentTemplate>
 						</asp:UpdatePanel>

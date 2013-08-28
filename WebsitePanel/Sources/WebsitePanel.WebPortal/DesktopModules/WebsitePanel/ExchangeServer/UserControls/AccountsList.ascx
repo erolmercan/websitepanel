@@ -69,6 +69,8 @@
 							meta:resourcekey="chkIncludeContacts" AutoPostBack="true" CssClass="Normal" OnCheckedChanged="chkIncludeMailboxes_CheckedChanged" />
 					<asp:CheckBox ID="chkIncludeLists" runat="server" Text="Distribution Lists" Checked="true"
 							meta:resourcekey="chkIncludeLists" AutoPostBack="true" CssClass="Normal" OnCheckedChanged="chkIncludeMailboxes_CheckedChanged" />
+                    <asp:CheckBox ID="chkIncludeGroups" runat="server" Text="Groups" Checked="true"
+							meta:resourcekey="chkIncludeGroups" AutoPostBack="true" CssClass="Normal" OnCheckedChanged="chkIncludeMailboxes_CheckedChanged" />
                 </div>
                 <div class="FormButtonsBarClean">
                     <div class="FormButtonsBarCleanRight">
