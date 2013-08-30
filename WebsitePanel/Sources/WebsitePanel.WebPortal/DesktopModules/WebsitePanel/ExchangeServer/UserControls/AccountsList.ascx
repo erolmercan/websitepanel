@@ -37,6 +37,13 @@
 					<asp:Literal ID="litPrimaryEmailAddress" runat="server" Text='<%# Eval("PrimaryEmailAddress") %>'></asp:Literal>
 				</ItemTemplate>
 			</asp:TemplateField>
+            <asp:TemplateField meta:resourcekey="gvAccountsAccountType" HeaderText="gvAccountsAccountType">
+				<HeaderStyle Wrap="false" />
+				<ItemStyle Width="50%" Wrap="false"></ItemStyle>
+				<ItemTemplate>
+					<asp:Literal ID="litType" runat="server" Text='<%# GetType((int)Eval("AccountType")) %>'></asp:Literal>
+				</ItemTemplate>
+			</asp:TemplateField>
 		</Columns>
 	</asp:GridView>
 
@@ -111,6 +118,12 @@
 									<asp:Literal ID="litPrimaryEmailAddress" runat="server" Text='<%# Eval("PrimaryEmailAddress") %>'></asp:Literal>
 								</ItemTemplate>
 							</asp:TemplateField>
+                            <asp:TemplateField meta:resourcekey="gvAccountsAccountType" HeaderText="gvAccountsAccountType">
+				                <ItemStyle Width="50%"></ItemStyle>
+				                <ItemTemplate>
+					                <asp:Literal ID="litType" runat="server" Text='<%# GetType((int)Eval("AccountType")) %>'></asp:Literal>
+				                </ItemTemplate>
+			                </asp:TemplateField>
 						</Columns>
 					</asp:GridView>
 				</div>

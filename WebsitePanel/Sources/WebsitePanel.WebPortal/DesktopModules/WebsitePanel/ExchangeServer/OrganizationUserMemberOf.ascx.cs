@@ -44,6 +44,7 @@ namespace WebsitePanel.Portal.HostedSolution
                 BindSettings();
 
                 MailboxTabsId.Visible = (PanelRequest.Context == "Mailbox");
+
                 UserTabsId.Visible = (PanelRequest.Context == "User");
             }
         }
@@ -53,26 +54,37 @@ namespace WebsitePanel.Portal.HostedSolution
             try
             {
                 // get settings
-                ExchangeMailbox mailbox = ES.Services.ExchangeServer.GetMailboxGeneralSettings(PanelRequest.ItemID,
-                    PanelRequest.AccountID);
+                OrganizationUser user = ES.Services.Organizations.GetUserGeneralSettings(PanelRequest.ItemID, PanelRequest.AccountID);
 
-                // title
-                litDisplayName.Text = mailbox.DisplayName;
-                
+                groups.DistributionListsEnabled = (user.AccountType == ExchangeAccountType.Mailbox
+                    || user.AccountType == ExchangeAccountType.Room
+                        || user.AccountType == ExchangeAccountType.Equipment);
+
+                litDisplayName.Text = user.DisplayName;
+               
                 //Distribution Lists
                 ExchangeAccount[] dLists = ES.Services.ExchangeServer.GetDistributionListsByMember(PanelRequest.ItemID, PanelRequest.AccountID);
-
-                distrlists.SetAccounts(dLists);
 
                 //Security Groups
                 ExchangeAccount[] securGroups = ES.Services.Organizations.GetSecurityGroupsByMember(PanelRequest.ItemID, PanelRequest.AccountID);
 
-                securegroups.SetAccounts(securGroups);
+                List<ExchangeAccount> groupsList = new List<ExchangeAccount>();
+                foreach (ExchangeAccount distList in dLists)
+                {
+                    groupsList.Add(distList);
+                }
+
+                foreach (ExchangeAccount secGroup in securGroups)
+                {
+                    groupsList.Add(secGroup);
+                }
+
+                groups.SetAccounts(groupsList.ToArray());
 
             }
             catch (Exception ex)
             {
-                messageBox.ShowErrorMessage("EXCHANGE_GET_MAILBOX_SETTINGS", ex);
+                messageBox.ShowErrorMessage("ORGANIZATION_GET_USER_SETTINGS", ex);
             }
         }
 
@@ -83,48 +95,62 @@ namespace WebsitePanel.Portal.HostedSolution
 
             try
             {
-                //Distribution Lists
-                ExchangeAccount[] oldDistributionLists = ES.Services.ExchangeServer.GetDistributionListsByMember(PanelRequest.ItemID, PanelRequest.AccountID);
-                List<string> newDistributionLists = new List<string>(distrlists.GetAccounts());
-                foreach (ExchangeAccount oldlist in oldDistributionLists)
+                ExchangeAccount[] oldSecGroups = ES.Services.Organizations.GetSecurityGroupsByMember(PanelRequest.ItemID, PanelRequest.AccountID);
+                ExchangeAccount[] oldDistLists = ES.Services.ExchangeServer.GetDistributionListsByMember(PanelRequest.ItemID, PanelRequest.AccountID);
+
+                IList<ExchangeAccount> oldGroups = new List<ExchangeAccount>();
+                foreach (ExchangeAccount distList in oldSecGroups)
                 {
-                    if (newDistributionLists.Contains(oldlist.AccountName))
-                        newDistributionLists.Remove(oldlist.AccountName);
-                    else
-                        ES.Services.ExchangeServer.DeleteDistributionListMember(PanelRequest.ItemID, oldlist.AccountName, PanelRequest.AccountID);
+                    oldGroups.Add(distList);
                 }
 
-                foreach (string newlist in newDistributionLists)
-                    ES.Services.ExchangeServer.AddDistributionListMember(PanelRequest.ItemID, newlist, PanelRequest.AccountID);
-
-                //Security Groups
-                ExchangeAccount[] oldDSecurityGroups = ES.Services.Organizations.GetSecurityGroupsByMember(PanelRequest.ItemID, PanelRequest.AccountID);
-                List<string> newSecurityGroups = new List<string>(securegroups.GetAccounts());
-                foreach (ExchangeAccount oldgroup in oldDSecurityGroups)
+                foreach (ExchangeAccount secGroup in oldDistLists)
                 {
-                    if (newSecurityGroups.Contains(oldgroup.AccountName))
+                    oldGroups.Add(secGroup);
+                }
+
+                IDictionary<string, ExchangeAccountType> newGroups = groups.GetFullAccounts();
+                foreach (ExchangeAccount oldGroup in oldGroups)
+                {
+                    if (newGroups.ContainsKey(oldGroup.AccountName))
                     {
-                        newSecurityGroups.Remove(oldgroup.AccountName);
+                        newGroups.Remove(oldGroup.AccountName);
                     }
                     else
                     {
-                        ES.Services.Organizations.DeleteUserFromSecurityGroup(PanelRequest.ItemID, PanelRequest.AccountID, oldgroup.AccountName);
+                        switch (oldGroup.AccountType)
+                        {
+                            case ExchangeAccountType.DistributionList:
+                                ES.Services.ExchangeServer.DeleteDistributionListMember(PanelRequest.ItemID, oldGroup.AccountName, PanelRequest.AccountID);
+                                break;
+                            case ExchangeAccountType.SecurityGroup:
+                                ES.Services.Organizations.DeleteObjectFromSecurityGroup(PanelRequest.ItemID, PanelRequest.AccountID, oldGroup.AccountName);
+                                break;
+                        }
                     }
                 }
 
-                foreach (string newgroup in newSecurityGroups)
+                foreach (KeyValuePair<string, ExchangeAccountType> newGroup in newGroups)
                 {
-                    ES.Services.Organizations.AddUserToSecurityGroup(PanelRequest.ItemID, PanelRequest.AccountID, newgroup);
+                    switch (newGroup.Value)
+                    {
+                        case ExchangeAccountType.DistributionList:
+                            ES.Services.ExchangeServer.AddDistributionListMember(PanelRequest.ItemID, newGroup.Key, PanelRequest.AccountID);
+                            break;
+                        case ExchangeAccountType.SecurityGroup:
+                            ES.Services.Organizations.AddObjectToSecurityGroup(PanelRequest.ItemID, PanelRequest.AccountID, newGroup.Key);
+                            break;
+                    }
                 }
 
-                messageBox.ShowSuccessMessage("EXCHANGE_UPDATE_MAILBOX_SETTINGS");
+                messageBox.ShowSuccessMessage("ORGANIZATION_UPDATE_USER_SETTINGS");
 
 
                 BindSettings();
             }
             catch (Exception ex)
             {
-                messageBox.ShowErrorMessage("EXCHANGE_UPDATE_MAILBOX_SETTINGS", ex);
+                messageBox.ShowErrorMessage("ORGANIZATION_UPDATE_USER_SETTINGS", ex);
             }
         }
 

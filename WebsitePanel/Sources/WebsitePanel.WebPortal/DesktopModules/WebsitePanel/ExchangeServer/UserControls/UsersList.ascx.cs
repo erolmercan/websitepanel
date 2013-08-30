@@ -139,7 +139,13 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
                 case ExchangeAccountType.Equipment:
                     imgName = "equipment_16.gif";
                     break;
+                case ExchangeAccountType.DistributionList:
+                    imgName = "dlist_16.gif";
+                    break;
                 case ExchangeAccountType.SecurityGroup:
+                    imgName = "dlist_16.gif";
+                    break;
+                case ExchangeAccountType.DefaultSecurityGroup:
                     imgName = "dlist_16.gif";
                     break;
                 default:
@@ -148,6 +154,23 @@ namespace WebsitePanel.Portal.ExchangeServer.UserControls
             }
 
             return GetThemedImage("Exchange/" + imgName);
+        }
+
+        public string GetType(int accountTypeId)
+        {
+            ExchangeAccountType accountType = (ExchangeAccountType)accountTypeId;
+
+            switch (accountType)
+            {
+                case ExchangeAccountType.DistributionList:
+                    return "Distribution";
+                case ExchangeAccountType.SecurityGroup:
+                    return "Security";
+                case ExchangeAccountType.DefaultSecurityGroup:
+                    return "Default Group";
+                default:
+                    return accountType.ToString();
+            }
         }
 
 		private void BindPopupAccounts()

@@ -43,27 +43,17 @@
                     <uc1:MailboxTabs ID="MailboxTabsId" runat="server" SelectedTab="user_memberof" />
                     <wsp:SimpleMessageBox id="messageBox" runat="server" />
                     
-					<wsp:CollapsiblePanel id="secDistributionLists" runat="server" TargetControlID="DistributionListsPanel" meta:resourcekey="secDistributionLists" Text="Distribution Lists"></wsp:CollapsiblePanel>
-                    <asp:Panel ID="DistributionListsPanel" runat="server" Height="0" style="overflow:hidden;">
-						<asp:UpdatePanel ID="DLGeneralUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
+					<wsp:CollapsiblePanel id="secGroups" runat="server" TargetControlID="GroupsPanel" meta:resourcekey="secGroups" Text="Groups"></wsp:CollapsiblePanel>
+                    <asp:Panel ID="GroupsPanel" runat="server" Height="0" style="overflow:hidden;">
+						<asp:UpdatePanel ID="GeneralUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
 							<ContentTemplate>
 
-                                <wsp:AccountsList id="distrlists" runat="server"
+                                <wsp:AccountsList id="groups" runat="server"
                                             MailboxesEnabled="false" 
                                             EnableMailboxOnly="true" 
 										    ContactsEnabled="false"
-										    DistributionListsEnabled="true"  />
-
-							</ContentTemplate>
-						</asp:UpdatePanel>
-					</asp:Panel>
-					
-                    <wsp:CollapsiblePanel id="secSecurityGroups" runat="server" TargetControlID="SecurityGroupsPanel" meta:resourcekey="secSecurityGroups" Text="Groups"></wsp:CollapsiblePanel>
-                    <asp:Panel ID="SecurityGroupsPanel" runat="server" Height="0" style="overflow:hidden;">
-						<asp:UpdatePanel ID="SCGeneralUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
-							<ContentTemplate>
-
-                                <wsp:GroupsList id="securegroups" runat="server" />
+										    DistributionListsEnabled="true"
+                                            SecurityGroupsEnabled="true" />
 
 							</ContentTemplate>
 						</asp:UpdatePanel>

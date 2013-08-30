@@ -85,22 +85,22 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::WebsitePanel.Portal.UserControls.SimpleMessageBox messageBox;
         
         /// <summary>
-        /// secDistributionLists control.
+        /// secGroups control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::WebsitePanel.Portal.CollapsiblePanel secDistributionLists;
+        protected global::WebsitePanel.Portal.CollapsiblePanel secGroups;
         
         /// <summary>
-        /// DistributionLists control.
+        /// GroupsPanel control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel DistributionLists;
+        protected global::System.Web.UI.WebControls.Panel GroupsPanel;
         
         /// <summary>
         /// GeneralUpdatePanel control.
@@ -112,13 +112,13 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::System.Web.UI.UpdatePanel GeneralUpdatePanel;
         
         /// <summary>
-        /// distrlists control.
+        /// groups control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.AccountsList distrlists;
+        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.AccountsList groups;
         
         /// <summary>
         /// btnSave control.

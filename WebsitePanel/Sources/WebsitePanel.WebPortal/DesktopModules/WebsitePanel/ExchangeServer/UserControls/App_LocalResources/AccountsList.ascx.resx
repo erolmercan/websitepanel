@@ -156,6 +156,9 @@
   <data name="gvAccounts.EmptyDataText" xml:space="preserve">
     <value>The list of accounts is empty. Click "Add..." button to add accounts.</value>
   </data>
+  <data name="gvAccountsAccountType.HeaderText" xml:space="preserve">
+    <value>Type</value>
+  </data>
   <data name="gvAccountsDisplayName.HeaderText" xml:space="preserve">
     <value>Display Name</value>
   </data>

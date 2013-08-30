@@ -1027,56 +1027,56 @@ namespace WebsitePanel.Providers.HostedSolution
             entry.CommitChanges();
         }
 
-        public void AddUserToSecurityGroup(string organizationId, string loginName, string groupName)
+        public void AddObjectToSecurityGroup(string organizationId, string accountName, string groupName)
         {
-            AddUserToSecurityGroupInternal(organizationId, loginName, groupName);
+            AddObjectToSecurityGroupInternal(organizationId, accountName, groupName);
         }
 
-        internal void AddUserToSecurityGroupInternal(string organizationId, string loginName, string groupName)
+        internal void AddObjectToSecurityGroupInternal(string organizationId, string accountName, string groupName)
         {
             HostedSolutionLog.LogStart("AddUserToSecurityGroupInternal");
             HostedSolutionLog.DebugInfo("organizationId : {0}", organizationId);
-            HostedSolutionLog.DebugInfo("loginName : {0}", loginName);
+            HostedSolutionLog.DebugInfo("accountName : {0}", accountName);
             HostedSolutionLog.DebugInfo("groupName : {0}", groupName);
 
             if (string.IsNullOrEmpty(organizationId))
                 throw new ArgumentNullException("organizationId");
 
-            if (string.IsNullOrEmpty(loginName))
+            if (string.IsNullOrEmpty(accountName))
                 throw new ArgumentNullException("loginName");
 
             if (string.IsNullOrEmpty(groupName))
                 throw new ArgumentNullException("groupName");
 
-            string userPath = GetUserPath(organizationId, loginName);
+            string userPath = GetObjectPath(organizationId, accountName);
 
             string groupPath = GetGroupPath(organizationId, groupName);
 
             ActiveDirectoryUtils.AddObjectToGroup(userPath, groupPath);
         }
 
-        public void DeleteUserFromSecurityGroup(string organizationId, string loginName, string groupName)
+        public void DeleteObjectFromSecurityGroup(string organizationId, string accountName, string groupName)
         {
-            DeleteUserFromSecurityGroupInternal(organizationId, loginName, groupName);
+            DeleteObjectFromSecurityGroupInternal(organizationId, accountName, groupName);
         }
 
-        internal void DeleteUserFromSecurityGroupInternal(string organizationId, string loginName, string groupName)
+        internal void DeleteObjectFromSecurityGroupInternal(string organizationId, string accountName, string groupName)
         {
             HostedSolutionLog.LogStart("AddUserToSecurityGroupInternal");
             HostedSolutionLog.DebugInfo("organizationId : {0}", organizationId);
-            HostedSolutionLog.DebugInfo("loginName : {0}", loginName);
+            HostedSolutionLog.DebugInfo("accountName : {0}", accountName);
             HostedSolutionLog.DebugInfo("groupName : {0}", groupName);
 
             if (string.IsNullOrEmpty(organizationId))
                 throw new ArgumentNullException("organizationId");
 
-            if (string.IsNullOrEmpty(loginName))
+            if (string.IsNullOrEmpty(accountName))
                 throw new ArgumentNullException("loginName");
 
             if (string.IsNullOrEmpty(groupName))
                 throw new ArgumentNullException("groupName");
 
-            string userPath = GetUserPath(organizationId, loginName);
+            string userPath = GetObjectPath(organizationId, accountName);
 
             string groupPath = GetGroupPath(organizationId, groupName);
 

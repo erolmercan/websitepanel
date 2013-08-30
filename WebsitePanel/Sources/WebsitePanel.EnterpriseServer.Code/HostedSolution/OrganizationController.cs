@@ -2514,7 +2514,7 @@ namespace WebsitePanel.EnterpriseServer
             return result;
         }
 
-        public static int AddUserToSecurityGroup(int itemId, int userAccountId, string groupName)
+        public static int AddObjectToSecurityGroup(int itemId, int accountId, string groupName)
         {
             // check account
             int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive);
@@ -2531,11 +2531,11 @@ namespace WebsitePanel.EnterpriseServer
                     return -1;
 
                 // load user account
-                OrganizationUser userAccount = GetAccount(itemId, userAccountId);
+                ExchangeAccount account = ExchangeServerController.GetAccount(itemId, accountId);
 
                 Organizations orgProxy = GetOrganizationProxy(org.ServiceId);
 
-                orgProxy.AddUserToSecurityGroup(org.OrganizationId, userAccount.AccountName, groupName);
+                orgProxy.AddObjectToSecurityGroup(org.OrganizationId, account.AccountName, groupName);
 
                 return 0;
             }
@@ -2549,7 +2549,7 @@ namespace WebsitePanel.EnterpriseServer
             }
         }
 
-        public static int DeleteUserFromSecurityGroup(int itemId, int userAccountId, string groupName)
+        public static int DeleteObjectFromSecurityGroup(int itemId, int accountId, string groupName)
         {
             // check account
             int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive);
@@ -2566,11 +2566,11 @@ namespace WebsitePanel.EnterpriseServer
                     return -1;
 
                 // load user account
-                OrganizationUser userAccount = GetAccount(itemId, userAccountId);
+                ExchangeAccount account = ExchangeServerController.GetAccount(itemId, accountId);
 
                 Organizations orgProxy = GetOrganizationProxy(org.ServiceId);
 
-                orgProxy.DeleteUserFromSecurityGroup(org.OrganizationId, userAccount.AccountName, groupName);
+                orgProxy.DeleteObjectFromSecurityGroup(org.OrganizationId, account.AccountName, groupName);
 
                 return 0;
             }
@@ -2699,8 +2699,8 @@ namespace WebsitePanel.EnterpriseServer
 
             if (!includeOnlySecurityGroups)
             {
-                accountTypes = string.Format("{0}, {1}, {2}, {3}, {4}", accountTypes, ((int)ExchangeAccountType.User), ((int)ExchangeAccountType.Mailbox),
-                    ((int)ExchangeAccountType.Room), ((int)ExchangeAccountType.Equipment));
+                accountTypes = string.Format("{0}, {1}, {2}, {3}, {4}, {5}", accountTypes, ((int)ExchangeAccountType.User), ((int)ExchangeAccountType.Mailbox),
+                    ((int)ExchangeAccountType.Room), ((int)ExchangeAccountType.Equipment), ((int)ExchangeAccountType.DistributionList));
             }
 
             List<ExchangeAccount> tmpAccounts = ObjectUtils.CreateListFromDataReader<ExchangeAccount>(
@@ -2711,9 +2711,22 @@ namespace WebsitePanel.EnterpriseServer
 
             foreach (ExchangeAccount tmpAccount in tmpAccounts.ToArray())
             {
-                if (tmpAccount.AccountType == ExchangeAccountType.SecurityGroup
-                    ? GetSecurityGroupGeneralSettings(itemId, tmpAccount.AccountId) != null
-                    : GetUserGeneralSettings(itemId, tmpAccount.AccountId) != null)
+                bool bSuccess = false;
+
+                switch (tmpAccount.AccountType)
+                {
+                    case ExchangeAccountType.SecurityGroup:
+                        bSuccess = GetSecurityGroupGeneralSettings(itemId, tmpAccount.AccountId) != null;
+                        break;
+                    case ExchangeAccountType.DistributionList:
+                        bSuccess = ExchangeServerController.GetDistributionListGeneralSettings(itemId, tmpAccount.AccountId) != null;
+                        break;
+                    default:
+                        bSuccess = GetUserGeneralSettings(itemId, tmpAccount.AccountId) != null;
+                        break;
+                }
+
+                if (bSuccess)
                 {
                     accounts.Add(tmpAccount);
                 }

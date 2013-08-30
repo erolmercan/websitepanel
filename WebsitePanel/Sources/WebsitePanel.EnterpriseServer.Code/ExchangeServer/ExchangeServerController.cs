@@ -3407,7 +3407,7 @@ namespace WebsitePanel.EnterpriseServer
                 ExchangeDistributionList dl = exchange.GetDistributionListGeneralSettings(accountName);
 
                 // add meta-item
-                int accountId = AddAccount(itemId, ExchangeAccountType.DistributionList, email,
+                int accountId = AddAccount(itemId, ExchangeAccountType.DistributionList, accountName,
                     displayName, email, false,
                     0, dl.SAMAccountName, null, 0, null);
 

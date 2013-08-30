@@ -30,12 +30,12 @@
                     <wsp:DistributionListTabs id="tabs" runat="server" SelectedTab="dlist_memberof" />
                     <wsp:SimpleMessageBox id="messageBox" runat="server" />
 					
-					<wsp:CollapsiblePanel id="secDistributionLists" runat="server" TargetControlID="DistributionLists" meta:resourcekey="secDistributionLists" Text="Distribution Lists"></wsp:CollapsiblePanel>
-                    <asp:Panel ID="DistributionLists" runat="server" Height="0" style="overflow:hidden;">
+					<wsp:CollapsiblePanel id="secGroups" runat="server" TargetControlID="GroupsPanel" meta:resourcekey="secGroups" Text="Groups"></wsp:CollapsiblePanel>
+                    <asp:Panel ID="GroupsPanel" runat="server" Height="0" style="overflow:hidden;">
 						<asp:UpdatePanel ID="GeneralUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
 							<ContentTemplate>
 
-                                <wsp:AccountsList id="distrlists" runat="server"
+                                <wsp:AccountsList id="groups" runat="server"
                                             MailboxesEnabled="false" 
                                             EnableMailboxOnly="true" 
 										    ContactsEnabled="false"

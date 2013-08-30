@@ -276,15 +276,15 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         [WebMethod]
-        public int AddUserToSecurityGroup(int itemId, int userAccountId, string groupName)
+        public int AddObjectToSecurityGroup(int itemId, int accountId, string groupName)
         {
-            return OrganizationController.AddUserToSecurityGroup(itemId, userAccountId, groupName);
+            return OrganizationController.AddObjectToSecurityGroup(itemId, accountId, groupName);
         }
 
         [WebMethod]
-        public int DeleteUserFromSecurityGroup(int itemId, int userAccountId, string groupName)
+        public int DeleteObjectFromSecurityGroup(int itemId, int accountId, string groupName)
         {
-            return OrganizationController.DeleteUserFromSecurityGroup(itemId, userAccountId, groupName);
+            return OrganizationController.DeleteObjectFromSecurityGroup(itemId, accountId, groupName);
         }
 
         [WebMethod]
