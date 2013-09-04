@@ -136,7 +136,7 @@ namespace WebsitePanel.Providers.Utils
             if (String.IsNullOrEmpty(str))
                 return str;
 
-            Regex re = new Regex("%(.+)%", RegexOptions.IgnoreCase);
+            Regex re = new Regex("%([^\\s\\%]+)%", RegexOptions.IgnoreCase);
             return re.Replace(str, new MatchEvaluator(EvaluateSystemVariable));
         }
 
@@ -185,7 +185,15 @@ namespace WebsitePanel.Providers.Utils
 
         private static string EvaluateSystemVariable(Match match)
         {
-            return Environment.GetEnvironmentVariable(match.Groups[1].Value);
+            string EnvVar = Environment.GetEnvironmentVariable(match.Groups[1].Value);
+            if (string.IsNullOrEmpty(EnvVar))
+            {
+                return @"%" + match.Groups[1].Value + @"%";
+            }
+            else
+            {
+                return EnvVar;
+            }
         }
 
         public static bool FileExists(string path)
@@ -964,8 +972,7 @@ namespace WebsitePanel.Providers.Utils
             catch
             { }
         }
-
-		#region Advanced Delete
+       #region Advanced Delete
 		/// <summary>
 		/// Deletes the specified file.
 		/// </summary>
