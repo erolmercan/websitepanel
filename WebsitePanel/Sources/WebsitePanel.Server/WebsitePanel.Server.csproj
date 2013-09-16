@@ -85,6 +85,8 @@
     <Content Include="AutoDiscovery.asmx" />
     <Content Include="BlackBerry.asmx" />
     <EmbeddedResource Include="Images\logo.png" />
+    <Content Include="EnterpriseStorage.asmx" />
+    <Content Include="RemoteDesktopServices.asmx" />
     <Content Include="HeliconZoo.asmx" />
     <Content Include="LyncServer.asmx" />
     <Content Include="OCSEdgeServer.asmx" />
@@ -127,6 +129,14 @@
     <Compile Include="Code\ServerConfiguration.cs" />
     <Compile Include="Code\ServerUsernameTokenManager.cs" />
     <Compile Include="Code\UsernameAssertion.cs" />
+    <Compile Include="EnterpriseStorage.asmx.cs">
+      <DependentUpon>EnterpriseStorage.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RemoteDesktopServices.asmx.cs">
+      <DependentUpon>RemoteDesktopServices.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="HeliconZoo.asmx.cs">
       <DependentUpon>HeliconZoo.asmx</DependentUpon>
       <SubType>Component</SubType>
