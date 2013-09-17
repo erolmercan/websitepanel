@@ -30,9 +30,11 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text;
+using System.Diagnostics;
 using System.ServiceProcess;
 using WebsitePanel.Server.Utils;
 using WebsitePanel.Providers.Utils;
+
 
 namespace WebsitePanel.Providers.DNS
 {
@@ -152,9 +154,6 @@ namespace WebsitePanel.Providers.DNS
 
 			// add DNS zone
 			UpdateZone(zoneName, records);
-
-			// reload config
-			ReloadBIND();
 		}
 
 		public virtual void AddSecondaryZone(string zoneName, string[] masterServers)
@@ -185,7 +184,7 @@ namespace WebsitePanel.Providers.DNS
 			File.Create(GetZoneFilePath(zoneName)).Close();
 
 			// reload config
-			ReloadBIND();
+            //ReloadBIND(); No need, we don't have a valid NS record, will generate a servfail on bind
 		}
 
 		public virtual DnsRecord[] GetZoneRecords(string zoneName)
@@ -256,7 +255,7 @@ namespace WebsitePanel.Providers.DNS
 				File.Delete(zonePath);
 
 			// reload config
-			ReloadBIND();
+            ReloadBIND("reconfig", "");
 		}
 		#endregion
 
@@ -912,6 +911,10 @@ namespace WebsitePanel.Providers.DNS
 		{
 			string path = GetZoneFilePath(zoneName);
 			File.WriteAllText(path, zoneContent);
+            
+            // This is need so bind reloads after update else you will get serverfail if new zone
+            // If update the change will not be accesseble from bind
+            ReloadBIND("reload", zoneName);
 		}
 
 		private string GetZoneFilePath(string zoneName)
@@ -924,10 +927,26 @@ namespace WebsitePanel.Providers.DNS
 			return StringUtils.ReplaceStringVariable(ZoneFileNameTemplate, "domain_name", zoneName);
 		}
 
-		private void ReloadBIND()
+		private void ReloadBIND(string Args, string zoneName)
 		{
-			FileUtils.ExecuteSystemCommand(BindReloadBatch, "");
+            // We don't use a bat file for reloading all zone files.. that's crazy talk
+            // Both bind 8 & 9 supports reloadind it's config and or reloading a single zone file
+            // rndc reconfig Will reload named.conf (perfect when adding a primary zone)
+            // rnd reload mydomain.com will reload the domain and only that domain
+            // Used Bind Reload Batch for inputing correct path to rndc
+            // Best Reguards, kenneth@cancode.se
+            Process rndc = new Process();
+
+            rndc.StartInfo.FileName = BindReloadBatch;
+            string rndcArguments = Args;
+            if (zoneName.Length > 0) {
+                rndcArguments += " " + zoneName; 
+            }
+            rndc.StartInfo.Arguments = rndcArguments;
+            rndc.StartInfo.CreateNoWindow = true;
+            rndc.Start();
 		}
+
 		#endregion
 
         public override bool IsInstalled()
