@@ -2262,10 +2262,6 @@ namespace WebsitePanel.EnterpriseServer
                 int packageCheck = SecurityContext.CheckPackage(org.PackageId, DemandPackage.IsActive);
                 if (packageCheck < 0) return packageCheck;
 
-                int errorCode;
-                if (!CheckUserQuota(org.Id, out errorCode))
-                    return errorCode;
-
                 Organizations orgProxy = GetOrganizationProxy(org.ServiceId);
 
                 string groupName = BuildAccountNameWithOrgId(org.OrganizationId, displayName.Replace(" ", ""), org.ServiceId);
