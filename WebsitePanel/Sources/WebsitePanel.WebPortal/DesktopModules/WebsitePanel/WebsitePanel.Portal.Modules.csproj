@@ -93,6 +93,13 @@
     <Compile Include="..\..\..\VersionInfo.cs">
       <Link>Code\VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="ApplyEnableHardQuotaFeature.ascx.cs">
+      <DependentUpon>ApplyEnableHardQuotaFeature.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ApplyEnableHardQuotaFeature.ascx.designer.cs">
+      <DependentUpon>ApplyEnableHardQuotaFeature.ascx</DependentUpon>
+    </Compile>
     <Compile Include="AuditLog.ascx.cs">
       <DependentUpon>AuditLog.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -202,12 +209,47 @@
     <Compile Include="Code\ReportingServices\IResourceStorage.cs" />
     <Compile Include="Code\ReportingServices\ReportingServicesUtils.cs" />
     <Compile Include="Code\UserControls\Tab.cs" />
+    <Compile Include="ExchangeServer\EnterpriseStorageSpaces.ascx.cs">
+      <DependentUpon>EnterpriseStorageSpaces.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\EnterpriseStorageSpaces.ascx.designer.cs">
+      <DependentUpon>EnterpriseStorageSpaces.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationSecurityGroupMemberOf.ascx.cs">
+      <DependentUpon>OrganizationSecurityGroupMemberOf.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationSecurityGroupMemberOf.ascx.designer.cs">
+      <DependentUpon>OrganizationSecurityGroupMemberOf.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeDistributionListMemberOf.ascx.cs">
+      <DependentUpon>ExchangeDistributionListMemberOf.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeDistributionListMemberOf.ascx.designer.cs">
+      <DependentUpon>ExchangeDistributionListMemberOf.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeMailboxMemberOf.ascx.cs">
+      <DependentUpon>ExchangeMailboxMemberOf.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeMailboxMemberOf.ascx.designer.cs">
+      <DependentUpon>ExchangeMailboxMemberOf.ascx</DependentUpon>
+    </Compile>
     <Compile Include="ExchangeServer\OrganizationAddDomainName.ascx.cs">
       <DependentUpon>OrganizationAddDomainName.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ExchangeServer\OrganizationAddDomainName.ascx.designer.cs">
       <DependentUpon>OrganizationAddDomainName.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationCreateSecurityGroup.ascx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>OrganizationCreateSecurityGroup.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationCreateSecurityGroup.ascx.designer.cs">
+      <DependentUpon>OrganizationCreateSecurityGroup.ascx</DependentUpon>
     </Compile>
     <Compile Include="ExchangeServer\OrganizationDomainNames.ascx.cs">
       <DependentUpon>OrganizationDomainNames.ascx</DependentUpon>
@@ -230,9 +272,37 @@
     <Compile Include="ExchangeServer\ExchangeMailboxPlans.ascx.designer.cs">
       <DependentUpon>ExchangeMailboxPlans.ascx</DependentUpon>
     </Compile>
+    <Compile Include="ExchangeServer\OrganizationSecurityGroupGeneralSettings.ascx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>OrganizationSecurityGroupGeneralSettings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationSecurityGroupGeneralSettings.ascx.designer.cs">
+      <DependentUpon>OrganizationSecurityGroupGeneralSettings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationSecurityGroups.ascx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>OrganizationSecurityGroups.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationSecurityGroups.ascx.designer.cs">
+      <DependentUpon>OrganizationSecurityGroups.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationUserMemberOf.ascx.cs">
+      <DependentUpon>OrganizationUserMemberOf.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\OrganizationUserMemberOf.ascx.designer.cs">
+      <DependentUpon>OrganizationUserMemberOf.ascx</DependentUpon>
+    </Compile>
     <Compile Include="ExchangeServer\UserControls\AccountsListWithPermissions.ascx.cs">
       <DependentUpon>AccountsListWithPermissions.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\UserControls\GroupsList.ascx.cs">
+      <DependentUpon>GroupsList.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\UserControls\GroupsList.ascx.designer.cs">
+      <DependentUpon>GroupsList.ascx</DependentUpon>
     </Compile>
     <Compile Include="ExchangeServer\UserControls\MailboxPlanSelector.ascx.cs">
       <DependentUpon>MailboxPlanSelector.ascx</DependentUpon>
@@ -241,12 +311,40 @@
     <Compile Include="ExchangeServer\UserControls\MailboxPlanSelector.ascx.designer.cs">
       <DependentUpon>MailboxPlanSelector.ascx</DependentUpon>
     </Compile>
+    <Compile Include="ExchangeServer\UserControls\SecurityGroupTabs.ascx.cs">
+      <DependentUpon>SecurityGroupTabs.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\UserControls\SecurityGroupTabs.ascx.designer.cs">
+      <DependentUpon>SecurityGroupTabs.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\UserControls\UsersList.ascx.cs">
+      <SubType>ASPXCodeBehind</SubType>
+      <DependentUpon>UsersList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\UserControls\UsersList.ascx.designer.cs">
+      <DependentUpon>UsersList.ascx</DependentUpon>
+    </Compile>
     <Compile Include="ExchangeServer\UserControls\UserTabs.ascx.cs">
       <DependentUpon>UserTabs.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="ExchangeServer\UserControls\UserTabs.ascx.designer.cs">
       <DependentUpon>UserTabs.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeDisclaimers.ascx.cs">
+      <DependentUpon>ExchangeDisclaimers.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeDisclaimers.ascx.designer.cs">
+      <DependentUpon>ExchangeDisclaimers.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeDisclaimerGeneralSettings.ascx.cs">
+      <DependentUpon>ExchangeDisclaimerGeneralSettings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ExchangeServer\ExchangeDisclaimerGeneralSettings.ascx.designer.cs">
+      <DependentUpon>ExchangeDisclaimerGeneralSettings.ascx</DependentUpon>
     </Compile>
     <Compile Include="Lync\LyncAddFederationDomain.ascx.cs">
       <DependentUpon>LyncAddFederationDomain.ascx</DependentUpon>
@@ -310,6 +408,27 @@
     </Compile>
     <Compile Include="Lync\UserControls\LyncUserPlanSelector.ascx.designer.cs">
       <DependentUpon>LyncUserPlanSelector.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\CRM2011_Settings.ascx.cs">
+      <DependentUpon>CRM2011_Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\CRM2011_Settings.ascx.designer.cs">
+      <DependentUpon>CRM2011_Settings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\EnterpriseStorage_Settings.ascx.cs">
+      <DependentUpon>EnterpriseStorage_Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\EnterpriseStorage_Settings.ascx.designer.cs">
+      <DependentUpon>EnterpriseStorage_Settings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="ProviderControls\HeliconZoo_Settings.ascx.cs">
+      <DependentUpon>HeliconZoo_Settings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ProviderControls\HeliconZoo_Settings.ascx.designer.cs">
+      <DependentUpon>HeliconZoo_Settings.ascx</DependentUpon>
     </Compile>
     <Compile Include="ProviderControls\hMailServer5_EditAccount.ascx.cs">
       <DependentUpon>hMailServer5_EditAccount.ascx</DependentUpon>
@@ -397,6 +516,34 @@
     </Compile>
     <Compile Include="UserControls\EditFeedsList.ascx.designer.cs">
       <DependentUpon>EditFeedsList.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\OrgIdPolicyEditor.ascx.cs">
+      <DependentUpon>OrgIdPolicyEditor.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\OrgIdPolicyEditor.ascx.designer.cs">
+      <DependentUpon>OrgIdPolicyEditor.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\OrgPolicyEditor.ascx.cs">
+      <DependentUpon>OrgPolicyEditor.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\OrgPolicyEditor.ascx.designer.cs">
+      <DependentUpon>OrgPolicyEditor.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\PackagePhoneNumbers.ascx.cs">
+      <DependentUpon>PackagePhoneNumbers.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\PackagePhoneNumbers.ascx.designer.cs">
+      <DependentUpon>PackagePhoneNumbers.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\AllocatePackagePhoneNumbers.ascx.cs">
+      <DependentUpon>AllocatePackagePhoneNumbers.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\AllocatePackagePhoneNumbers.ascx.designer.cs">
+      <DependentUpon>AllocatePackagePhoneNumbers.ascx</DependentUpon>
     </Compile>
     <Compile Include="VPSForPC\MonitoringPage.aspx.cs">
       <DependentUpon>MonitoringPage.aspx</DependentUpon>
@@ -3711,6 +3858,13 @@
     <Compile Include="WebSitesEditHeliconApeUser.ascx.designer.cs">
       <DependentUpon>WebSitesEditHeliconApeUser.ascx</DependentUpon>
     </Compile>
+    <Compile Include="WebSitesHeliconZooControl.ascx.cs">
+      <DependentUpon>WebSitesHeliconZooControl.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="WebSitesHeliconZooControl.ascx.designer.cs">
+      <DependentUpon>WebSitesHeliconZooControl.ascx</DependentUpon>
+    </Compile>
     <Compile Include="WebSitesEditWebFolder.ascx.cs">
       <DependentUpon>WebSitesEditWebFolder.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -3809,12 +3963,64 @@
     <Compile Include="WebsitesSSL.ascx.designer.cs">
       <DependentUpon>WebsitesSSL.ascx</DependentUpon>
     </Compile>
+    <Compile Include="LyncPhoneNumbers.ascx.cs">
+      <DependentUpon>LyncPhoneNumbers.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="LyncPhoneNumbers.ascx.designer.cs">
+      <DependentUpon>LyncPhoneNumbers.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="LyncAllocatePhoneNumbers.ascx.cs">
+      <DependentUpon>LyncAllocatePhoneNumbers.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="LyncAllocatePhoneNumbers.ascx.designer.cs">
+      <DependentUpon>LyncAllocatePhoneNumbers.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="PhoneNumbers.ascx.cs">
+      <DependentUpon>PhoneNumbers.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PhoneNumbers.ascx.designer.cs">
+      <DependentUpon>PhoneNumbers.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="PhoneNumbersAddPhoneNumber.ascx.cs">
+      <DependentUpon>PhoneNumbersAddPhoneNumber.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PhoneNumbersAddPhoneNumber.ascx.designer.cs">
+      <DependentUpon>PhoneNumbersAddPhoneNumber.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="PhoneNumbersEditPhoneNumber.ascx.cs">
+      <DependentUpon>PhoneNumbersEditPhoneNumber.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="PhoneNumbersEditPhoneNumber.ascx.designer.cs">
+      <DependentUpon>PhoneNumbersEditPhoneNumber.ascx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ApplyEnableHardQuotaFeature.ascx" />
+    <Content Include="ExchangeServer\EnterpriseStorageSpaces.ascx" />
+    <Content Include="ExchangeServer\OrganizationSecurityGroupMemberOf.ascx" />
+    <Content Include="ExchangeServer\ExchangeDistributionListMemberOf.ascx" />
+    <Content Include="ExchangeServer\ExchangeMailboxMemberOf.ascx" />
     <Content Include="ExchangeServer\OrganizationAddDomainName.ascx" />
+    <Content Include="ExchangeServer\OrganizationCreateSecurityGroup.ascx" />
     <Content Include="ExchangeServer\OrganizationDomainNames.ascx" />
     <Content Include="ExchangeServer\ExchangeAddMailboxPlan.ascx" />
+    <Content Include="ExchangeServer\ExchangeDisclaimers.ascx" />
+    <Content Include="ExchangeServer\ExchangeDisclaimerGeneralSettings.ascx" />
+    <Content Include="ExchangeServer\OrganizationSecurityGroupGeneralSettings.ascx" />
+    <Content Include="ExchangeServer\OrganizationSecurityGroups.ascx" />
+    <Content Include="ExchangeServer\OrganizationUserMemberOf.ascx" />
+    <Content Include="ExchangeServer\UserControls\GroupsList.ascx" />
+    <Content Include="ExchangeServer\UserControls\SecurityGroupTabs.ascx" />
+    <Content Include="ExchangeServer\UserControls\UsersList.ascx" />
     <Content Include="Lync\UserControls\LyncUserSettings.ascx" />
+    <Content Include="ProviderControls\CRM2011_Settings.ascx" />
+    <Content Include="ProviderControls\EnterpriseStorage_Settings.ascx" />
+    <Content Include="ProviderControls\HeliconZoo_Settings.ascx" />
     <Content Include="ServersEditWebPlatformInstaller.ascx" />
     <Content Include="ExchangeServer\ExchangeMailboxPlans.ascx" />
     <Content Include="ExchangeServer\UserControls\AccountsListWithPermissions.ascx" />
@@ -3839,6 +4045,10 @@
     <Content Include="SettingsExchangeMailboxPlansPolicy.ascx" />
     <Content Include="SettingsLyncUserPlansPolicy.ascx" />
     <Content Include="UserControls\EditFeedsList.ascx" />
+    <Content Include="UserControls\OrgIdPolicyEditor.ascx" />
+    <Content Include="UserControls\OrgPolicyEditor.ascx" />
+    <Content Include="UserControls\PackagePhoneNumbers.ascx" />
+    <Content Include="UserControls\AllocatePackagePhoneNumbers.ascx" />
     <Content Include="VPSForPC\MonitoringPage.aspx" />
     <Content Include="VPSForPC\VdcAccountVLanAdd.ascx" />
     <Content Include="VPSForPC\VdcAccountVLanNetwork.ascx" />
@@ -3899,7 +4109,13 @@
     <Content Include="UserControls\UserDetails.ascx" />
     <Content Include="UserControls\UserLookup.ascx" />
     <Content Include="UserControls\UsernameControl.ascx" />
+    <Content Include="WebSitesHeliconZooControl.ascx" />
     <Content Include="WebsitesSSL.ascx" />
+    <Content Include="LyncPhoneNumbers.ascx" />
+    <Content Include="LyncAllocatePhoneNumbers.ascx" />
+    <Content Include="PhoneNumbers.ascx" />
+    <Content Include="PhoneNumbersAddPhoneNumber.ascx" />
+    <Content Include="PhoneNumbersEditPhoneNumber.ascx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_LocalResources\BandwidthReport.ascx.resx">
@@ -4913,7 +5129,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="ScheduleTaskControls\App_LocalResources\NotifyOverusedDatabases.ascx.resx" />
-    <Content Include="App_LocalResources\WebSitesEditHeliconApeFolder.ascx.resx" />
+    <Content Include="App_LocalResources\WebSitesEditHeliconApeFolder.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="App_LocalResources\WebSitesEditHeliconApeFolderAuth.ascx.resx" />
     <Content Include="App_LocalResources\WebSitesEditHeliconApeGroup.ascx.resx" />
     <Content Include="App_LocalResources\WebSitesEditHeliconApeUser.ascx.resx" />
@@ -4966,13 +5184,57 @@
     <Content Include="Lync\App_LocalResources\LyncUserPlans.ascx.resx" />
     <Content Include="Lync\App_LocalResources\LyncUsers.ascx.resx" />
     <Content Include="ProviderControls\App_LocalResources\Lync_Settings.ascx.resx" />
-    <Content Include="ExchangeServer\UserControls\App_LocalResources\UserTabs.ascx.resx" />
+    <Content Include="ExchangeServer\UserControls\App_LocalResources\UserTabs.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="App_LocalResources\SettingsExchangeMailboxPlansPolicy.ascx.resx" />
     <Content Include="App_LocalResources\SettingsLyncUserPlansPolicy.ascx.resx" />
+    <Content Include="ProviderControls\App_LocalResources\HeliconZoo_Settings.ascx.resx" />
     <Content Include="ExchangeServer\App_LocalResources\OrganizationDomainNames.ascx.resx">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="ExchangeServer\App_LocalResources\OrganizationAddDomainName.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="UserControls\App_LocalResources\OrgIdPolicyEditor.ascx.resx" />
+    <Content Include="UserControls\App_LocalResources\PackagePhoneNumbers.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="UserControls\App_LocalResources\AllocatePackagePhoneNumbers.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <None Include="Resources\Windows2008_Settings.ascx.resx" />
+    <Content Include="App_LocalResources\WebSitesHeliconZooControl.ascx.resx" />
+    <Content Include="ExchangeServer\App_LocalResources\ExchangeDisclaimers.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ExchangeServer\App_LocalResources\ExchangeDisclaimerGeneralSettings.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ExchangeServer\App_LocalResources\ExchangeDistributionListMemberOf.ascx.resx" />
+    <Content Include="ExchangeServer\App_LocalResources\ExchangeMailboxMemberOf.ascx.resx" />
+    <Content Include="ExchangeServer\App_LocalResources\OrganizationUserMemberOf.ascx.resx" />
+    <Content Include="App_LocalResources\LyncPhoneNumbers.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_LocalResources\LyncAllocatePhoneNumbers.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="App_LocalResources\PhoneNumbers.ascx.resx" />
+    <Content Include="App_LocalResources\PhoneNumbersAddPhoneNumber.ascx.resx" />
+    <Content Include="App_LocalResources\PhoneNumbersEditPhoneNumber.ascx.resx" />
+    <Content Include="ExchangeServer\App_LocalResources\OrganizationCreateSecurityGroup.ascx.resx" />
+    <Content Include="ExchangeServer\App_LocalResources\OrganizationSecurityGroupGeneralSettings.ascx.resx" />
+    <Content Include="ExchangeServer\App_LocalResources\OrganizationSecurityGroups.ascx.resx" />
+    <Content Include="ExchangeServer\UserControls\App_LocalResources\AccountsListWithPermissions.ascx.resx" />
+    <Content Include="ExchangeServer\UserControls\App_LocalResources\SecurityGroupTabs.ascx.resx" />
+    <Content Include="ExchangeServer\UserControls\App_LocalResources\UsersList.ascx.resx" />
+    <Content Include="ExchangeServer\UserControls\App_LocalResources\GroupsList.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="ProviderControls\App_LocalResources\EnterpriseStorage_Settings.ascx.resx" />
+    <Content Include="ExchangeServer\App_LocalResources\EnterpriseStorageSpaces.ascx.resx" />
+    <Content Include="UserControls\App_LocalResources\OrgPolicyEditor.ascx.resx">
       <SubType>Designer</SubType>
     </Content>
     <EmbeddedResource Include="UserControls\App_LocalResources\EditDomainsList.ascx.resx">

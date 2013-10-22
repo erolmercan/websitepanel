@@ -63,6 +63,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Management" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -71,15 +72,19 @@
     <Compile Include="..\VersionInfo.cs">
       <Link>VersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Common\AppPoolState.cs" />
     <Compile Include="Common\ByteOperations.cs" />
     <Compile Include="Common\ErrorCodes.cs" />
     <Compile Include="Common\PasswdHelper.cs" />
     <Compile Include="Common\WPIEntries.cs" />
+    <Compile Include="EnterpriseStorage\IEnterpriseStorage.cs" />
+    <Compile Include="HeliconZoo\IHeliconZooServer.cs" />
     <Compile Include="HostedSolution\BaseReport.cs" />
     <Compile Include="HostedSolution\BaseStatistics.cs" />
     <Compile Include="HostedSolution\BlackBerryErrorsCodes.cs" />
     <Compile Include="HostedSolution\BlackBerryStatsItem.cs" />
     <Compile Include="HostedSolution\BlackBerryUserDeleteState.cs" />
+    <Compile Include="HostedSolution\ExchangeDisclaimer.cs" />
     <Compile Include="HostedSolution\ExchangeOrganization.cs" />
     <Compile Include="HostedSolution\ExchangeAcceptedDomainType.cs" />
     <Compile Include="HostedSolution\ExchangeMailboxPlanType.cs" />
@@ -89,6 +94,8 @@
     <Compile Include="HostedSolution\LyncErrorCodes.cs" />
     <Compile Include="HostedSolution\LyncFederationDomain.cs" />
     <Compile Include="HostedSolution\LyncOrganizationStatistics.cs" />
+    <Compile Include="HostedSolution\LyncPolicyType.cs" />
+    <Compile Include="HostedSolution\LyncTransaction.cs" />
     <Compile Include="HostedSolution\LyncUserStatistics.cs" />
     <Compile Include="HostedSolution\LyncStatisticsReport.cs" />
     <Compile Include="HostedSolution\LyncUser.cs" />
@@ -96,7 +103,9 @@
     <Compile Include="HostedSolution\LyncUserPlanType.cs" />
     <Compile Include="HostedSolution\LyncUsersPaged.cs" />
     <Compile Include="HostedSolution\LyncVoicePolicyType.cs" />
+    <Compile Include="HostedSolution\OrganizationSecurityGroup.cs" />
     <Compile Include="HostedSolution\TransactionAction.cs" />
+    <Compile Include="RemoteDesktopServices\IRemoteDesktopServices.cs" />
     <Compile Include="ResultObjects\HeliconApe.cs" />
     <Compile Include="HostedSolution\ExchangeMobileDevice.cs" />
     <Compile Include="HostedSolution\IOCSEdgeServer.cs" />

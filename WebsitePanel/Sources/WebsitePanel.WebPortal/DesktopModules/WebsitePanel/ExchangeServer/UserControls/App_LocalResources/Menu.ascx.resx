@@ -126,6 +126,9 @@
   <data name="Text.DistributionLists" xml:space="preserve">
     <value>Distribution Lists</value>
   </data>
+  <data name="Text.Disclaimers" xml:space="preserve">
+    <value>Disclaimers</value>
+  </data>
   <data name="Text.DomainNames" xml:space="preserve">
     <value>Domains</value>
   </data>
@@ -145,7 +148,7 @@
     <value>Mailboxes</value>
   </data>
   <data name="Text.OrganizationGroup" xml:space="preserve">
-    <value>Organization's</value>
+    <value>Organization</value>
   </data>
   <data name="Text.CRMGroup" xml:space="preserve">
     <value>CRM</value>
@@ -197,5 +200,14 @@
   </data>
   <data name="Text.LyncFederationDomains" xml:space="preserve">
     <value>Lync Federation Domains</value>
+  </data>
+  <data name="Text.SecurityGroups" xml:space="preserve">
+    <value>Groups</value>
+  </data>
+  <data name="Text.EnterpriseStorageGroup" xml:space="preserve">
+    <value>Enterprise Storage</value>
+  </data>
+  <data name="Text.EnterpriseStorageSpaces" xml:space="preserve">
+    <value>Spaces</value>
   </data>
 </root>

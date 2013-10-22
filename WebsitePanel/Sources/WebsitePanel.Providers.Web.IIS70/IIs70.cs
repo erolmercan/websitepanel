@@ -38,6 +38,7 @@ using WebsitePanel.Providers.HostedSolution;
 using WebsitePanel.Providers.OS;
 using WebsitePanel.Providers.ResultObjects;
 using WebsitePanel.Providers.Utils;
+using WebsitePanel.Providers.Web.Compression;
 using WebsitePanel.Providers.Web.Handlers;
 using WebsitePanel.Providers.Web.HttpRedirect;
 using WebsitePanel.Providers.Web.Iis.Authentication;
@@ -78,6 +79,7 @@ namespace WebsitePanel.Providers.Web
 		public const string AnonymousAuthenticationSection = "system.webServer/security/authentication/anonymousAuthentication";
 		public const string BasicAuthenticationSection = "system.webServer/security/authentication/basicAuthentication";
 		public const string WindowsAuthenticationSection = "system.webServer/security/authentication/windowsAuthentication";
+        public const string CompressionSection = "system.webServer/urlCompression";
 		public const string StaticContentSection = "system.webServer/staticContent";
 		public const string ModulesSection = "system.webServer/modules";
 		public const string IsapiCgiRestrictionSection = "system.webServer/security/isapiCgiRestriction";
@@ -101,7 +103,14 @@ namespace WebsitePanel.Providers.Web
         public const string DOTNETPANEL_IISMODULES = "DotNetPanel.IIsModules";
         
 
-        public const string HeliconApeModule = "Helicon Ape";
+        public const string HeliconApeModulePrevName = "Helicon Ape";
+        // true module name
+        public const string HeliconApeModule  = "Helicon.Ape";
+        public const string HeliconApeModuleType = "Helicon.Ape.ApeModule";
+        // true handler name
+        public const string HeliconApeHandler = "Helicon.Ape Handler";
+        public const string HeliconApeHandlerType = "Helicon.Ape.Handler";
+        
         public const string HeliconApeHandlerPath = "*.apehandler";
         
 		public const string IsapiModule = "IsapiModule";
@@ -340,6 +349,7 @@ namespace WebsitePanel.Providers.Web
 		private AnonymAuthModuleService anonymAuthSvc;
 		private WindowsAuthModuleService winAuthSvc;
 		private BasicAuthModuleService basicAuthSvc;
+        private CompressionModuleService comprSvc;
 		private DefaultDocsModuleService defaultDocSvc;
 		private CustomHttpErrorsModuleService customErrorsSvc;
 		private CustomHttpHeadersModuleService customHeadersSvc;
@@ -512,6 +522,7 @@ namespace WebsitePanel.Providers.Web
 				winAuthSvc = new WindowsAuthModuleService();
 				anonymAuthSvc = new AnonymAuthModuleService();
 				basicAuthSvc = new BasicAuthModuleService();
+                comprSvc = new CompressionModuleService();
 				defaultDocSvc = new DefaultDocsModuleService();
 				classicAspSvc = new ClassicAspModuleService();
 				httpRedirectSvc = new HttpRedirectModuleService();
@@ -616,6 +627,8 @@ namespace WebsitePanel.Providers.Web
 			virtualDir.AnonymousUserPassword = (string)bag[AuthenticationGlobals.AnonymousAuthenticationPassword];
 			virtualDir.EnableAnonymousAccess = (bool)bag[AuthenticationGlobals.Enabled];
 
+            
+
 			// load windows auth 
 			bag = winAuthSvc.GetAuthenticationSettings(srvman, virtualDir.FullQualifiedPath);
 			virtualDir.EnableWindowsAuthentication = (bool)bag[AuthenticationGlobals.Enabled];
@@ -629,10 +642,17 @@ namespace WebsitePanel.Providers.Web
 			bag = classicAspSvc.GetClassicAspSettings(srvman, virtualDir.FullQualifiedPath);
 			virtualDir.EnableParentPaths = (bool)bag[ClassicAspGlobals.EnableParentPaths];
 			//
+
+            //gzip
+            bag = comprSvc.GetSettings(srvman, virtualDir.FullQualifiedPath);
+            virtualDir.EnableDynamicCompression = (bool)bag[CompressionGlobals.DynamicCompression];
+            virtualDir.EnableStaticCompression = (bool)bag[CompressionGlobals.StaticCompression];
+
 			virtualDir.IIs7 = true;
 		}
 
-		private void FillIISObjectFromVirtualDirectory(WebVirtualDirectory virtualDir)
+
+	    private void FillIISObjectFromVirtualDirectory(WebVirtualDirectory virtualDir)
 		{
 			dirBrowseSvc.SetDirectoryBrowseEnabled(virtualDir.FullQualifiedPath, virtualDir.EnableDirectoryBrowsing);
 			//
@@ -641,6 +661,8 @@ namespace WebsitePanel.Providers.Web
 			winAuthSvc.SetEnabled(virtualDir.FullQualifiedPath, virtualDir.EnableWindowsAuthentication);
 			//
 			basicAuthSvc.SetAuthenticationSettings(virtualDir);
+            //
+            comprSvc.SetSettings(virtualDir.FullQualifiedPath, virtualDir.EnableDynamicCompression, virtualDir.EnableStaticCompression);
 			//
 			defaultDocSvc.SetDefaultDocumentSettings(virtualDir.FullQualifiedPath, virtualDir.DefaultDocs);
 			//
@@ -1165,6 +1187,7 @@ namespace WebsitePanel.Providers.Web
                 HeliconApeStatus heliconApeStatus = GetHeliconApeStatus(srvman, siteId);
                 site.HeliconApeInstalled = heliconApeStatus.IsInstalled;
                 site.HeliconApeEnabled = heliconApeStatus.IsEnabled;
+                site.HeliconApeStatus = heliconApeStatus;
 
                 //
                 site.SiteState = GetSiteState(srvman, siteId);
@@ -1501,6 +1524,27 @@ namespace WebsitePanel.Providers.Web
 			}
 		}
 
+        // AppPool
+        public void ChangeAppPoolState(string siteId, AppPoolState state)
+        {
+            webObjectsSvc.ChangeAppPoolState(siteId, state);
+        }
+
+        public AppPoolState GetAppPoolState(string siteId)
+        {
+            using (ServerManager srvman = webObjectsSvc.GetServerManager())
+            {
+                return GetAppPoolState(srvman, siteId);
+            }
+        }
+
+        public AppPoolState GetAppPoolState(ServerManager srvman, string siteId)
+        {
+            return webObjectsSvc.GetAppPoolState(srvman, siteId);
+        }
+
+
+
 		/// <summary>
 		/// Checks whether virtual iisDirObject with supplied name under specified site exists.
 		/// </summary>
@@ -1519,11 +1563,17 @@ namespace WebsitePanel.Providers.Web
 		/// <returns>virtual directories that belong to site with supplied id.</returns>
 		public override WebVirtualDirectory[] GetVirtualDirectories(string siteId)
 		{
+            
+
             using (ServerManager srvman = webObjectsSvc.GetServerManager())
             {
                 return GetVirtualDirectories(srvman, siteId);
             }
 		}
+
+      
+
+                        
 
         private WebVirtualDirectory[] GetVirtualDirectories(ServerManager srvman, string siteId)
         {
@@ -1860,6 +1910,9 @@ namespace WebsitePanel.Providers.Web
 
 		#endregion
 
+
+
+
 		#region Helicon Ape
 
         public override HeliconApeStatus GetHeliconApeStatus(string siteId)
@@ -1888,13 +1941,40 @@ namespace WebsitePanel.Providers.Web
 
         private bool IsHeliconApeEnabled(ServerManager srvman, string siteId)
         {
+            if (!string.IsNullOrEmpty(siteId))
+            {
+                // Check the web site app pool in integrated pipeline mode
+                WebSite webSite = null;
+                webSite = webObjectsSvc.GetWebSiteFromIIS(srvman, siteId);
+                if (webSite == null)
+                    throw new ApplicationException(
+                        String.Format("Could not find a web site with the following identifier: {0}.", siteId));
+
+                // Fill ASP.NET settings
+                FillAspNetSettingsFromIISObject(srvman, webSite);
+
+                var aphl = new WebAppPoolHelper(ProviderSettings);
+                var currentPool = aphl.match_webapp_pool(webSite);
+
+                if (aphl.pipeline(currentPool.Mode) != SiteAppPoolMode.Integrated)
+                {
+                    // Ape is not working in not Integrated pipeline mode
+                    return false;
+                }
+            }
+
+
             var appConfig = srvman.GetApplicationHostConfiguration();
             var modulesSection = appConfig.GetSection(Constants.ModulesSection, siteId);
             var modulesCollection = modulesSection.GetCollection();
 
             foreach (var moduleEntry in modulesCollection)
             {
-                if (String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase))
+                if (
+                    String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase)
+                    ||
+                    String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModulePrevName, StringComparison.InvariantCultureIgnoreCase)
+                )
                     return true;
             }
             //
@@ -1911,7 +1991,7 @@ namespace WebsitePanel.Providers.Web
 		public new void GrantWebDeployPublishingAccess(string siteName, string accountName, string accountPassword)
 		{
 			// Web Publishing Access feature requires FullControl permissions on the web site's wwwroot folder
-			GrantWebManagementAccessInternally(siteName, accountName, accountPassword, NTFSPermission.FullControl);
+			//GrantWebManagementAccessInternally(siteName, accountName, accountPassword, NTFSPermission.FullControl);
 			//
 			EnforceDelegationRulesRestrictions(siteName, accountName);
 		}
@@ -1925,7 +2005,7 @@ namespace WebsitePanel.Providers.Web
 		public new void RevokeWebDeployPublishingAccess(string siteName, string accountName)
 		{
 			// Web Publishing Access feature requires FullControl permissions on the web site's wwwroot folder
-			RevokeWebManagementAccess(siteName, accountName);
+			//RevokeWebManagementAccess(siteName, accountName);
 			//
 			RemoveDelegationRulesRestrictions(siteName, accountName);
 		}
@@ -1986,7 +2066,13 @@ namespace WebsitePanel.Providers.Web
         private string GetHeliconApeInstallDir(string siteId)
         {
             //Check global registration
-            return Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Helicon\\Ape", "InstallDir", string.Empty) as string;
+            string installDir = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Helicon\\Ape", "InstallDir", string.Empty) as string;
+            if (string.Empty == installDir)
+            {
+                installDir = Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Helicon\\Ape", "InstallDir", string.Empty) as string;
+            }
+
+            return installDir;
         }
 
         private bool IsHeliconApeInstalled(ServerManager srvman, string siteId, string installDir)
@@ -2013,7 +2099,26 @@ namespace WebsitePanel.Providers.Web
             if (string.IsNullOrEmpty(installDir))
                 return HELICON_APE_NOT_REGISTERED;
 
-            return System.Diagnostics.FileVersionInfo.GetVersionInfo(Path.Combine(installDir, "Helicon.Ape.Editor.dll")).FileVersion;
+            string apeModulePath = Path.Combine(installDir, "bin\\Helicon.Ape.dll");
+            if (File.Exists(apeModulePath))
+            {
+                return System.Diagnostics.FileVersionInfo.GetVersionInfo(apeModulePath).FileVersion;
+            }
+
+            apeModulePath = Path.Combine(installDir, "ManualInstall\\bin\\Helicon.Ape.dll");
+            if (File.Exists(apeModulePath))
+            {
+                return System.Diagnostics.FileVersionInfo.GetVersionInfo(apeModulePath).FileVersion;
+            }
+
+            apeModulePath = Path.Combine(installDir, "Helicon.Ape.dll");
+            if (File.Exists(apeModulePath))
+            {
+                return System.Diagnostics.FileVersionInfo.GetVersionInfo(apeModulePath).FileVersion;
+            }
+
+
+            return HELICON_APE_NOT_REGISTERED;
         }
 
         private string GetHeliconApeModuleType(string siteId)
@@ -2147,165 +2252,252 @@ namespace WebsitePanel.Providers.Web
             return registrationInfo.StartsWith("Registered to:");
         }
 
+        /// <summary>
+        /// Enables Helicon Ape module & handler on the web site or server globally.
+        /// </summary>
+        /// <param name="siteId">
+        /// Web site id or empty string ("") for server-wide enabling
+        /// </param>
         public override void EnableHeliconApe(string siteId)
         {
-            WebSite webSite = null;
-            using (ServerManager srvman = webObjectsSvc.GetServerManager())
+            if (null == siteId)
             {
-                //
-                if (String.IsNullOrEmpty(siteId))
-                    throw new ArgumentNullException("siteId");
-
-                // Helicon.Ape.ApeModule works for apps working in Integrated Pipeline mode
-                // Switch automatically to the app pool with Integrated Pipeline enabled
-                webSite = webObjectsSvc.GetWebSiteFromIIS(srvman, siteId);
-                //
-                if (webSite == null)
-                    throw new ApplicationException(String.Format("Could not find a web site with the following identifier: {0}.", siteId));
-
-                // Fill ASP.NET settings
-                FillAspNetSettingsFromIISObject(srvman, webSite);
+                throw new ArgumentNullException("siteId");
             }
 
-            //
-            var aphl = new WebAppPoolHelper(ProviderSettings);
-            var currentPool = aphl.match_webapp_pool(webSite);
-            var dotNetVersion = aphl.dotNetVersion(currentPool.Mode);
-            var sisMode = aphl.isolation(currentPool.Mode);
-            // AT least ASP.NET 2.0 is allowed to provide such capabilities...
-            if (dotNetVersion == SiteAppPoolMode.dotNetFramework1)
-                dotNetVersion = SiteAppPoolMode.dotNetFramework2;
-            // and Integrated pipeline...
-            if (aphl.pipeline(currentPool.Mode) != SiteAppPoolMode.Integrated)
+            if ("" != siteId)
             {
-                // Lookup for the opposite pool matching the criteria
-                var oppositePool = Array.Find<WebAppPool>(aphl.SupportedAppPools.ToArray(),
-                    x => aphl.dotNetVersion(x.Mode) == dotNetVersion && aphl.isolation(x.Mode) == sisMode
-                        && aphl.pipeline(x.Mode) == SiteAppPoolMode.Integrated);
+                // prepare enabling Ape for web site
+
+                WebSite webSite = null;
+                using (ServerManager srvman = webObjectsSvc.GetServerManager())
+                {
+                    // Helicon.Ape.ApeModule works for apps working in Integrated Pipeline mode
+                    // Switch automatically to the app pool with Integrated Pipeline enabled
+                    webSite = webObjectsSvc.GetWebSiteFromIIS(srvman, siteId);
+                    if (webSite == null)
+                        throw new ApplicationException(
+                            String.Format("Could not find a web site with the following identifier: {0}.", siteId));
+
+                    // Fill ASP.NET settings
+                    FillAspNetSettingsFromIISObject(srvman, webSite);
+                }
+
                 //
-                webSite.AspNetInstalled = oppositePool.AspNetInstalled;
-                //
-                SetWebSiteApplicationPool(webSite, false);
-                //
+                var aphl = new WebAppPoolHelper(ProviderSettings);
+                var currentPool = aphl.match_webapp_pool(webSite);
+                var dotNetVersion = aphl.dotNetVersion(currentPool.Mode);
+                var sisMode = aphl.isolation(currentPool.Mode);
+                // AT least ASP.NET 2.0 is allowed to provide such capabilities...
+                if (dotNetVersion == SiteAppPoolMode.dotNetFramework1)
+                    dotNetVersion = SiteAppPoolMode.dotNetFramework2;
+                // and Integrated pipeline...
+                if (aphl.pipeline(currentPool.Mode) != SiteAppPoolMode.Integrated)
+                {
+                    // Lookup for the opposite pool matching the criteria
+                    var oppositePool = Array.Find<WebAppPool>(aphl.SupportedAppPools.ToArray(),
+                                                              x =>
+                                                              aphl.dotNetVersion(x.Mode) == dotNetVersion &&
+                                                              aphl.isolation(x.Mode) == sisMode
+                                                              && aphl.pipeline(x.Mode) == SiteAppPoolMode.Integrated);
+                    //
+                    webSite.AspNetInstalled = oppositePool.AspNetInstalled;
+                    //
+                    SetWebSiteApplicationPool(webSite, false);
+                    //
+                    using (var srvman = webObjectsSvc.GetServerManager())
+                    {
+                        var iisSiteObject = srvman.Sites[siteId];
+                        iisSiteObject.Applications["/"].ApplicationPoolName = webSite.ApplicationPool;
+                        //
+                        srvman.CommitChanges();
+                    }
+                }
+
+                #region Disable automatically Integrated Windows Authentication
+
                 using (var srvman = webObjectsSvc.GetServerManager())
                 {
-                    var iisSiteObject = srvman.Sites[siteId];
-                    iisSiteObject.Applications["/"].ApplicationPoolName = webSite.ApplicationPool;
+                    PropertyBag winAuthBag = winAuthSvc.GetAuthenticationSettings(srvman, siteId);
                     //
-                    srvman.CommitChanges();
-                }
-            }
+                    if ((bool) winAuthBag[AuthenticationGlobals.Enabled])
+                    {
+                        Configuration config = srvman.GetApplicationHostConfiguration();
 
-            #region Disable automatically Integrated Windows Authentication
-            using (var srvman = webObjectsSvc.GetServerManager())
-            {
-                PropertyBag winAuthBag = winAuthSvc.GetAuthenticationSettings(srvman, siteId);
-                //
-                if ((bool)winAuthBag[AuthenticationGlobals.Enabled])
+                        ConfigurationSection windowsAuthenticationSection = config.GetSection(
+                            "system.webServer/security/authentication/windowsAuthentication",
+                            siteId);
+                        //
+                        windowsAuthenticationSection["enabled"] = false;
+                        //
+                        srvman.CommitChanges();
+                    }
+                }
+
+                #endregion
+
+                #region Disable automatically Secured Folders
+
+                if (IsSecuredFoldersInstalled(siteId))
                 {
-                    Configuration config = srvman.GetApplicationHostConfiguration();
-
-                    ConfigurationSection windowsAuthenticationSection = config.GetSection(
-                        "system.webServer/security/authentication/windowsAuthentication",
-                        siteId);
-                    //
-                    windowsAuthenticationSection["enabled"] = false;
-                    //
-                    srvman.CommitChanges();
+                    UninstallSecuredFolders(siteId);
                 }
+
+                #endregion
             }
-            #endregion
 
-            #region Disable automatically Secured Folders
-            if (IsSecuredFoldersInstalled(siteId))
-            {
-                UninstallSecuredFolders(siteId);
-            }
-            #endregion
-
-
-            //
             using (var srvman = webObjectsSvc.GetServerManager())
             {
-                //
-                Configuration appConfig = srvman.GetApplicationHostConfiguration();
-                
-                // add Helicon.Ape module
-                ConfigurationSection modulesSection = appConfig.GetSection(Constants.ModulesSection, siteId);
-                ConfigurationElementCollection modulesCollection = modulesSection.GetCollection();
-                ConfigurationElement moduleAdd = modulesCollection.CreateElement("add");
-                moduleAdd["name"] = Constants.HeliconApeModule;
-                moduleAdd["type"] = GetHeliconApeModuleType(siteId);
-                //
-                modulesCollection.Add(moduleAdd);
+                if (!IsHeliconApeEnabled(srvman, siteId))
+                {
 
-                // add Helicon.Ape handler
-                ConfigurationSection handlersSection = appConfig.GetSection(Constants.HandlersSection, siteId);
-                ConfigurationElementCollection handlersCollection = handlersSection.GetCollection();
-                ConfigurationElement handlerAdd = handlersCollection.CreateElement("add");
-                handlerAdd["name"] = Constants.HeliconApeModule;
-                handlerAdd["type"] = GetHeliconApeHandlerType(siteId);
-                handlerAdd["path"] = Constants.HeliconApeHandlerPath;
-                handlerAdd["verb"] = "*";
-                handlerAdd["resourceType"] = "Unspecified";
-                //
-                handlersCollection.Add(handlerAdd);
-                //
-                srvman.CommitChanges();
+                    Configuration appConfig = srvman.GetApplicationHostConfiguration();
+
+                    // add Helicon.Ape module
+                    ConfigurationSection modulesSection = appConfig.GetSection(Constants.ModulesSection, siteId);
+                    ConfigurationElementCollection modulesCollection = modulesSection.GetCollection();
+
+                    // <add name="Helicon.Ape" />
+                    ConfigurationElement heliconApeModuleEntry = modulesCollection.CreateElement("add");
+                    heliconApeModuleEntry["name"] = Constants.HeliconApeModule;
+                    heliconApeModuleEntry["type"] = GetHeliconApeModuleType(siteId);
+
+                    // this way make <clear/> and copy all modules list from ancestor
+                    //modulesCollection.AddAt(0, heliconApeModuleEntry);
+                    // this way just insert single ape module entry
+                    modulesCollection.Add(heliconApeModuleEntry);
+
+
+
+
+                    // add Helicon.Ape handler
+                    ConfigurationSection handlersSection = appConfig.GetSection(Constants.HandlersSection, siteId);
+                    ConfigurationElementCollection handlersCollection = handlersSection.GetCollection();
+
+                    // <add name="Helicon.Ape" />
+                    ConfigurationElement heliconApeHandlerEntry = handlersCollection.CreateElement("add");
+                    heliconApeHandlerEntry["name"] = Constants.HeliconApeHandler;
+                    heliconApeHandlerEntry["type"] = GetHeliconApeHandlerType(siteId);
+                    heliconApeHandlerEntry["path"] = Constants.HeliconApeHandlerPath;
+                    heliconApeHandlerEntry["verb"] = "*";
+                    heliconApeHandlerEntry["resourceType"] = "Unspecified";
+
+                    handlersCollection.AddAt(0, heliconApeHandlerEntry);
+
+                    srvman.CommitChanges();
+                }
             }
         }
 
+        /// <summary>
+        /// Disables Helicon Ape module & handler on the web site or server globally.
+        /// </summary>
+        /// <param name="siteId">
+        /// Web site id or empty string ("") for server-wide disabling
+        /// </param>
         public override void DisableHeliconApe(string siteId)
         {
-            //
-            if (String.IsNullOrEmpty(siteId))
+            if (null == siteId)
                 throw new ArgumentNullException("siteId");
-            //
+
             using (var srvman = webObjectsSvc.GetServerManager())
             {
+                bool alterConfiguration = false;
                 //
                 Configuration appConfig = srvman.GetApplicationHostConfiguration();
+
+
+
                 
                 // remove Helicon.Ape module
                 ConfigurationSection modulesSection = appConfig.GetSection(Constants.ModulesSection, siteId);
                 ConfigurationElementCollection modulesCollection = modulesSection.GetCollection();
-                ConfigurationElement htaccessModuleEntry = null;
-                foreach (ConfigurationElement moduleEntry in modulesCollection)
+                //List<ConfigurationElement> heliconApeModuleEntriesList = new List<ConfigurationElement>();
+                //foreach (ConfigurationElement moduleEntry in modulesCollection)
+                //{
+                //    if (
+                //        String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase)
+                //        ||
+                //        String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModulePrevName, StringComparison.InvariantCultureIgnoreCase)
+                //    )
+                //    {
+                //        heliconApeModuleEntriesList.Add(moduleEntry);
+                //    }
+                //}
+                //foreach (ConfigurationElement heliconApeElement in heliconApeModuleEntriesList)
+                //{
+                //    modulesCollection.Remove(heliconApeElement);
+                //}
+
+                for (int i = 0; i < modulesCollection.Count; )
                 {
-                    if (String.Equals(moduleEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase))
+                    ConfigurationElement moduleEntry = modulesCollection[i];
+
+                    string type = moduleEntry["type"].ToString();
+
+                    if (type.IndexOf(Constants.HeliconApeModuleType, StringComparison.Ordinal) >= 0)
                     {
-                        htaccessModuleEntry = moduleEntry;
-                        break;
+                        modulesCollection.RemoveAt(i);
+                        alterConfiguration = true;
                     }
-                }
-                if (htaccessModuleEntry != null)
-                {
-                    modulesCollection.Remove(htaccessModuleEntry);
+                    else
+                    {
+                        ++i;
+                    }
+
                 }
 
                 // remove Helicon.Ape handler
                 ConfigurationSection handlersSection = appConfig.GetSection(Constants.HandlersSection, siteId);
                 ConfigurationElementCollection handlersCollection = handlersSection.GetCollection();
-                ConfigurationElement htaccessHandlerEntry = null;
-                foreach (ConfigurationElement handlerEntry in handlersCollection)
+                //List<ConfigurationElement> heliconApeHandlerEntriesList = new List<ConfigurationElement>();
+                //foreach (ConfigurationElement handlerEntry in handlersCollection)
+                //{
+                //    if (
+                //        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase)
+                //        ||
+                //        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeModulePrevName, StringComparison.InvariantCultureIgnoreCase)
+                //        ||
+                //        String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeHandler, StringComparison.InvariantCultureIgnoreCase)
+                //    )
+                //    {
+                //        heliconApeHandlerEntriesList.Add(handlerEntry);
+                //    }
+                //}
+                ////
+                //foreach (ConfigurationElement heliconApeHandlerEntry in heliconApeHandlerEntriesList)
+                //{
+                //    handlersCollection.Remove(heliconApeHandlerEntry);
+                //}
+
+                //// commit changes to metabase
+                //if (heliconApeModuleEntriesList.Count > 0 || heliconApeHandlerEntriesList.Count > 0)
+                //{
+                //    srvman.CommitChanges();
+                //}
+
+                for (int i = 0; i < handlersCollection.Count; )
                 {
-                    if (String.Equals(handlerEntry["name"].ToString(), Constants.HeliconApeModule, StringComparison.InvariantCultureIgnoreCase))
+
+                    string type = handlersCollection[i]["type"].ToString();
+
+                    if (type.IndexOf(Constants.HeliconApeHandlerType, StringComparison.Ordinal) >= 0)
                     {
-                        htaccessHandlerEntry = handlerEntry;
-                        break;
+                        handlersCollection.RemoveAt(i);
+                        alterConfiguration = true;
                     }
-                }
-				//
-                if (htaccessHandlerEntry != null)
-                {
-                    handlersCollection.Remove(htaccessHandlerEntry);
+                    else
+                    {
+                        ++i;
+                    }
+
                 }
 
-                // commit changes to metabase
-                if (htaccessModuleEntry != null || htaccessHandlerEntry != null)
+                if (alterConfiguration)
                 {
-                    srvman.CommitChanges();
+                    srvman.CommitChanges();    
                 }
+                
 
             }
         }
@@ -2400,9 +2592,88 @@ namespace WebsitePanel.Providers.Web
 
         #endregion
 
+        #region Helicon Zoo
+
+        public override WebVirtualDirectory[] GetZooApplications(string siteId)
+        {
+            using (ServerManager srvman = webObjectsSvc.GetServerManager())
+            {
+                return webObjectsSvc.GetZooApplications(srvman, siteId);
+            }
+        }
+
+        public override StringResultObject SetZooEnvironmentVariable(string siteId, string appName, string envName, string envValue)
+        {
+            StringResultObject result = new StringResultObject();
+
+            try
+            {
+                using (ServerManager srvman = webObjectsSvc.GetServerManager())
+                {
+                    webObjectsSvc.SetZooEnvironmentVariable(srvman, siteId, appName, envName, envValue);
+                }
+                
+                result.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                result.AddError("Exception", e);
+            }
+
+            return result;
+        }
+
+
+        public override StringResultObject SetZooConsoleEnabled(string siteId, string appName)
+        {
+            StringResultObject result = new StringResultObject();
+
+            try
+            {
+                using (ServerManager srvman = webObjectsSvc.GetServerManager())
+                {
+                    webObjectsSvc.SetZooConsoleEnabled(srvman, siteId, appName);
+                }
+
+                result.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                result.AddError("Exception", e);
+            }
+
+            return result;
+        }
+
+        public override StringResultObject SetZooConsoleDisabled(string siteId, string appName)
+        {
+            StringResultObject result = new StringResultObject();
+
+            try
+            {
+                using (ServerManager srvman = webObjectsSvc.GetServerManager())
+                {
+                    webObjectsSvc.SetZooConsoleDisabled(srvman, siteId, appName);
+                }
+
+                result.IsSuccess = true;
+            }
+            catch (Exception e)
+            {
+                result.AddError("Exception", e);
+            }
+
+            return result;
+        }
+
+
+        
+
+        #endregion
+
         #region Secured Helicon Ape Users
 
-	    public static string GeneratePasswordHash(HtaccessUser user)
+        public static string GeneratePasswordHash(HtaccessUser user)
 	    {
 	        if (HtaccessFolder.AUTH_TYPE_BASIC == user.AuthType)
 	        {
@@ -3668,7 +3939,7 @@ namespace WebsitePanel.Providers.Web
 			else
 			{
 				//
-				SystemUser user = SecurityUtils.GetUser(accountName, ServerSettings, String.Empty);
+				SystemUser user = SecurityUtils.GetUser(GetNonQualifiedAccountName(accountName), ServerSettings, String.Empty);
 				//
 				user.Password = accountPassword;
 				//
@@ -3711,14 +3982,14 @@ namespace WebsitePanel.Providers.Web
                     if (adEnabled)
                     {
                         ManagementAuthorization.Revoke(GetFullQualifiedAccountName(accountName), fqWebPath);
-                        SecurityUtils.RemoveNtfsPermissions(contentPath, accountName, ServerSettings, UsersOU, GroupsOU);
-                        SecurityUtils.DeleteUser(accountName, ServerSettings, UsersOU);
+                        SecurityUtils.RemoveNtfsPermissions(contentPath, GetNonQualifiedAccountName(accountName), ServerSettings, UsersOU, GroupsOU);
+                        SecurityUtils.DeleteUser(GetNonQualifiedAccountName(accountName), ServerSettings, UsersOU);
                     }
                     else
                     {
                         ManagementAuthorization.Revoke(GetFullQualifiedAccountName(accountName), fqWebPath);
-                        SecurityUtils.RemoveNtfsPermissions(contentPath, accountName, ServerSettings, String.Empty, String.Empty);
-                        SecurityUtils.DeleteUser(accountName, ServerSettings, String.Empty);
+                        SecurityUtils.RemoveNtfsPermissions(contentPath, GetNonQualifiedAccountName(accountName), ServerSettings, String.Empty, String.Empty);
+                        SecurityUtils.DeleteUser(GetNonQualifiedAccountName(accountName), ServerSettings, String.Empty);
                     }
                 }
                 // Restore setting back

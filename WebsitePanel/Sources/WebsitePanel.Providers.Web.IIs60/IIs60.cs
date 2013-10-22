@@ -279,7 +279,8 @@ namespace WebsitePanel.Providers.Web
 			get { return FileUtils.EvaluateSystemVariables(ProviderSettings["ProtectedFoldersFile"]); }
 		}
 
-		protected string GalleryXmlFeedUrl
+        /*
+        protected string GalleryXmlFeedUrl
 		{
 			get
 			{
@@ -289,6 +290,7 @@ namespace WebsitePanel.Providers.Web
 				return ret;
 			}
 		}
+        */
 		#endregion
 
 		private WmiHelper wmi = null;
@@ -846,6 +848,16 @@ namespace WebsitePanel.Providers.Web
 				}
 			}
 		}
+
+        // AppPool
+        public void ChangeAppPoolState(string siteId, AppPoolState state)
+        {
+        }
+
+        public AppPoolState GetAppPoolState(string siteId)
+        {
+            return AppPoolState.Unknown;
+        }
 
         public virtual void UpdateSiteBindings(string siteId, ServerBinding[] bindings, bool emptyBindingsAllowed)
 		{
@@ -2443,10 +2455,37 @@ namespace WebsitePanel.Providers.Web
 			throw new NotImplementedException();
 		}
 
-		#endregion
+	   
 
-		#region Private Helper Methods
-		protected string GetVirtualDirectoryPath(string siteId, string directoryName)
+	    #endregion
+
+        #region Helicon Zoo
+        public virtual WebVirtualDirectory[] GetZooApplications(string siteId)
+        {
+            return new WebVirtualDirectory[] { };
+        }
+
+        public virtual StringResultObject SetZooEnvironmentVariable(string siteId, string appName, string envName, string envValue)
+	    {
+	        //pass
+            return new StringResultObject();
+            
+	    }
+
+        public virtual StringResultObject SetZooConsoleEnabled(string siteId, string appName)
+	    {
+            return new StringResultObject();
+	    }
+
+	    public virtual StringResultObject SetZooConsoleDisabled(string siteId, string appName)
+	    {
+            return new StringResultObject();
+	    }
+
+	    #endregion
+
+        #region Private Helper Methods
+        protected string GetVirtualDirectoryPath(string siteId, string directoryName)
 		{
 			string path = siteId + "/ROOT";
 			if (!String.IsNullOrEmpty(directoryName))
@@ -2486,6 +2525,8 @@ namespace WebsitePanel.Providers.Web
 			virtDir.EnableWindowsAuthentication = (bool)obj.Properties["AuthNTLM"].Value;
 			virtDir.EnableAnonymousAccess = (bool)obj.Properties["AuthAnonymous"].Value;
 			virtDir.EnableBasicAuthentication = (bool)obj.Properties["AuthBasic"].Value;
+            //virtDir.EnableDynamicCompression = (bool)obj.Properties["DoDynamicCompression"].Value;
+            //virtDir.EnableStaticCompression = (bool)obj.Properties["DoStaticCompression"].Value;
 			virtDir.DefaultDocs = (string)obj.Properties["DefaultDoc"].Value;
 			virtDir.EnableParentPaths = (bool)obj.Properties["AspEnableParentPaths"].Value;
 		}
@@ -2504,6 +2545,9 @@ namespace WebsitePanel.Providers.Web
 			obj.Properties["AuthNTLM"].Value = virtDir.EnableWindowsAuthentication;
 			obj.Properties["AuthAnonymous"].Value = virtDir.EnableAnonymousAccess;
 			obj.Properties["AuthBasic"].Value = virtDir.EnableBasicAuthentication;
+            //obj.Properties["DoDynamicCompression"].Value = virtDir.EnableDynamicCompression;
+            //obj.Properties["DoStaticCompression"].Value = virtDir.EnableStaticCompression;
+
 			obj.Properties["AspEnableParentPaths"].Value = virtDir.EnableParentPaths;
 			if (virtDir.DefaultDocs != null && virtDir.DefaultDocs != "")
 				obj.Properties["DefaultDoc"].Value = virtDir.DefaultDocs;

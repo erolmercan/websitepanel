@@ -46,7 +46,6 @@ namespace WebsitePanel.EnterpriseServer
 
         protected void Application_Start(object sender, EventArgs e)
         {
-            Scheduler.Start();
         }
 
         protected void Application_End(object sender, EventArgs e)

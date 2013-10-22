@@ -56,6 +56,8 @@ namespace WebsitePanel.Providers.Web
         private bool enableAnonymousAccess;
         private bool enableWindowsAuthentication;
         private bool enableBasicAuthentication;
+        private bool enableDynamicCompression;
+        private bool enableStaticCompression;
         private string defaultDocs;
         private string httpRedirect;
         private HttpError[] httpErrors;
@@ -76,6 +78,7 @@ namespace WebsitePanel.Providers.Web
         private bool redirectPermanent;
         private bool sharePointInstalled;
         private bool iis7;
+        private string consoleUrl;
 
         public string AnonymousUsername
         {
@@ -167,6 +170,17 @@ namespace WebsitePanel.Providers.Web
             set { this.enableBasicAuthentication = value; }
         }
 
+        public bool EnableDynamicCompression
+        {
+            get { return this.enableDynamicCompression; }
+            set { this.enableDynamicCompression = value; }
+        }
+        public bool EnableStaticCompression
+        {
+            get { return this.enableStaticCompression; }
+            set { this.enableStaticCompression = value; }
+        }
+
         public bool AspInstalled
         {
             get { return this.aspInstalled; }
@@ -249,6 +263,12 @@ namespace WebsitePanel.Providers.Web
         {
             get { return this.iis7; }
             set { this.iis7 = value; }
+        }
+        
+        public string ConsoleUrl
+        {
+            get { return consoleUrl; }
+            set { consoleUrl = value; }
         }
 
 		#region Web Deploy Publishing Properties

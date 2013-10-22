@@ -51,6 +51,12 @@ namespace WebsitePanel.EnterpriseServer
     public class esFiles : System.Web.Services.WebService
     {
         [WebMethod]
+        public SystemSettings GetFileManagerSettings()
+        {
+            return FilesController.GetFileManagerSettings();
+        }
+
+        [WebMethod]
         public static string GetHomeFolder(int packageId)
         {
             return FilesController.GetHomeFolder(packageId);
@@ -193,5 +199,13 @@ namespace WebsitePanel.EnterpriseServer
         {
             FilesController.ExecuteSyncActions(packageId, actions);
         }
+
+        //CO Changes
+        [WebMethod]
+        public int ApplyEnableHardQuotaFeature(int packageId)
+        {
+            return FilesController.ApplyEnableHardQuotaFeature(packageId);
+        }
+        //END
     }
 }

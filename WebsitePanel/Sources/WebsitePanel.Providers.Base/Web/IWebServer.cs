@@ -54,6 +54,10 @@ namespace WebsitePanel.Providers.Web
         void UpdateSiteBindings(string siteId, ServerBinding[] bindings, bool emptyBindingsAllowed);
 		void DeleteSite(string siteId);
 
+        // AppPool
+        void ChangeAppPoolState(string siteId, AppPoolState state);
+        AppPoolState GetAppPoolState(string siteId);
+
 		// virtual directories
 		bool VirtualDirectoryExists(string siteId, string directoryName);
 		WebVirtualDirectory[] GetVirtualDirectories(string siteId);
@@ -116,6 +120,12 @@ namespace WebsitePanel.Providers.Web
         WebGroup GetHeliconApeGroup(string siteId, string groupName);
         void UpdateHeliconApeGroup(string siteId, WebGroup group);
         void DeleteHeliconApeGroup(string siteId, string groupName);
+
+        // Helicon Zoo
+	    WebVirtualDirectory[] GetZooApplications(string siteId);
+        StringResultObject SetZooEnvironmentVariable(string siteId, string appName, string envName, string envValue);
+        StringResultObject SetZooConsoleEnabled(string siteId, string appName);
+        StringResultObject SetZooConsoleDisabled(string siteId, string appName);
 
 
 		// web app gallery

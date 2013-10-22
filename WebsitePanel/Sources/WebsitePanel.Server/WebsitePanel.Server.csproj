@@ -20,6 +20,10 @@
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <UseIISExpress>false</UseIISExpress>
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -53,11 +57,6 @@
       <HintPath>..\..\Lib\References\Microsoft\Microsoft.Web.PlatformInstaller.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Web.PlatformInstaller.WebDeployShim, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\References\Microsoft\Microsoft.Web.PlatformInstaller.WebDeployShim.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.Web.Services3, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Lib\Microsoft.Web.Services3.dll</HintPath>
@@ -86,6 +85,9 @@
     <Content Include="AutoDiscovery.asmx" />
     <Content Include="BlackBerry.asmx" />
     <EmbeddedResource Include="Images\logo.png" />
+    <Content Include="EnterpriseStorage.asmx" />
+    <Content Include="RemoteDesktopServices.asmx" />
+    <Content Include="HeliconZoo.asmx" />
     <Content Include="LyncServer.asmx" />
     <Content Include="OCSEdgeServer.asmx" />
     <Content Include="OCSServer.asmx" />
@@ -127,6 +129,18 @@
     <Compile Include="Code\ServerConfiguration.cs" />
     <Compile Include="Code\ServerUsernameTokenManager.cs" />
     <Compile Include="Code\UsernameAssertion.cs" />
+    <Compile Include="EnterpriseStorage.asmx.cs">
+      <DependentUpon>EnterpriseStorage.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="RemoteDesktopServices.asmx.cs">
+      <DependentUpon>RemoteDesktopServices.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HeliconZoo.asmx.cs">
+      <DependentUpon>HeliconZoo.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="LyncServer.asmx.cs">
       <DependentUpon>LyncServer.asmx</DependentUpon>
       <SubType>Component</SubType>

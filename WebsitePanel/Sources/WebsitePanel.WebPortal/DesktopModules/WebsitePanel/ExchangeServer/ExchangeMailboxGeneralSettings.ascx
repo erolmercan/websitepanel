@@ -32,9 +32,7 @@
                     <wsp:MailboxTabs id="tabs" runat="server" SelectedTab="mailbox_settings" />
                     <wsp:SimpleMessageBox id="messageBox" runat="server" />
                     
-					<wsp:CollapsiblePanel id="secGeneral" runat="server"
-                        TargetControlID="General" meta:resourcekey="secGeneral" Text="General">
-                    </wsp:CollapsiblePanel>
+					<wsp:CollapsiblePanel id="secGeneral" runat="server" TargetControlID="General" meta:resourcekey="secGeneral" Text="General"></wsp:CollapsiblePanel>
                     <asp:Panel ID="General" runat="server" Height="0" style="overflow:hidden;">
 						<asp:UpdatePanel ID="GeneralUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
 							<ContentTemplate>
@@ -59,6 +57,12 @@
                                             <wsp:MailboxPlanSelector ID="mailboxPlanSelector" runat="server" />
                                         </td>
 					                </tr>
+					                <tr>
+					                    <td class="FormLabel150"><asp:Localize ID="locDisclaimer" runat="server" meta:resourcekey="locDisclaimer" Text="Disclaimer: "></asp:Localize></td>
+					                    <td>                                
+                                            <asp:DropDownList ID="ddDisclaimer" runat="server" />
+                                        </td>
+					                </tr>
                                     <tr>
                                         <td class="FormLabel150"><asp:Localize ID="locQuota" runat="server" meta:resourcekey="locQuota" Text="Mailbox Size:"></asp:Localize></td>
 					                    <td>                                
@@ -71,14 +75,37 @@
 						</asp:UpdatePanel>
 					</asp:Panel>
 
-					<wsp:CollapsiblePanel id="secCalendarSettings" runat="server"
-                        TargetControlID="CalendarSettings" meta:resourcekey="secCalendarSettings" Text="General">
-                    </wsp:CollapsiblePanel>
+                    <wsp:CollapsiblePanel id="secLitigationHoldSettings" runat="server" TargetControlID="LitigationHoldSettings" meta:resourcekey="secLitigationHoldSettings" Text="Litigation Hold"></wsp:CollapsiblePanel>
+                    <asp:Panel ID="LitigationHoldSettings" runat="server" Height="0" style="overflow:hidden;">
+						<asp:UpdatePanel ID="LitigationHoldUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
+							<ContentTemplate>
+					            <table>
+<!--
+						            <tr>
+						                <td></td>
+						                <td>
+						                    <asp:CheckBox ID="chkEnableLitigationHold" runat="server" meta:resourcekey="chkEnableLitigationHold" Text="Enable Litigation Hold" />
+						                    <br />
+						                    <br />
+						                </td>
+						            </tr>
+-->
+                                    <tr>
+                                        <td class="FormLabel150"><asp:Localize ID="locLitigationHoldSpace" runat="server" meta:resourcekey="locLitigationHoldSpace" Text="Litigation Hold Space:"></asp:Localize></td>
+					                    <td>                                
+                                            <wsp:QuotaViewer ID="litigationHoldSpace" runat="server" QuotaTypeId="2" DisplayGauge="true" /> MB
+                                        </td>
+					                </tr>
+					            </table>
+							</ContentTemplate>
+						</asp:UpdatePanel>
+					</asp:Panel>
+
+					<wsp:CollapsiblePanel id="secCalendarSettings" runat="server" TargetControlID="CalendarSettings" meta:resourcekey="secCalendarSettings" Text="General"></wsp:CollapsiblePanel>
                     <asp:Panel ID="CalendarSettings" runat="server" Height="0" style="overflow:hidden;">
 						<asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
 							<ContentTemplate>
 					            <table>
-
 					            </table>
 							</ContentTemplate>
 						</asp:UpdatePanel>
