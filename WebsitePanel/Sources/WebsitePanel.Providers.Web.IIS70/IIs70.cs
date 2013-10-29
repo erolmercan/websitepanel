@@ -2218,15 +2218,36 @@ namespace WebsitePanel.Providers.Web
             if (!string.IsNullOrEmpty(registrationInfo))
                 return registrationInfo;
 
+            string ApeRegistryPath = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Helicon\\Ape";
+            long dtFirstRunBinary = 0L;
 
+            try
+            {
+                dtFirstRunBinary = (long) Registry.GetValue(ApeRegistryPath, "FirstRun", 0L);
+            }
+            catch(NullReferenceException)
+            {
+                // nothing
+            }
 
-            long dtFirstRunBinary = (long)Registry.GetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Helicon\\Ape", "FirstRun", 0L);
+            if (0 == dtFirstRunBinary)
+            {
+                ApeRegistryPath = "HKEY_LOCAL_MACHINE\\SOFTWARE\\Wow6432Node\\Helicon\\Ape";
+                try
+                {
+                    dtFirstRunBinary = (long) Registry.GetValue(ApeRegistryPath, "FirstRun", 0L);
+                }
+                catch(NullReferenceException)
+                {
+                    // nothing
+                }
+            }
 
             DateTime dtFirstRun;
             if (0 == dtFirstRunBinary)
             {
                 dtFirstRun = DateTime.Now;
-                Registry.SetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Helicon\\Ape", "FirstRun", dtFirstRun.ToBinary(),RegistryValueKind.QWord );
+                Registry.SetValue(ApeRegistryPath, "FirstRun", dtFirstRun.ToBinary(),RegistryValueKind.QWord );
             }
             else
             {
