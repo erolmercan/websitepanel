@@ -236,7 +236,7 @@ namespace WebsitePanel.EnterpriseServer
             }
 
             // get Helicon Zoo service for site
-            int serviceId = DataProvider.GetServiceIdByProviderForServer(heliconZooProviderId, serverId);
+            int serviceId = DataProvider.GetServiceIdByProviderForServer(heliconZooProviderId, packageId);
             return serviceId;
         }
 

@@ -3932,15 +3932,16 @@ namespace WebsitePanel.EnterpriseServer
             return packageId;
         }
 
-        public static int GetServiceIdByProviderForServer(int providerId, int serverId)
+        public static int GetServiceIdByProviderForServer(int providerId, int packageId)
         {
             IDataReader reader = SqlHelper.ExecuteReader(ConnectionString, CommandType.Text,
                 @"SELECT TOP 1 
-                    ServiceID
-                  FROM Services
-                  WHERE ProviderID = @ProviderID AND ServerID = @ServerID",
+                    PackageServices.ServiceID
+                  FROM PackageServices
+                  LEFT JOIN Services ON Services.ServiceID = PackageServices.ServiceID
+                  WHERE PackageServices.PackageID = @PackageID AND Services.ProviderID = @ProviderID",
                 new SqlParameter("@ProviderID", providerId),
-                new SqlParameter("@ServerID", serverId));
+                new SqlParameter("@PackageID", packageId));
 
             if (reader.Read())
             {
