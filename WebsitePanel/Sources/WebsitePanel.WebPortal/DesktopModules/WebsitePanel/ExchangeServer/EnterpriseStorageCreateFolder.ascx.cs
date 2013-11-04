@@ -27,23 +27,46 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Collections;
-using WebsitePanel.Providers.OS;
-using WebsitePanel.Providers.Web;
+using WebsitePanel.EnterpriseServer;
+using WebsitePanel.Providers.Common;
+using WebsitePanel.Providers.HostedSolution;
 
-namespace WebsitePanel.Providers.EnterpriseStorage
+namespace WebsitePanel.Portal.ExchangeServer
 {
-    /// <summary>
-    /// Summary description for IEnterpriseStorage.
-    /// </summary>
-    public interface IEnterpriseStorage
+    public partial class EnterpriseStorageCreateFolder : WebsitePanelModuleBase
     {
-        SystemFile[] GetFolders(string organizationId);
-        SystemFile GetFolder(string organizationId, string folderName);
-        void CreateFolder(string organizationId, string folder);
-        void DeleteFolder(string organizationId, string folder);
-        bool SetFolderWebDavRules(string organizationId, string folder, WebDavFolderRule[] rules);
-        WebDavFolderRule[] GetFolderWebDavRules(string organizationId, string folder);
-        bool CheckFileServicesInstallation();
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!IsPostBack)
+            {
+                Organization org = ES.Services.Organizations.GetOrganization(PanelRequest.ItemID);
+
+                litRootFolder.Text = org.OrganizationId;
+            }
+        }
+
+        protected void btnCreate_Click(object sender, EventArgs e)
+        {
+            if (!Page.IsValid)
+                return;
+            try
+            {
+                ResultObject result = ES.Services.EnterpriseStorage.CreateEnterpriseFolder(PanelRequest.ItemID, txtFolderName.Text);
+
+                if (!result.IsSuccess && result.ErrorCodes.Count > 0)
+                {
+                    messageBox.ShowMessage(result, "ENTERPRISE_STORAGE_FOLDER", "EnterpriseStorage");
+                    return;
+                }
+
+                Response.Redirect(EditUrl("SpaceID", PanelSecurity.PackageId.ToString(), "enterprisestorage_folder_settings",
+                    "FolderID=" + txtFolderName.Text,
+                    "ItemID=" + PanelRequest.ItemID));
+            }
+            catch (Exception ex)
+            {
+                messageBox.ShowErrorMessage("ENTERPRISE_STORAGE_CREATE_FOLDER", ex);
+            }
+        }
     }
 }

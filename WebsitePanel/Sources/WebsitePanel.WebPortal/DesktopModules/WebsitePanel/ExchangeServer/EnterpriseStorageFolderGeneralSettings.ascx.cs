@@ -30,7 +30,6 @@ using System;
 using System.Data;
 using System.Configuration;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Web;
 using System.Web.Security;
 using System.Web.UI;
@@ -38,42 +37,70 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Web.UI.HtmlControls;
 
-namespace WebsitePanel.Portal.ProviderControls
+using WebsitePanel.Providers.HostedSolution;
+using WebsitePanel.EnterpriseServer;
+using WebsitePanel.Providers.OS;
+
+namespace WebsitePanel.Portal.ExchangeServer
 {
-    public partial class EnterpriseStorage_Settings : WebsitePanelControlBase, IHostingServiceProviderSettings
+    public partial class EnterpriseStorageFolderGeneralSettings : WebsitePanelModuleBase
     {
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                try
-                {
-                    chkEnableHardQuota.Enabled = ES.Services.EnterpriseStorage.CheckFileServicesInstallation(PanelRequest.ServiceId);
-                    txtLocationDrive.Enabled = chkEnableHardQuota.Enabled;
-                    valLocationDrive.Enabled = chkEnableHardQuota.Enabled;
-                    if (!chkEnableHardQuota.Enabled)
-                        lblFileServiceInfo.Visible = true;
-                }
-                catch
-                {
-                }
+                BindSettings();
             }
         }
 
-        public void BindSettings(StringDictionary settings)
+        private void BindSettings()
         {
-            txtFolder.Text = settings["UsersHome"];
-            txtLocationDrive.Text = settings["LocationDrive"];
-            txtDomain.Text = settings["UsersDomain"];
-            chkEnableHardQuota.Checked = settings["EnableHardQuota"] == "true" ? true : false;
+            try
+            {
+                // get settings
+
+                Organization org = ES.Services.Organizations.GetOrganization(PanelRequest.ItemID);
+
+                SystemFile folder = ES.Services.EnterpriseStorage.GetEnterpriseFolder(
+                    PanelRequest.ItemID, PanelRequest.FolderID);
+
+                litFolderName.Text = string.Format("{0}\\{1}", org.OrganizationId, folder.Name);
+
+                // bind form
+                txtFolderName.Text = folder.Name;
+                lblFolderUrl.Text = folder.Url;
+
+                var esPermissions = ES.Services.EnterpriseStorage.GetEnterpriseFolderPermissions(PanelRequest.ItemID,folder.Name);
+
+                permissions.SetPermissions(esPermissions);
+
+                txtNotes.Text = folder.GetValue<string>("Notes");
+            }
+            catch (Exception ex)
+            {
+                messageBox.ShowErrorMessage("ENETERPRISE_STORAGE_GET_FOLDER_SETTINGS", ex);
+            }
         }
 
-        public void SaveSettings(StringDictionary settings)
+        protected void btnSave_Click(object sender, EventArgs e)
         {
-            settings["UsersHome"] = txtFolder.Text;
-            settings["LocationDrive"] = txtLocationDrive.Text;
-            settings["UsersDomain"] = txtDomain.Text;
-            settings["EnableHardQuota"] = chkEnableHardQuota.Checked.ToString().ToLower();
+            if (!Page.IsValid)
+                return;
+
+            try
+            {
+                litFolderName.Text = txtFolderName.Text;
+
+                SystemFile folder = ES.Services.EnterpriseStorage.GetEnterpriseFolder(PanelRequest.ItemID, PanelRequest.FolderID);
+
+                ES.Services.EnterpriseStorage.SetEnterpriseFolderPermissions(PanelRequest.ItemID, folder.Name, permissions.GetPemissions());
+
+                messageBox.ShowSuccessMessage("ENTERPRISE_STORAGE_UPDATE_FOLDER_SETTINGS");
+            }
+            catch (Exception ex)
+            {
+                messageBox.ShowErrorMessage("ENTERPRISE_STORAGE_UPDATE_FOLDER_SETTINGS", ex);
+            }
         }
     }
 }

@@ -1708,6 +1708,97 @@ namespace WebsitePanel.EnterpriseServer
             }
         }
 
+        public static int AddWebDavDirectory(int packageId, string site, string vdirName, string contentpath)
+        {
+            // check account
+            int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive);
+            if (accountCheck < 0) return accountCheck;
+
+            // place log record
+            TaskManager.StartTask("ENTERPRISE_STORAGE", "ADD_VDIR", vdirName);
+
+            TaskManager.WriteParameter("enterprise storage", site);
+
+            try
+            {
+                // create virtual directory
+                WebVirtualDirectory dir = new WebVirtualDirectory();
+                dir.Name = vdirName;
+                dir.ContentPath = Path.Combine(contentpath, vdirName);
+
+                dir.EnableAnonymousAccess = false;
+                dir.EnableWindowsAuthentication = false;
+                dir.EnableBasicAuthentication = false;
+
+                //dir.InstalledDotNetFramework = aspNet;
+
+                dir.DefaultDocs = null; // inherit from service
+                dir.HttpRedirect = "";
+                dir.HttpErrors = null;
+                dir.MimeMaps = null;
+
+                int serviceId = PackageController.GetPackageServiceId(packageId, ResourceGroups.Web);
+
+                if (serviceId == -1)
+                    return serviceId;
+
+                // create directory
+                WebServer web = new WebServer();
+                ServiceProviderProxy.Init(web, serviceId);
+                if (web.VirtualDirectoryExists(site, vdirName))
+                    return BusinessErrorCodes.ERROR_VDIR_ALREADY_EXISTS;
+
+                web.CreateVirtualDirectory(site, dir);
+
+                return 0;
+
+            }
+            catch (Exception ex)
+            {
+                throw TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                TaskManager.CompleteTask();
+            }
+        }
+
+        public static int DeleteWebDavDirectory(int packageId, string site, string vdirName)
+        {
+            // check account
+            int accountCheck = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive);
+            if (accountCheck < 0) return accountCheck;
+
+            // place log record
+            TaskManager.StartTask("ENTERPRISE_STORAGE", "DELETE_VDIR", vdirName);
+
+            TaskManager.WriteParameter("enterprise storage", site);
+
+            try
+            {
+                int serviceId = PackageController.GetPackageServiceId(packageId, ResourceGroups.Web);
+
+                if (serviceId == -1)
+                    return serviceId;
+
+                // create directory
+                WebServer web = new WebServer();
+                ServiceProviderProxy.Init(web, serviceId);
+                if (web.VirtualDirectoryExists(site, vdirName))
+                    web.DeleteVirtualDirectory(site, vdirName);
+
+                return 0;
+            }
+            catch (Exception ex)
+            {
+                throw TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                TaskManager.CompleteTask();
+            }
+        }
+
         public static int UpdateVirtualDirectory(int siteItemId, WebVirtualDirectory vdir)
         {
             // check account
