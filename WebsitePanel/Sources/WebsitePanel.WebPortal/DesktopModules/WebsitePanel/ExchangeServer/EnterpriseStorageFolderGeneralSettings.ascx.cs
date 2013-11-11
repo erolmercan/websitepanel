@@ -49,6 +49,12 @@ namespace WebsitePanel.Portal.ExchangeServer
         {
             if (!IsPostBack)
             {
+                if (!ES.Services.EnterpriseStorage.CheckUsersDomainExists(PanelRequest.ItemID))
+                {
+                    Response.Redirect(EditUrl("SpaceID", PanelSecurity.PackageId.ToString(), "enterprisestorage_folders",
+                        "ItemID=" + PanelRequest.ItemID));
+                }
+
                 BindSettings();
             }
         }
@@ -94,8 +100,12 @@ namespace WebsitePanel.Portal.ExchangeServer
 
                 litFolderName.Text = txtFolderName.Text;
 
-              //  SystemFile folder = ES.Services.EnterpriseStorage.GetEnterpriseFolder(PanelRequest.ItemID, PanelRequest.FolderID);
-                SystemFile folder = new SystemFile();
+                SystemFile folder = null;
+
+                if (!ES.Services.EnterpriseStorage.CheckEnterpriseStorageInitialization(PanelSecurity.PackageId, PanelRequest.ItemID))
+                {
+                    ES.Services.EnterpriseStorage.CreateEnterpriseStorage(PanelSecurity.PackageId, PanelRequest.ItemID);
+                }
 
                 if (PanelRequest.FolderID != txtFolderName.Text)
                 {
