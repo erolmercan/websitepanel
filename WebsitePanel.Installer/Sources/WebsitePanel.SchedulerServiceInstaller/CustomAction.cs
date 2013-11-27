@@ -35,6 +35,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
 using Microsoft.Deployment.WindowsInstaller;
+using WebsitePanel.Setup;
 
 namespace WebsitePanel.SchedulerServiceInstaller
 {
@@ -72,10 +73,18 @@ namespace WebsitePanel.SchedulerServiceInstaller
         {
             try
             {
-                if (!ServiceController.GetServices().Any(s => s.DisplayName.Equals("WebsitePanel Scheduler", StringComparison.CurrentCultureIgnoreCase)))
+                var schedulerService =
+                    ServiceController.GetServices().FirstOrDefault(
+                        s => s.DisplayName.Equals("WebsitePanel Scheduler", StringComparison.CurrentCultureIgnoreCase));
+
+                if (schedulerService != null)
                 {
-                    ManagedInstallerClass.InstallHelper(new[] {"/i", Path.Combine(installFolder, "WebsitePanel.SchedulerService.exe")});
+                    StopService(schedulerService.ServiceName);
+
+                    SecurityUtils.DeleteService(schedulerService.ServiceName);
                 }
+
+                ManagedInstallerClass.InstallHelper(new[] { "/i", Path.Combine(installFolder, "WebsitePanel.SchedulerService.exe") });
 
                 StartService("WebsitePanel Scheduler");
             }
@@ -119,6 +128,17 @@ namespace WebsitePanel.SchedulerServiceInstaller
             using (var writer = new StreamWriter(path))
             {
                 writer.Write(content);
+            }
+        }
+
+        private static void StopService(string serviceName)
+        {
+            var sc = new ServiceController(serviceName);
+
+            if (sc.Status == ServiceControllerStatus.Running)
+            {
+                sc.Stop();
+                sc.WaitForStatus(ServiceControllerStatus.Stopped);
             }
         }
 
