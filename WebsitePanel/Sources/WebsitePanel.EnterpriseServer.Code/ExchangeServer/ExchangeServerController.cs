@@ -1235,7 +1235,7 @@ namespace WebsitePanel.EnterpriseServer
 
             DataProvider.DeleteExchangeAccount(itemId, accountId);
         }
-
+/*
         private static string BuildAccountName(string orgId, string name)
         {
             string accountName = name = name.Replace(" ", "");
@@ -1271,7 +1271,7 @@ namespace WebsitePanel.EnterpriseServer
             }
 
         }
-
+*/
 
         #endregion
 
@@ -3041,7 +3041,7 @@ namespace WebsitePanel.EnterpriseServer
                 if (idx > -1)
                     name = email.Substring(0, idx);
 
-                string accountName = BuildAccountName(org.OrganizationId, name);
+                string accountName = OrganizationController.BuildAccountNameEx(org, name);
 
                 // add contact
                 int exchangeServiceId = GetExchangeServiceID(org.PackageId);
@@ -3375,7 +3375,7 @@ namespace WebsitePanel.EnterpriseServer
                 int packageCheck = SecurityContext.CheckPackage(org.PackageId, DemandPackage.IsActive);
                 if (packageCheck < 0) return packageCheck;
 
-                string accountName = OrganizationController.BuildAccountNameWithOrgId(org.OrganizationId, name, org.ServiceId);
+                string accountName = OrganizationController.BuildAccountNameEx(org, name);
 
                 // add account
                 // add contact
@@ -4179,7 +4179,7 @@ namespace WebsitePanel.EnterpriseServer
                 if (String.IsNullOrEmpty(name))
                     name = Utils.CleanIdentifier(folderName);
 
-                string accountName = BuildAccountName(org.OrganizationId, name);
+                string accountName = OrganizationController.BuildAccountNameEx(org, name);
 
                 // add mailbox
                 int exchangeServiceId = GetExchangeServiceID(org.PackageId);
@@ -4324,7 +4324,7 @@ namespace WebsitePanel.EnterpriseServer
                 if (EmailAddressExists(email))
                     return BusinessErrorCodes.ERROR_EXCHANGE_EMAIL_EXISTS;
 
-                string accountName = BuildAccountName(org.OrganizationId, name);
+                string accountName = OrganizationController.BuildAccountNameEx(org, name);
 
                 int exchangeServiceId = GetExchangeServiceID(org.PackageId);
                 ExchangeServer exchange = GetExchangeServer(exchangeServiceId, org.ServiceId);
