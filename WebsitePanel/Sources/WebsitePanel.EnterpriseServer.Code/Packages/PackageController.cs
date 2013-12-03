@@ -489,7 +489,7 @@ namespace WebsitePanel.EnterpriseServer
                                     ServerController.AddServiceDNSRecords(packageId, ResourceGroups.VPSForPC, domain, "");
                                 }
                             }
-                            
+
                             if (createInstantAlias)
                                 ServerController.CreateDomainInstantAlias("", domainId);
 
@@ -783,7 +783,6 @@ namespace WebsitePanel.EnterpriseServer
 
                 // Update the Hard quota on home folder in case it was enabled and in case there was a change in disk space
                 UpdatePackageHardQuota(package.PackageId);
-                UpdateESHardQuota(package.PackageId);
 
                 DataProvider.DistributePackageServices(SecurityContext.User.UserId, package.PackageId);
             }
@@ -981,7 +980,6 @@ namespace WebsitePanel.EnterpriseServer
 
             // Added By Haya
             UpdatePackageHardQuota(packageId);
-            UpdateESHardQuota(packageId);
 
             // save package item
             return AddPackageItem(homeFolder);
@@ -996,7 +994,7 @@ namespace WebsitePanel.EnterpriseServer
         {
             DataProvider.UpdatePackageBandwidthUpdate(packageId, updateDate);
         }
-      
+
         // This gets the system quota and updates the home folder with the value
         public static void UpdatePackageHardQuota(int packageId)
         {
@@ -1021,32 +1019,32 @@ namespace WebsitePanel.EnterpriseServer
 
         }
 
-        public static void UpdateESHardQuota(int packageId)
-        {
-            int esServiceId = PackageController.GetPackageServiceId(packageId, ResourceGroups.EnterpriseStorage);
+        //public static void UpdateESHardQuota(int packageId)
+        //{
+        //    int esServiceId = PackageController.GetPackageServiceId(packageId, ResourceGroups.EnterpriseStorage);
 
-            if (esServiceId != 0)
-            {
+        //    if (esServiceId != 0)
+        //    {
 
-                StringDictionary esSesstings = ServerController.GetServiceSettings(esServiceId);
+        //        StringDictionary esSesstings = ServerController.GetServiceSettings(esServiceId);
 
-                string usersHome = esSesstings["UsersHome"];
-                string usersDomain = esSesstings["UsersDomain"];
-                string locationDrive = esSesstings["LocationDrive"];
+        //        string usersHome = esSesstings["UsersHome"];
+        //        string usersDomain = esSesstings["UsersDomain"];
+        //        string locationDrive = esSesstings["LocationDrive"];
 
-                string homePath = string.Format("{0}:\\{1}", locationDrive, usersHome);
+        //        string homePath = string.Format("{0}:\\{1}", locationDrive, usersHome);
 
-                int osId = PackageController.GetPackageServiceId(packageId, ResourceGroups.Os);
-                bool enableHardQuota = (esSesstings["enablehardquota"] != null)
-                    ? bool.Parse(esSesstings["enablehardquota"])
-                    : false;
+        //        int osId = PackageController.GetPackageServiceId(packageId, ResourceGroups.Os);
+        //        bool enableHardQuota = (esSesstings["enablehardquota"] != null)
+        //            ? bool.Parse(esSesstings["enablehardquota"])
+        //            : false;
 
-                if (enableHardQuota && osId != 0 && OperatingSystemController.CheckFileServicesInstallation(osId))
-                {
-                    FilesController.SetFolderQuota(packageId, usersHome, locationDrive, Quotas.ENTERPRISESTORAGE_DISKSTORAGESPACE);
-                }
-            }
-        }
+        //        if (enableHardQuota && osId != 0 && OperatingSystemController.CheckFileServicesInstallation(osId))
+        //        {
+        //            FilesController.SetFolderQuota(packageId, usersHome, locationDrive, Quotas.ENTERPRISESTORAGE_DISKSTORAGESPACE);
+        //        }
+        //    }
+        //}
 
         #endregion
 
@@ -1090,7 +1088,7 @@ namespace WebsitePanel.EnterpriseServer
             if (result.Result < 0)
                 result.Result = SecurityContext.CheckAccount(DemandAccount.NotDemo | DemandAccount.IsActive
                 | DemandAccount.IsResellerCSR);
-            
+
             if (result.Result < 0) return result;
 
             int addonId = 0;
@@ -1108,7 +1106,6 @@ namespace WebsitePanel.EnterpriseServer
 
             // Update the Hard quota on home folder in case it was enabled and in case there was a change in disk space
             UpdatePackageHardQuota(addon.PackageId);
-            UpdateESHardQuota(addon.PackageId);
             return result;
         }
 
@@ -1138,7 +1135,6 @@ namespace WebsitePanel.EnterpriseServer
 
             // Update the Hard quota on home folder in case it was enabled and in case there was a change in disk space
             UpdatePackageHardQuota(addon.PackageId);
-            UpdateESHardQuota(addon.PackageId);
             return result;
         }
 
@@ -1155,7 +1151,6 @@ namespace WebsitePanel.EnterpriseServer
 
             // Update the Hard quota on home folder in case it was enabled and in case there was a change in disk space
             UpdatePackageHardQuota(packageId);
-            UpdateESHardQuota(packageId);
 
             return 0;
         }
@@ -2107,7 +2102,7 @@ namespace WebsitePanel.EnterpriseServer
 
             }
             items["Addons"] = addOns;
-            
+
             // package contexts
             Hashtable cntxs = new Hashtable();
             foreach (PackageInfo package in packages)

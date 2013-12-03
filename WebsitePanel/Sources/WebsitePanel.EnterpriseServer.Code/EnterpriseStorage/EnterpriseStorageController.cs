@@ -66,12 +66,12 @@ namespace WebsitePanel.EnterpriseServer
 
         public static ResultObject DeleteEnterpriseStorage(int packageId, int itemId)
         {
-            return DeleteEnterpriseStorageInternal(packageId,itemId);
+            return DeleteEnterpriseStorageInternal(packageId, itemId);
         }
 
         public static SystemFile[] GetFolders(int itemId)
         {
-           return GetFoldersInternal(itemId);
+            return GetFoldersInternal(itemId);
         }
 
         public static SystemFile GetFolder(int itemId, string folderName)
@@ -102,7 +102,7 @@ namespace WebsitePanel.EnterpriseServer
         public static ResultObject DeleteFolder(int itemId, string folderName)
         {
             return DeleteFolderInternal(itemId, folderName);
-        } 
+        }
 
         public static List<ExchangeAccount> SearchESAccounts(int itemId, string filterColumn, string filterValue, string sortColumn)
         {
@@ -121,7 +121,7 @@ namespace WebsitePanel.EnterpriseServer
 
         public static ESPermission[] GetFolderPermission(int itemId, string folder)
         {
-            return ConvertToESPermission(itemId,GetFolderWebDavRulesInternal(itemId, folder));
+            return ConvertToESPermission(itemId, GetFolderWebDavRulesInternal(itemId, folder));
         }
 
         public static bool CheckFileServicesInstallation(int serviceId)
@@ -144,7 +144,7 @@ namespace WebsitePanel.EnterpriseServer
 
         public static bool GetDirectoryBrowseEnabled(int itemId, string siteId)
         {
-          return  GetDirectoryBrowseEnabledInternal(itemId, siteId);
+            return GetDirectoryBrowseEnabledInternal(itemId, siteId);
         }
 
         public static void SetDirectoryBrowseEnabled(int itemId, string siteId, bool enabled)
@@ -164,10 +164,10 @@ namespace WebsitePanel.EnterpriseServer
         public static int DeleteWebDavDirectory(int packageId, string site, string vdirName)
         {
             return DeleteWebDavDirectoryInternal(packageId, site, vdirName);
-        } 
+        }
 
         #endregion
-        
+
         #endregion
 
         protected static bool CheckUsersDomainExistsInternal(int itemId)
@@ -227,7 +227,7 @@ namespace WebsitePanel.EnterpriseServer
             string usersDomain = esSesstings["UsersDomain"];
 
             WebServer web = GetWebServer(packageId);
-            
+
             if (!web.VirtualDirectoryExists(usersDomain, org.OrganizationId))
             {
                 checkResult = false;
@@ -347,7 +347,7 @@ namespace WebsitePanel.EnterpriseServer
                 Organization org = OrganizationController.GetOrganization(itemId);
                 if (org == null)
                 {
-                    return null;
+                    return new SystemFile[0];
                 }
 
                 EnterpriseStorage es = GetEnterpriseStorage(GetEnterpriseStorageServiceID(org.PackageId));
@@ -418,6 +418,8 @@ namespace WebsitePanel.EnterpriseServer
                 EnterpriseStorage es = GetEnterpriseStorage(GetEnterpriseStorageServiceID(org.PackageId));
 
                 es.CreateFolder(org.OrganizationId, folderName);
+
+                UpdateESHardQuota(org.PackageId);
             }
             catch (Exception ex)
             {
@@ -473,7 +475,7 @@ namespace WebsitePanel.EnterpriseServer
 
             return result;
         }
-    
+
         protected static List<ExchangeAccount> SearchESAccountsInternal(int itemId, string filterColumn, string filterValue, string sortColumn)
         {
             // load organization
@@ -547,7 +549,7 @@ namespace WebsitePanel.EnterpriseServer
 
             return result;
         }
-        
+
         #region WebDav
 
         protected static int AddWebDavDirectoryInternal(int packageId, string site, string vdirName, string contentpath)
@@ -750,7 +752,7 @@ namespace WebsitePanel.EnterpriseServer
 
                 var account = ObjectUtils.FillObjectFromDataReader<ExchangeAccount>(DataProvider.GetExchangeAccountByAccountName(itemId, permission.Account));
 
-                if (account.AccountType == ExchangeAccountType.SecurityGroup 
+                if (account.AccountType == ExchangeAccountType.SecurityGroup
                     || account.AccountType == ExchangeAccountType.DefaultSecurityGroup)
                 {
                     rule.Roles.Add(permission.Account);
@@ -833,6 +835,33 @@ namespace WebsitePanel.EnterpriseServer
 
         }
 
+        private static void UpdateESHardQuota(int packageId)
+        {
+            int esServiceId = PackageController.GetPackageServiceId(packageId, ResourceGroups.EnterpriseStorage);
+
+            if (esServiceId != 0)
+            {
+
+                StringDictionary esSesstings = ServerController.GetServiceSettings(esServiceId);
+
+                string usersHome = esSesstings["UsersHome"];
+                string usersDomain = esSesstings["UsersDomain"];
+                string locationDrive = esSesstings["LocationDrive"];
+
+                string homePath = string.Format("{0}:\\{1}", locationDrive, usersHome);
+
+                int osId = PackageController.GetPackageServiceId(packageId, ResourceGroups.Os);
+                bool enableHardQuota = (esSesstings["enablehardquota"] != null)
+                    ? bool.Parse(esSesstings["enablehardquota"])
+                    : false;
+
+                if (enableHardQuota && osId != 0 && OperatingSystemController.CheckFileServicesInstallation(osId))
+                {
+                    FilesController.SetFolderQuota(packageId, usersHome, locationDrive, Quotas.ENTERPRISESTORAGE_DISKSTORAGESPACE);
+                }
+            }
+        }
+
         /// <summary>
         /// Get webserver (IIS) installed on server connected with packageId
         /// </summary>
@@ -842,15 +871,15 @@ namespace WebsitePanel.EnterpriseServer
         {
             try
             {
-                var group = ServerController.GetResourceGroupByName(ResourceGroups.Web);
+                var webGroup = ServerController.GetResourceGroupByName(ResourceGroups.Web);
+                var webProviders = ServerController.GetProvidersByGroupID(webGroup.GroupId);
+                var esServiceInfo = ServerController.GetServiceInfo(GetEnterpriseStorageServiceID(packageId));
 
-                var webProviders = ServerController.GetProvidersByGroupID(group.GroupId);
-
-                var package = PackageController.GetPackage(packageId);
+                var serverId = esServiceInfo.ServerId;
 
                 foreach (var webProvider in webProviders)
                 {
-                    BoolResult result = ServerController.IsInstalled(package.ServerId, webProvider.ProviderId);
+                    BoolResult result = ServerController.IsInstalled(serverId, webProvider.ProviderId);
 
                     if (result.IsSuccess && result.Value)
                     {
@@ -867,7 +896,7 @@ namespace WebsitePanel.EnterpriseServer
                         //foreach (string key in serviceSettings.Keys)
                         //    cnfg.ProviderSettings.Settings[key] = serviceSettings[key];
 
-                        ServiceProviderProxy.ServerInit(web, cnfg, package.ServerId);
+                        ServiceProviderProxy.ServerInit(web, cnfg, serverId);
 
                         return web;
                     }
