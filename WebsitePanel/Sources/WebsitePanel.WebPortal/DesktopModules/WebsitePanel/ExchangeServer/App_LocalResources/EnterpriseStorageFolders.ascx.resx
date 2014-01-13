@@ -159,4 +159,7 @@
   <data name="gvFolderQuota.Header" xml:space="preserve">
     <value>Allocated Space</value>
   </data>
+  <data name="locQuotaAvailableSpace.Text" xml:space="preserve">
+    <value>Used Diskspace (Mb):</value>
+  </data>
 </root>

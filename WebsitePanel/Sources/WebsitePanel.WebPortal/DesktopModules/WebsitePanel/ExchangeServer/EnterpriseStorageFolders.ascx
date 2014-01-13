@@ -63,13 +63,13 @@
                             <asp:TemplateField HeaderText="gvFolderQuota" SortExpression="FRSMQuotaGB">
 							    <ItemStyle Width="20%"></ItemStyle>
 							    <ItemTemplate>
-                                    <asp:Literal id="litFolderQuota" runat="server" Text='<%# Eval("FRSMQuotaGB").ToString() + " Gb" %>'></asp:Literal>
+                                    <asp:Literal id="litFolderQuota" runat="server" Text='<%# ConvertMBytesToGB(Eval("FRSMQuotaMB")).ToString() + " Gb" %>'></asp:Literal>
 							    </ItemTemplate>
 						    </asp:TemplateField>
                             <asp:TemplateField HeaderText="gvFolderSize" SortExpression="Size">
 							    <ItemStyle Width="20%"></ItemStyle>
 							    <ItemTemplate>
-                                    <asp:Literal id="litFolderSize" runat="server" Text='<%# (ConvertMBytesToGB(Eval("Size"))).ToString("f1") + " Gb" %>'></asp:Literal>
+                                    <asp:Literal id="litFolderSize" runat="server" Text='<%# (ConvertMBytesToGB(Eval("Size"))).ToString() + " Gb" %>'></asp:Literal>
 							    </ItemTemplate>
 						    </asp:TemplateField>
                             <asp:TemplateField HeaderText="gvFolderUrl">
@@ -108,6 +108,12 @@
                     <asp:Localize ID="locQuotaSpace" runat="server" meta:resourcekey="locQuotaSpace" Text="Total Space Allocated (Gb):"></asp:Localize>
 				    &nbsp;&nbsp;&nbsp;
 				    <wsp:QuotaViewer ID="spaceQuota" runat="server" QuotaTypeId="3" />
+                    <br />
+                    <br />
+
+                    <asp:Localize ID="locQuotaAvailableSpace" runat="server" meta:resourcekey="locQuotaAvailableSpace" Text="Used Diskspace (Mb):"></asp:Localize>
+				    &nbsp;&nbsp;&nbsp;
+				    <wsp:QuotaViewer ID="spaceAvailableQuota" runat="server" QuotaTypeId="2" />
 				</div>
 			</div>
 		</div>

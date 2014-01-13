@@ -69,7 +69,7 @@ namespace WebsitePanel.Portal.ExchangeServer
 
         public decimal ConvertMBytesToGB(object size)
         {
-            return Convert.ToDecimal(size) / OneGb;
+            return Math.Round(Convert.ToDecimal(size) / OneGb, 2);
         }
 
         protected void BindEnterpriseStorageStats()
@@ -81,6 +81,11 @@ namespace WebsitePanel.Portal.ExchangeServer
 
             foldersQuota.QuotaUsedValue = organizationStats.CreatedEnterpriseStorageFolders;
             foldersQuota.QuotaValue = organizationStats.AllocatedEnterpriseStorageFolders;
+
+            spaceAvailableQuota.QuotaUsedValue = organizationStats.UsedEnterpriseStorageSpace;
+            spaceAvailableQuota.QuotaValue = organizationStats.AllocatedEnterpriseStorageSpace;
+
+            spaceQuota.QuotaValue = (int)Math.Round(ConvertMBytesToGB(organizationStats.UsedEnterpriseStorageSpace), 0);
 
             if (organizationStats.AllocatedEnterpriseStorageFolders != -1)
             {
@@ -94,15 +99,13 @@ namespace WebsitePanel.Portal.ExchangeServer
 
             if (organizationStats.AllocatedEnterpriseStorageSpace != -1)
             {
-                int spaceAvailable = (int)ConvertMBytesToGB(tenantStats.AllocatedEnterpriseStorageSpace - tenantStats.UsedEnterpriseStorageSpace);
+                int spaceAvailable = spaceAvailableQuota.QuotaAvailable = tenantStats.AllocatedEnterpriseStorageSpace - tenantStats.UsedEnterpriseStorageSpace;
 
                 if (spaceAvailable <= 0)
                 {
                     btnAddFolder.Enabled = false;
                 }
             }
-
-            spaceQuota.QuotaValue = (int)ConvertMBytesToGB(organizationStats.UsedEnterpriseStorageSpace);
         }
 
         protected void btnAddFolder_Click(object sender, EventArgs e)

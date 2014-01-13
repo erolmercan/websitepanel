@@ -228,7 +228,7 @@ namespace WebsitePanel.Providers.EnterpriseStorage
 
             SecurityUtils.ResetNtfsPermissions(path);
 
-            SecurityUtils.GrantGroupNtfsPermissions(path, users.ToArray(), true, new RemoteServerSettings(), null, null);
+            SecurityUtils.GrantGroupNtfsPermissions(path, users.ToArray(), false, new RemoteServerSettings(), null, null);
 
             IWebDav webdav = new WebDav(UsersDomain);
             

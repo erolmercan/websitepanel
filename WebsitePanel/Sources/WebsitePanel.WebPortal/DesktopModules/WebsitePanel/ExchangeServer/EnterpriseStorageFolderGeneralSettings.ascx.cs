@@ -69,7 +69,8 @@ namespace WebsitePanel.Portal.ExchangeServer
                 {
                     OrganizationStatistics tenantStats = ES.Services.Organizations.GetOrganizationStatistics(PanelRequest.ItemID);
 
-                    rangeFolderSize.MaximumValue = ((tenantStats.AllocatedEnterpriseStorageSpace - tenantStats.UsedEnterpriseStorageSpace)/OneGb + Utils.ParseInt(txtFolderSize.Text, 0)).ToString();
+                    rangeFolderSize.MaximumValue = Math.Round((tenantStats.AllocatedEnterpriseStorageSpace - (decimal)tenantStats.UsedEnterpriseStorageSpace)/OneGb
+                        + Utils.ParseDecimal(txtFolderSize.Text, 0), 2).ToString();
                     rangeFolderSize.ErrorMessage = string.Format("The quota you’ve entered exceeds the available quota for tenant ({0}Gb)", rangeFolderSize.MaximumValue);
                 }
             }
@@ -91,9 +92,9 @@ namespace WebsitePanel.Portal.ExchangeServer
                 txtFolderName.Text = folder.Name;
                 lblFolderUrl.Text = folder.Url;
                 
-                if (folder.FRSMQuotaGB != -1)
+                if (folder.FRSMQuotaMB != -1)
                 {
-                    txtFolderSize.Text = folder.FRSMQuotaGB.ToString();
+                    txtFolderSize.Text = (Math.Round((decimal)folder.FRSMQuotaMB / OneGb, 2)).ToString();
                 }
 
                 switch (folder.FsrmQuotaType)
@@ -163,7 +164,7 @@ namespace WebsitePanel.Portal.ExchangeServer
                     folder,
                     permissions.GetPemissions(),
                     chkDirectoryBrowsing.Checked,
-                    int.Parse(txtFolderSize.Text) * OneGb,
+                    (int)(decimal.Parse(txtFolderSize.Text) * OneGb),
                     rbtnQuotaSoft.Checked ? QuotaType.Soft : QuotaType.Hard);
 
 
