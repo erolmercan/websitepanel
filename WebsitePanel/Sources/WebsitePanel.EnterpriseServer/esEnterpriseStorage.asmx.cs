@@ -158,5 +158,21 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         #endregion
+
+        #region Statistics
+
+        [WebMethod]
+        public OrganizationStatistics GetStatistics(int itemId)
+        {
+            return EnterpriseStorageController.GetStatistics(itemId);
+        }
+
+        [WebMethod]
+        public OrganizationStatistics GetStatisticsByOrganization(int itemId)
+        {
+            return EnterpriseStorageController.GetStatisticsByOrganization(itemId);
+        }
+
+        #endregion
     }
 }

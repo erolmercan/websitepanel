@@ -1040,5 +1040,85 @@ namespace WebsitePanel.EnterpriseServer
 
             return null;
         }
+
+        #region Statistics
+
+        public static OrganizationStatistics GetStatistics(int itemId)
+        {
+            return GetStatisticsInternal(itemId, false);
+        }
+
+        public static OrganizationStatistics GetStatisticsByOrganization(int itemId)
+        {
+            return GetStatisticsInternal(itemId, true);
+        }
+
+        private static OrganizationStatistics GetStatisticsInternal(int itemId, bool byOrganization)
+        {
+            // place log record
+            TaskManager.StartTask("ENTERPRISE_STORAGE", "GET_ORG_STATS", itemId);
+
+            try
+            {
+                Organization org = (Organization)PackageController.GetPackageItem(itemId);
+                if (org == null)
+                    return null;
+
+                OrganizationStatistics stats = new OrganizationStatistics();
+
+                if (byOrganization)
+                {
+                    SystemFile[] folders = GetFolders(itemId);
+
+                    stats.CreatedEnterpriseStorageFolders = folders.Count();
+
+                    stats.UsedEnterpriseStorageSpace = folders.Where(x => x.FRSMQuotaMB != -1).Sum(x => x.FRSMQuotaMB);
+                }
+                else
+                {
+                    UserInfo user = ObjectUtils.FillObjectFromDataReader<UserInfo>(DataProvider.GetUserByExchangeOrganizationIdInternally(org.Id));
+                    List<PackageInfo> Packages = PackageController.GetPackages(user.UserId);
+
+                    if ((Packages != null) & (Packages.Count > 0))
+                    {
+                        foreach (PackageInfo Package in Packages)
+                        {
+                            List<Organization> orgs = null;
+
+                            orgs = ExchangeServerController.GetExchangeOrganizations(Package.PackageId, false);
+
+                            if ((orgs != null) & (orgs.Count > 0))
+                            {
+                                foreach (Organization o in orgs)
+                                {
+                                    SystemFile[] folders = GetFolders(o.Id);
+
+                                    stats.CreatedEnterpriseStorageFolders += folders.Count();
+
+                                    stats.UsedEnterpriseStorageSpace += folders.Where(x => x.FRSMQuotaMB != -1).Sum(x => x.FRSMQuotaMB);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // allocated quotas
+                PackageContext cntx = PackageController.GetPackageContext(org.PackageId);
+                stats.AllocatedEnterpriseStorageSpace = cntx.Quotas[Quotas.ENTERPRISESTORAGE_DISKSTORAGESPACE].QuotaAllocatedValue;
+                stats.AllocatedEnterpriseStorageFolders = cntx.Quotas[Quotas.ENTERPRISESTORAGE_FOLDERS].QuotaAllocatedValue;
+
+                return stats;
+            }
+            catch (Exception ex)
+            {
+                throw TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                TaskManager.CompleteTask();
+            }
+        }
+
+        #endregion
     }
 }

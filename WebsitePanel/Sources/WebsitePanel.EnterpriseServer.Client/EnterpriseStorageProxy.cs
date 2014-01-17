@@ -28,7 +28,6 @@ namespace WebsitePanel.EnterpriseServer
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ServiceProviderItem))]
     public partial class esEnterpriseStorage : Microsoft.Web.Services3.WebServicesClientProtocol
     {
-
         private System.Threading.SendOrPostCallback CheckFileServicesInstallationOperationCompleted;
 
         private System.Threading.SendOrPostCallback GetEnterpriseFoldersOperationCompleted;
@@ -60,6 +59,10 @@ namespace WebsitePanel.EnterpriseServer
         private System.Threading.SendOrPostCallback SetDirectoryBrowseEnabledOperationCompleted;
 
         private System.Threading.SendOrPostCallback SetEnterpriseFolderSettingsOperationCompleted;
+
+        private System.Threading.SendOrPostCallback GetStatisticsOperationCompleted;
+
+        private System.Threading.SendOrPostCallback GetStatisticsByOrganizationOperationCompleted;
 
         /// <remarks/>
         public esEnterpriseStorage()
@@ -114,6 +117,12 @@ namespace WebsitePanel.EnterpriseServer
 
         /// <remarks/>
         public event SetEnterpriseFolderSettingsCompletedEventHandler SetEnterpriseFolderSettingsCompleted;
+
+        /// <remarks/>
+        public event GetStatisticsCompletedEventHandler GetStatisticsCompleted;
+
+        /// <remarks/>
+        public event GetStatisticsByOrganizationCompletedEventHandler GetStatisticsByOrganizationCompleted;
 
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/CheckFileServicesInstallation", RequestNamespace = "http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace = "http://smbsaas/websitepanel/enterpriseserver", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -972,6 +981,104 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/GetStatistics", RequestNamespace = "http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace = "http://smbsaas/websitepanel/enterpriseserver", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public OrganizationStatistics GetStatistics(int itemId)
+        {
+            object[] results = this.Invoke("GetStatistics", new object[] {
+                    itemId});
+            return ((OrganizationStatistics)(results[0]));
+        }
+
+        /// <remarks/>
+        public System.IAsyncResult BeginGetStatistics(int itemId, System.AsyncCallback callback, object asyncState)
+        {
+            return this.BeginInvoke("GetStatistics", new object[] {
+                    itemId}, callback, asyncState);
+        }
+
+        /// <remarks/>
+        public OrganizationStatistics EndGetStatistics(System.IAsyncResult asyncResult)
+        {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((OrganizationStatistics)(results[0]));
+        }
+
+        /// <remarks/>
+        public void GetStatisticsAsync(int itemId)
+        {
+            this.GetStatisticsAsync(itemId, null);
+        }
+
+        /// <remarks/>
+        public void GetStatisticsAsync(int itemId, object userState)
+        {
+            if ((this.GetStatisticsOperationCompleted == null))
+            {
+                this.GetStatisticsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetStatisticsOperationCompleted);
+            }
+            this.InvokeAsync("GetStatistics", new object[] {
+                    itemId}, this.GetStatisticsOperationCompleted, userState);
+        }
+
+        private void OnGetStatisticsOperationCompleted(object arg)
+        {
+            if ((this.GetStatisticsCompleted != null))
+            {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetStatisticsCompleted(this, new GetStatisticsCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/GetStatisticsByOrganization", RequestNamespace = "http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace = "http://smbsaas/websitepanel/enterpriseserver", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public OrganizationStatistics GetStatisticsByOrganization(int itemId)
+        {
+            object[] results = this.Invoke("GetStatisticsByOrganization", new object[] {
+                    itemId});
+            return ((OrganizationStatistics)(results[0]));
+        }
+
+        /// <remarks/>
+        public System.IAsyncResult BeginGetStatisticsByOrganization(int itemId, System.AsyncCallback callback, object asyncState)
+        {
+            return this.BeginInvoke("GetStatisticsByOrganization", new object[] {
+                    itemId}, callback, asyncState);
+        }
+
+        /// <remarks/>
+        public OrganizationStatistics EndGetStatisticsByOrganization(System.IAsyncResult asyncResult)
+        {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((OrganizationStatistics)(results[0]));
+        }
+
+        /// <remarks/>
+        public void GetStatisticsByOrganizationAsync(int itemId)
+        {
+            this.GetStatisticsByOrganizationAsync(itemId, null);
+        }
+
+        /// <remarks/>
+        public void GetStatisticsByOrganizationAsync(int itemId, object userState)
+        {
+            if ((this.GetStatisticsByOrganizationOperationCompleted == null))
+            {
+                this.GetStatisticsByOrganizationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetStatisticsByOrganizationOperationCompleted);
+            }
+            this.InvokeAsync("GetStatisticsByOrganization", new object[] {
+                    itemId}, this.GetStatisticsByOrganizationOperationCompleted, userState);
+        }
+
+        private void OnGetStatisticsByOrganizationOperationCompleted(object arg)
+        {
+            if ((this.GetStatisticsByOrganizationCompleted != null))
+            {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetStatisticsByOrganizationCompleted(this, new GetStatisticsByOrganizationCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+
+        /// <remarks/>
         public new void CancelAsync(object userState)
         {
             base.CancelAsync(userState);
@@ -979,11 +1086,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void CheckFileServicesInstallationCompletedEventHandler(object sender, CheckFileServicesInstallationCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class CheckFileServicesInstallationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1009,11 +1116,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void GetEnterpriseFoldersCompletedEventHandler(object sender, GetEnterpriseFoldersCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetEnterpriseFoldersCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1039,11 +1146,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void GetEnterpriseFolderCompletedEventHandler(object sender, GetEnterpriseFolderCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetEnterpriseFolderCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1069,11 +1176,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void CreateEnterpriseFolderCompletedEventHandler(object sender, CreateEnterpriseFolderCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class CreateEnterpriseFolderCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1099,11 +1206,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void DeleteEnterpriseFolderCompletedEventHandler(object sender, DeleteEnterpriseFolderCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class DeleteEnterpriseFolderCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1129,11 +1236,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void GetEnterpriseFolderPermissionsCompletedEventHandler(object sender, GetEnterpriseFolderPermissionsCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetEnterpriseFolderPermissionsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1159,11 +1266,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void SetEnterpriseFolderPermissionsCompletedEventHandler(object sender, SetEnterpriseFolderPermissionsCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class SetEnterpriseFolderPermissionsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1189,11 +1296,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void SearchESAccountsCompletedEventHandler(object sender, SearchESAccountsCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class SearchESAccountsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1219,11 +1326,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void GetEnterpriseFoldersPagedCompletedEventHandler(object sender, GetEnterpriseFoldersPagedCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetEnterpriseFoldersPagedCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1249,11 +1356,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void RenameEnterpriseFolderCompletedEventHandler(object sender, RenameEnterpriseFolderCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class RenameEnterpriseFolderCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1279,11 +1386,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void CreateEnterpriseStorageCompletedEventHandler(object sender, CreateEnterpriseStorageCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class CreateEnterpriseStorageCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1309,11 +1416,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void CheckEnterpriseStorageInitializationCompletedEventHandler(object sender, CheckEnterpriseStorageInitializationCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class CheckEnterpriseStorageInitializationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1339,11 +1446,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void CheckUsersDomainExistsCompletedEventHandler(object sender, CheckUsersDomainExistsCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class CheckUsersDomainExistsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1369,11 +1476,11 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void GetDirectoryBrowseEnabledCompletedEventHandler(object sender, GetDirectoryBrowseEnabledCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     public partial class GetDirectoryBrowseEnabledCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
@@ -1399,10 +1506,70 @@ namespace WebsitePanel.EnterpriseServer
     }
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void SetDirectoryBrowseEnabledCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
 
     /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
     public delegate void SetEnterpriseFolderSettingsCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
+    public delegate void GetStatisticsCompletedEventHandler(object sender, GetStatisticsCompletedEventArgs e);
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetStatisticsCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+    {
+
+        private object[] results;
+
+        internal GetStatisticsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) :
+            base(exception, cancelled, userState)
+        {
+            this.results = results;
+        }
+
+        /// <remarks/>
+        public OrganizationStatistics Result
+        {
+            get
+            {
+                this.RaiseExceptionIfNecessary();
+                return ((OrganizationStatistics)(this.results[0]));
+            }
+        }
+    }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
+    public delegate void GetStatisticsByOrganizationCompletedEventHandler(object sender, GetStatisticsByOrganizationCompletedEventArgs e);
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "4.0.30319.17929")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetStatisticsByOrganizationCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+    {
+
+        private object[] results;
+
+        internal GetStatisticsByOrganizationCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) :
+            base(exception, cancelled, userState)
+        {
+            this.results = results;
+        }
+
+        /// <remarks/>
+        public OrganizationStatistics Result
+        {
+            get
+            {
+                this.RaiseExceptionIfNecessary();
+                return ((OrganizationStatistics)(this.results[0]));
+            }
+        }
+    }
 }

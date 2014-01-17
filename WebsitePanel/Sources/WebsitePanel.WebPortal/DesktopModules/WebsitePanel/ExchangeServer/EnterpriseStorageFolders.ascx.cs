@@ -76,8 +76,8 @@ namespace WebsitePanel.Portal.ExchangeServer
         {
             btnAddFolder.Enabled = true;
 
-            OrganizationStatistics organizationStats = ES.Services.Organizations.GetOrganizationStatisticsByOrganization(PanelRequest.ItemID);
-            OrganizationStatistics tenantStats = ES.Services.Organizations.GetOrganizationStatistics(PanelRequest.ItemID);
+            OrganizationStatistics organizationStats = ES.Services.EnterpriseStorage.GetStatisticsByOrganization/*ES.Services.Organizations.GetOrganizationStatisticsByOrganization*/(PanelRequest.ItemID);
+            OrganizationStatistics tenantStats = ES.Services.EnterpriseStorage.GetStatistics/*ES.Services.Organizations.GetOrganizationStatistics*/(PanelRequest.ItemID);
 
             foldersQuota.QuotaUsedValue = organizationStats.CreatedEnterpriseStorageFolders;
             foldersQuota.QuotaValue = organizationStats.AllocatedEnterpriseStorageFolders;
