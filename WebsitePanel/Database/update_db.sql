@@ -3036,3 +3036,120 @@ GO
 
 UPDATE [dbo].[Quotas] SET [QuotaDescription] = N'Disk Storage Space (Mb)' WHERE [QuotaName] = 'EnterpriseStorage.DiskStorageSpace'
 GO
+
+
+-- CRM2013
+
+-- CRM2013 ResourceGroup
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ResourceGroups] WHERE [GroupName] = 'Hosted CRM2013')
+BEGIN
+INSERT [dbo].[ResourceGroups] ([GroupID], [GroupName], [GroupOrder], [GroupController], [ShowGroup]) VALUES (24, N'Hosted CRM2013', 15, NULL, 1)
+END
+GO
+
+-- CRM2013 Provider
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE [DisplayName] = 'Hosted MS CRM 2013')
+BEGIN
+INSERT [dbo].[Providers] ([ProviderId], [GroupId], [ProviderName], [DisplayName], [ProviderType], [EditorControl], [DisableAutoDiscovery]) 
+VALUES(1202, 24, N'CRM', N'Hosted MS CRM 2013', N'WebsitePanel.Providers.HostedSolution.CRMProvider2013, WebsitePanel.Providers.HostedSolution.Crm2013', N'CRM2011', NULL)
+END
+GO
+
+-- CRM2013 Quotas
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'HostedCRM2013.Organization')
+BEGIN
+INSERT [dbo].[Quotas] ([QuotaID], [GroupID], [QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID], [HideQuota]) 
+VALUES (463, 24, 1, N'HostedCRM2013.Organization', N'CRM Organization', 1, 0, NULL, NULL)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'HostedCRM2013.MaxDatabaseSize')
+BEGIN
+INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) 
+VALUES (464, 24, 5, N'HostedCRM2013.MaxDatabaseSize', N'Max Database Size, MB',3, 0 , NULL)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'HostedCRM2013.EssentialUsers')
+BEGIN
+INSERT [dbo].[Quotas] ([QuotaID], [GroupID], [QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID], [HideQuota]) 
+VALUES (465, 24, 2, N'HostedCRM2013.EssentialUsers', N'Essential licenses per organization', 3, 0, NULL, NULL)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'HostedCRM2013.BasicUsers')
+BEGIN
+INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) 
+VALUES (466, 24, 3, N'HostedCRM2013.BasicUsers', N'Basic licenses per organization',3, 0 , NULL)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'HostedCRM2013.ProfessionalUsers')
+BEGIN
+INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) 
+VALUES (467, 24, 4, N'HostedCRM2013.ProfessionalUsers', N'Professional licenses per organization',3, 0 , NULL)
+END
+GO
+
+INSERT INTO EnterpriseFolders
+(
+	ItemID,
+	FolderName
+)
+VALUES
+(
+	@ItemID,
+	@FolderName
+)
+
+SET @FolderID = SCOPE_IDENTITY()
+
+RETURN
+GO
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'DeleteEnterpriseFolder')
+DROP PROCEDURE DeleteEnterpriseFolder
+GO
+
+CREATE PROCEDURE [dbo].[DeleteEnterpriseFolder]
+(
+	@ItemID INT,
+	@FolderName NVARCHAR(255)
+)
+AS
+
+DELETE FROM EnterpriseFolders
+WHERE ItemID = @ItemID AND FolderName = @FolderName
+GO
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'UpdateEnterpriseFolder')
+DROP PROCEDURE UpdateEnterpriseFolder
+GO
+
+CREATE PROCEDURE [dbo].[UpdateEnterpriseFolder]
+(
+	@ItemID INT,
+	@FolderID NVARCHAR(255),
+	@FolderName NVARCHAR(255),
+	@FolderQuota INT
+)
+AS
+
+UPDATE EnterpriseFolders SET
+	FolderName = @FolderName,
+	FolderQuota = @FolderQuota
+WHERE ItemID = @ItemID AND FolderName = @FolderID
+GO
+
+-- Enterprise Storage Quotas
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'EnterpriseStorage.DiskStorageSpace')
+BEGIN
+INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) VALUES (430, 44, 1,N'EnterpriseStorage.DiskStorageSpace',N'Disk Storage Space (Mb)',2, 0 , NULL)
+END
+GO
+
+UPDATE [dbo].[Quotas] SET [QuotaDescription] = N'Disk Storage Space (Mb)' WHERE [QuotaName] = 'EnterpriseStorage.DiskStorageSpace'
+GO
