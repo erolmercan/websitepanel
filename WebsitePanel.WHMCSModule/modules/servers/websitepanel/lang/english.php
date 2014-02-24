@@ -27,47 +27,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE)  ARISING  IN  ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 /**
- * WebsitePanel WHMCS WebsitePanel / WHMCS Client Contact Details Sync
+ * WebsitePanel WHMCS Server Module Client Area Language
  *
  * @author Christopher York
  * @link http://www.websitepanel.net/
  * @access public
  * @name websitepanel
- * @version 3.0.2
+ * @version 3.0.0
  * @package WHMCS
  */
-
-/**
- * Returns the WebsitePanel Sync configuration options
- *
- * @access public
- * @return array
- */
-function websitepanel_sync_config()
-{
-    return array('name' => 'WebsitePanel Sync Automation',
-                 'description' => 'Syncs WHMCS client details / contact changes with WebsitePanel accounts',
-                 'version' => '3.0.1',
-                 'author' => 'Christopher York');
-}
-
-/**
- * Returns the WebsitePanel Sync configuration options
- *
- * @param $vars array WHMCS parameters
- * @access public
- * @return array
- */
-function websitepanel_sync_upgrade($vars)
-{
-    // Module version
-    $version = $vars['version'];
-
-    // Remove the WebsitePanel credentials
-    if ($version < 1.2)
-    {
-        full_query("DELETE FROM `tbladdonmodules` WHERE `module` = 'websitepanel_sync' AND `setting` = 'username'");
-        full_query("DELETE FROM `tbladdonmodules` WHERE `module` = 'websitepanel_sync' AND `setting` = 'password'");
-    }
-}
+$_MOD_LANG['websitepanel_clientarea_oneclicklogin'] = 'Login to Control Panel (One-Click Login)';
+$_MOD_LANG['websitepanel_adminarea_gotowebsitepanelaccount'] = 'View Account in WebsitePanel';

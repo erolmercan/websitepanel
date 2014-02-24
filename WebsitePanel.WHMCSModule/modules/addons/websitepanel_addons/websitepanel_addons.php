@@ -28,32 +28,30 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /**
- * WebsitePanel Addons Addon Module
+ * WebsitePanel Enterprise Server Client
+ * For the ASPnix WebsitePanel system only - Only tested against the ASPnix WebsitePanel system
  * 
  * @author Christopher York
- * @package WebsitePanel Addons Addon Module
- * @version v1.0
  * @link http://www.websitepanel.net/
+ * @access public
+ * @name websitepanel_EnterpriseServer
+ * @version 3.0.2
+ * @package WHMCS
+ * @final
  */
 
 /**
  * websitepanel_addons_config
- * 
+ *
  * @access public
  * @return array
  */
 function websitepanel_addons_config()
 {
-    $configarray = array('name' => 'WebsitePanel Addons Automation',
-                         'description' => 'Automates WHMCS product addons with WebsitePanel',
-                         'version' => '1.2',
-                         'author' => 'Christopher York',
-                         'fields' => array('serverhost' => array('FriendlyName', 'Enterprise Server Host', 'Type' => 'text', 'Size' => 25, 'Description' => 'Enterprise Server hostname / IP address', 'Default' => '127.0.0.1'),
-                                           'serverport' => array('FriendlyName', 'Enterprise Server Port', 'Type' => 'text', 'Size' => 4, 'Description' => 'Enterprise Server port', 'Default' => 9002),
-                                           'serversecured' => array('FriendlyName', 'Use Secured Connection', 'Type' => 'yesno', 'Description' => 'Tick to use SSL secured connection'),
-                                           )
-                        );
-    return $configarray;
+    return array('name' => 'WebsitePanel Addons Automation',
+                 'description' => 'Automates WHMCS product addons with WebsitePanel Addons',
+                 'version' => '3.0.1',
+                 'author' => 'Christopher York');
 }
 
 /**
@@ -65,14 +63,14 @@ function websitepanel_addons_config()
 function websitepanel_addons_activate()
 {
     // Create the WebsitePanel Addons table
-    $query = "CREATE TABLE `mod_wspaddons` (
+    $query = "CREATE TABLE IF NOT EXISTS `mod_wspaddons` (
               `whmcs_id` int(11) NOT NULL,
               `wsp_id` int(11) NOT NULL,
-              `is_ipaddress` bit(1) NOT NULL DEFAULT 0,
+              `is_ipaddress` bit(1) NOT NULL DEFAULT b'0',
               PRIMARY KEY (`whmcs_id`)
               ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
     $result = full_query($query);
-    
+
     // Check the results to verify that the table has been created properly
     if (!$result)
     {
@@ -115,7 +113,7 @@ function websitepanel_addons_deactivate()
  */
 function websitepanel_addons_upgrade($vars)
 {
-
+    // Module versions
     $version = $vars['version'];
 
     // Adjust the table name and remove the WebsitePanel credentials
@@ -128,7 +126,7 @@ function websitepanel_addons_upgrade($vars)
 }
 
 /**
- * websitepanel_addons_output
+ * Displays the WebsitePanel Addons module output
  *
  * @access public
  * @return mixed
@@ -140,7 +138,7 @@ function websitepanel_addons_output($params)
     {
         delete_query('mod_wspaddons', array('whmcs_id' => $_GET['id']));
     }
-    
+
     // Add the requested WebsitePanel addon
     if ($_POST && isset($_POST['action']) && $_POST['action'] == 'add')
     {
@@ -163,10 +161,10 @@ function websitepanel_addons_output($params)
             echo '<p><div style="margin:0 0 -5px 0;padding: 10px;background-color: #FBEEEB;border: 1px dashed #cc0000;font-weight: bold;color: #cc0000;font-size:14px;text-align: center;-moz-border-radius: 10px;-webkit-border-radius: 10px;-o-border-radius: 10px;border-radius: 10px;">WHMCS Addon Not Found! Check The ID And Try Again.</div></p>';
         }
     }
-    
+
     // Get all the assigned addons and display them to the user
     $results = full_query('SELECT a.name AS `name`, a.id AS `whmcs_id`, w.wsp_id AS `wsp_id` FROM `tbladdons` AS a, `mod_wspaddons` AS w WHERE w.whmcs_id = a.id');
-    
+
     // Build the table / data grid
     echo '<div class="tablebg">';
     echo '<table class="datatable" width="100%" border="0" cellspacing="1" cellpadding="3">';
@@ -183,7 +181,7 @@ function websitepanel_addons_output($params)
         echo '<tr><td colspan="4">No Addon Data Found</td></tr>';
     }
     echo '</table></div>';
-    
+
     // Build the add addon form
     echo '<p><strong>Add WebsitePanel Addon</strong></p>';
     echo "<form action=\"{$params['modulelink']}\" method=\"POST\">";
