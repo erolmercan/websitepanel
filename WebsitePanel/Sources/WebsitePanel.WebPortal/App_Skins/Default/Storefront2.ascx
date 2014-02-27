@@ -29,14 +29,11 @@
         
         <div id="TopMenu">
             <wsp:TopMenu ID="menu" runat="server" />
+            <asp:PlaceHolder ID="LeftPane" runat="server"></asp:PlaceHolder>
         </div>
         
         <div id="Top">
 			<wsp:CatalogBreadCrumb runat="server" />
-        </div>
-        
-        <div id="Left">
-            <asp:PlaceHolder ID="LeftPane" runat="server"></asp:PlaceHolder>
         </div>
         
         <div id="StorefrontCenter">
