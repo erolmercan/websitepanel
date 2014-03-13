@@ -241,7 +241,7 @@ namespace WebsitePanel.WebPortal
                 }
                 // find LeftPane
                 ctrlPane = ctrlSkin.FindControl(LEFT_PANE_NAME);
-                if (ctrlPane != null)
+                if (ctrlPane != null && page.ContentPanes.ContainsKey(LEFT_PANE_NAME))
                 {
                     ContentPane pane = page.ContentPanes[LEFT_PANE_NAME];
                      foreach (PageModule module in pane.Modules)
