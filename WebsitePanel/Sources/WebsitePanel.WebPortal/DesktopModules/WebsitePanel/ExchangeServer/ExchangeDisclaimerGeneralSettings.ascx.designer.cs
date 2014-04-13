@@ -1,4 +1,4 @@
-// Copyright (c) 2011, Outercurve Foundation.
+// Copyright (c) 2014, Outercurve Foundation.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -33,7 +33,6 @@
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated. 
 // </auto-generated>
-
 //------------------------------------------------------------------------------
 
 namespace WebsitePanel.Portal.ExchangeServer {
@@ -47,29 +46,8 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::WebsitePanel.Portal.EnableAsyncTasksSupport asyncTasks;
-        
-        /// <summary>
-        /// breadcrumb control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-
-        /// </remarks>
-        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.Breadcrumb breadcrumb;
-        
-        /// <summary>
-        /// menu control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-
-        /// </remarks>
-        protected global::WebsitePanel.Portal.ExchangeServer.UserControls.Menu menu;
         
         /// <summary>
         /// Image1 control.
@@ -77,7 +55,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.Image Image1;
         
@@ -87,7 +64,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.Localize locTitle;
         
@@ -97,7 +73,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.Literal litDisplayName;
         
@@ -107,7 +82,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::WebsitePanel.Portal.UserControls.SimpleMessageBox messageBox;
         
@@ -117,7 +91,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.Localize locDisplayName;
         
@@ -127,7 +100,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtDisplayName;
         
@@ -137,7 +109,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.RequiredFieldValidator valRequireDisplayName;
         
@@ -147,7 +118,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.Localize locNotes;
         
@@ -157,7 +127,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox txtNotes;
         
@@ -167,7 +136,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnSave;
         
@@ -177,7 +145,6 @@ namespace WebsitePanel.Portal.ExchangeServer {
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
-
         /// </remarks>
         protected global::System.Web.UI.WebControls.ValidationSummary ValidationSummary1;
     }

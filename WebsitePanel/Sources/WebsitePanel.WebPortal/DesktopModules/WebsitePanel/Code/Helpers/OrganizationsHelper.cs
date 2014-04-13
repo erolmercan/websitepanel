@@ -1,4 +1,4 @@
-// Copyright (c) 2012, Outercurve Foundation.
+// Copyright (c) 2014, Outercurve Foundation.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -53,6 +53,19 @@ namespace WebsitePanel.Portal
             orgs = ES.Services.Organizations.GetRawOrganizationsPaged(packageId,
                 recursive, filterColumn, filterValue, sortColumn, startRowIndex, maximumRows);
             
+            return orgs.Tables[1];
+        }
+
+        //public Organization[] GetOrganizations(int packageId, bool recursive)
+        //{
+        //    return ES.Services.Organizations.GetOrganizations(packageId, recursive);
+        //}
+
+        public DataTable GetOrganizations(int packageId, bool recursive)
+        {
+            orgs = ES.Services.Organizations.GetRawOrganizationsPaged(packageId,
+                recursive, "ItemName", "%", "ItemName", -1, int.MaxValue);
+
             return orgs.Tables[1];
         }
         #endregion
