@@ -924,6 +924,13 @@ namespace WebsitePanel.EnterpriseServer
 
                     PackageContext cntxTmp = PackageController.GetPackageContext(org.PackageId);
 
+                    if (cntxTmp.Quotas.ContainsKey(Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT) &&
+                            (cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaAllocatedValue == 1 &&
+                                cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaTypeId == 1))
+                    {
+                        stats.CreatedGroups = GetOrganizationSecurityGroupsPaged(org.Id, string.Empty, string.Empty, string.Empty, 0, int.MaxValue).RecordsCount;
+                    }
+
                     if (cntxTmp.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
                     {
                         SharePointSiteCollectionListPaged sharePointStats = HostedSharePointServerController.GetSiteCollectionsPaged(org.PackageId, org.Id, string.Empty, string.Empty, string.Empty, 0, 0);
@@ -989,6 +996,13 @@ namespace WebsitePanel.EnterpriseServer
 
                                     PackageContext cntxTmp = PackageController.GetPackageContext(org.PackageId);
 
+                                    if (cntxTmp.Quotas.ContainsKey(Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT) &&
+                                            (cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaAllocatedValue == 1 &&
+                                                cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaTypeId == 1))
+                                    {
+                                        stats.CreatedGroups = GetOrganizationSecurityGroupsPaged(org.Id, string.Empty, string.Empty, string.Empty, 0, int.MaxValue).RecordsCount;
+                                    }
+
                                     if (cntxTmp.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
                                     {
                                         SharePointSiteCollectionListPaged sharePointStats = HostedSharePointServerController.GetSiteCollectionsPaged(org.PackageId, o.Id, string.Empty, string.Empty, string.Empty, 0, 0);
@@ -1038,6 +1052,13 @@ namespace WebsitePanel.EnterpriseServer
                 PackageContext cntx = PackageController.GetPackageContext(org.PackageId);
                 stats.AllocatedUsers = cntx.Quotas[Quotas.ORGANIZATION_USERS].QuotaAllocatedValue;
                 stats.AllocatedDomains = cntx.Quotas[Quotas.ORGANIZATION_DOMAINS].QuotaAllocatedValue;
+
+                if (cntx.Quotas.ContainsKey(Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT) &&
+                        (cntx.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaAllocatedValue == 1 &&
+                            cntx.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaTypeId == 1))
+                {
+                    stats.AllocatedGroups = -1;
+                }
 
                 if (cntx.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
                 {
