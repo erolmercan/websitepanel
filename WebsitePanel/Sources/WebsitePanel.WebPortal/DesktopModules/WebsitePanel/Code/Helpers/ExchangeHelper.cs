@@ -1,4 +1,4 @@
-// Copyright (c) 2014, Outercurve Foundation.
+// Copyright (c) 2012, Outercurve Foundation.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -70,6 +70,21 @@ namespace WebsitePanel.Portal
 			return accounts.RecordsCount;
 		}
 
+        public int GetExchangeAccountsPagedCount(int itemId, string accountTypes,
+            string filterColumn, string filterValue)
+        {
+            return accounts.RecordsCount;
+        }
+
+        public ExchangeAccount[] GetExchangeAccountsPaged(int itemId, string accountTypes,
+            string filterColumn, string filterValue,
+            int maximumRows, int startRowIndex, string sortColumn)
+        {
+            return GetExchangeAccountsPaged(itemId, accountTypes,
+            filterColumn, filterValue,
+            maximumRows, startRowIndex, sortColumn, false);
+        }
+
 		public ExchangeAccount[] GetExchangeAccountsPaged(int itemId, string accountTypes,
 			string filterColumn, string filterValue,
             int maximumRows, int startRowIndex, string sortColumn, bool archiving)
@@ -84,5 +99,5 @@ namespace WebsitePanel.Portal
 		}
 
 		#endregion
-    }
+	}
 }
