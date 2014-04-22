@@ -6,6 +6,7 @@
 <wsp:EnableAsyncTasksSupport id="asyncTasks" runat="server"/>
 
 <div id="ExchangeContainer">
+    <div class="Module">
 		<div class="Left">
 		</div>
 		<div class="Content">

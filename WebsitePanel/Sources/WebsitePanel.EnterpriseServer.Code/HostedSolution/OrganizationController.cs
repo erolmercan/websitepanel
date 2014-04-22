@@ -921,15 +921,9 @@ namespace WebsitePanel.EnterpriseServer
 
                     stats.CreatedUsers = tempStats.CreatedUsers;
                     stats.CreatedDomains = tempStats.CreatedDomains;
+                    stats.CreatedGroups = tempStats.CreatedGroups;
 
                     PackageContext cntxTmp = PackageController.GetPackageContext(org.PackageId);
-
-                    if (cntxTmp.Quotas.ContainsKey(Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT) &&
-                            (cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaAllocatedValue == 1 &&
-                                cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaTypeId == 1))
-                    {
-                        stats.CreatedGroups = GetOrganizationSecurityGroupsPaged(org.Id, string.Empty, string.Empty, string.Empty, 0, int.MaxValue).RecordsCount;
-                    }
 
                     if (cntxTmp.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
                     {
@@ -1001,15 +995,9 @@ namespace WebsitePanel.EnterpriseServer
 
                                     stats.CreatedUsers += tempStats.CreatedUsers;
                                     stats.CreatedDomains += tempStats.CreatedDomains;
+                                    stats.CreatedGroups += tempStats.CreatedGroups;
 
                                     PackageContext cntxTmp = PackageController.GetPackageContext(org.PackageId);
-
-                                    if (cntxTmp.Quotas.ContainsKey(Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT) &&
-                                            (cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaAllocatedValue == 1 &&
-                                                cntxTmp.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaTypeId == 1))
-                                    {
-                                        stats.CreatedGroups = GetOrganizationSecurityGroupsPaged(org.Id, string.Empty, string.Empty, string.Empty, 0, int.MaxValue).RecordsCount;
-                                    }
 
                                     if (cntxTmp.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
                                     {
@@ -1069,13 +1057,7 @@ namespace WebsitePanel.EnterpriseServer
                 PackageContext cntx = PackageController.GetPackageContext(org.PackageId);
                 stats.AllocatedUsers = cntx.Quotas[Quotas.ORGANIZATION_USERS].QuotaAllocatedValue;
                 stats.AllocatedDomains = cntx.Quotas[Quotas.ORGANIZATION_DOMAINS].QuotaAllocatedValue;
-
-                if (cntx.Quotas.ContainsKey(Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT) &&
-                        (cntx.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaAllocatedValue == 1 &&
-                            cntx.Quotas[Quotas.ORGANIZATION_SECURITYGROUPMANAGEMENT].QuotaTypeId == 1))
-                {
-                    stats.AllocatedGroups = -1;
-                }
+                stats.AllocatedGroups = cntx.Quotas[Quotas.ORGANIZATION_SECURITYGROUPS].QuotaAllocatedValue;
 
                 if (cntx.Groups.ContainsKey(ResourceGroups.HostedSharePoint))
                 {
