@@ -117,6 +117,11 @@ namespace WebsitePanel.EnterpriseServer
             return OrganizationController.GetAccountIdByUserPrincipalName(itemId, userPrincipalName);
         }
 
+        [WebMethod]
+        public void SetDefaultOrganization(int newDefaultOrganizationId, int currentDefaultOrganizationId)
+        {
+            OrganizationController.SetDefaultOrganization(newDefaultOrganizationId, currentDefaultOrganizationId);
+        }
 
         #endregion
 

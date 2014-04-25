@@ -286,6 +286,7 @@ namespace WebsitePanel.EnterpriseServer
                 TaskManager.WriteError(ex);
             }
         }
+
         public static int CreateOrganization(int packageId, string organizationId, string organizationName, string domainName)
         {
             int itemId;
@@ -1274,6 +1275,44 @@ namespace WebsitePanel.EnterpriseServer
             PackageController.UpdatePackageItem(org);
 
             return 0;
+        }
+
+        public static void SetDefaultOrganization(int newDefaultOrganizationId, int currentDefaultOrganizationId)
+        {
+            // place log record
+            List<BackgroundTaskParameter> parameters = new List<BackgroundTaskParameter>();
+            parameters.Add(new BackgroundTaskParameter("ItemID", newDefaultOrganizationId));
+
+            TaskManager.StartTask("ORGANIZATION", "SET_DEFAULT_ORG", parameters);
+
+            try
+            {
+                if (currentDefaultOrganizationId > 0)
+                {
+                    // load current default organization
+                    Organization currentDefaultOrg = (Organization)PackageController.GetPackageItem(currentDefaultOrganizationId);
+
+                    currentDefaultOrg.IsDefault = false;
+
+                    // save changes
+                    PackageController.UpdatePackageItem(currentDefaultOrg);
+                }
+
+                // load organization
+                Organization newDefaultOrg = (Organization)PackageController.GetPackageItem(newDefaultOrganizationId);
+                
+                newDefaultOrg.IsDefault = true;
+                // save changes
+                PackageController.UpdatePackageItem(newDefaultOrg);
+            }
+            catch (Exception ex)
+            {
+                throw TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                TaskManager.CompleteTask();
+            }
         }
 
         #region Users

@@ -1,4 +1,4 @@
-// Copyright (c) 2014, Outercurve Foundation.
+// Copyright (c) 2012, Outercurve Foundation.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -27,14 +27,18 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Data;
 using System.Text;
 using System.Web.UI.WebControls;
 using WebsitePanel.EnterpriseServer;
+using WebsitePanel.Providers.HostedSolution;
 
 namespace WebsitePanel.Portal.ExchangeServer
 {
     public partial class Organizations : WebsitePanelModuleBase
     {
+        private int CurrentDefaultOrgId { get; set; }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             // set display preferences
@@ -50,15 +54,16 @@ namespace WebsitePanel.Portal.ExchangeServer
                 btnCreate.Enabled = false;
             }
 
-
             PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
             if (cntx.Quotas.ContainsKey(Quotas.ORGANIZATIONS))
             {
                 btnCreate.Enabled = (!(cntx.Quotas[Quotas.ORGANIZATIONS].QuotaAllocatedValue <= gvOrgs.Rows.Count)||(cntx.Quotas[Quotas.ORGANIZATIONS].QuotaAllocatedValue==-1));
             }
-            
+
             //else
                 //if (gvOrgs.Rows.Count > 0) btnCreate.Enabled = false;
+
+            btnSetDefaultOrganization.Enabled = !(gvOrgs.Rows.Count < 2);
 
             if (!Page.IsPostBack)
             {
@@ -69,6 +74,8 @@ namespace WebsitePanel.Portal.ExchangeServer
                     
                     if (Request.UrlReferrer.Query.Equals(queryBuilder.ToString(), StringComparison.InvariantCultureIgnoreCase) && gvOrgs.Rows.Count > 0)
                     {
+                        if (CurrentDefaultOrgId > 0) Response.Redirect(GetOrganizationEditUrl(CurrentDefaultOrgId.ToString()));
+
                         Response.Redirect(((HyperLink)gvOrgs.Rows[0].Cells[1].Controls[1]).NavigateUrl);
                     }
                 }
@@ -138,6 +145,34 @@ namespace WebsitePanel.Portal.ExchangeServer
                     messageBox.ShowErrorMessage("DELETE_ORG", ex);
                 }
             }
+        }
+
+        protected void btnSetDefaultOrganization_Click(object sender, EventArgs e)
+        {
+            // get org
+            int newDefaultOrgId = Utils.ParseInt(Request.Form["DefaultOrganization"], CurrentDefaultOrgId);
+
+            try
+            {
+                ES.Services.Organizations.SetDefaultOrganization(newDefaultOrgId, CurrentDefaultOrgId);
+
+                ShowSuccessMessage("REQUEST_COMPLETED_SUCCESFULLY");
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage("ORGANIZATION_SET_DEFAULT_ORG", ex);
+            }
+        }
+
+        public string IsChecked(string val, string itemId)
+        {
+            if (!string.IsNullOrEmpty(val) && val.ToLowerInvariant() == "true")
+            {
+                CurrentDefaultOrgId = Utils.ParseInt(itemId, 0);
+                return "checked";
+            }
+
+            return "";
         }
     }
 }

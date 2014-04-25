@@ -74,6 +74,13 @@
 								</ItemTemplate>
 								<HeaderStyle Wrap="False" />
 							</asp:TemplateField>
+                            <asp:TemplateField meta:resourcekey="gvOrgsDefault">
+							    <ItemTemplate>
+							        <div style="text-align:center">
+								        <input type="radio" name="DefaultOrganization" value='<%# Eval("ItemID") %>' <%# IsChecked(Convert.ToString(Eval("IsDefault")), Eval("ItemID").ToString()) %>/>
+								    </div>
+							    </ItemTemplate>
+						    </asp:TemplateField>
 						    <asp:TemplateField ItemStyle-Width="20px">
 							    <ItemTemplate>
 								    <asp:ImageButton ID="cmdDelete" runat="server" Text="Delete" SkinID="ExchangeDelete"
@@ -98,11 +105,15 @@
 					</asp:ObjectDataSource>
 				    
 				    <br />
+
 				    <asp:Localize ID="locQuota" runat="server" meta:resourcekey="locQuota" Text="Total Organizations Created:"></asp:Localize>
 				    &nbsp;&nbsp;&nbsp;
 				    <wsp:Quota ID="orgsQuota" runat="server" QuotaName="HostedSolution.Organizations" />
-				    <br />
-				    <br />
+
+                    <div style="text-align: center">
+				        <asp:Button ID="btnSetDefaultOrganization" runat="server" meta:resourcekey="btnSetDefaultOrganization"
+                            Text="Set Default Organization" CssClass="Button1" OnClick="btnSetDefaultOrganization_Click" />
+                    </div>
 				</div>
 			</div>
 		</div>

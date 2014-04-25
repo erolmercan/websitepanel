@@ -144,6 +144,8 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
 
         private System.Threading.SendOrPostCallback AddAdditionalGroupOperationCompleted;
 
+        private System.Threading.SendOrPostCallback SetDefaultOrganizationOperationCompleted;
+
         /// <remarks/>
         public esOrganizations()
         {
@@ -266,6 +268,9 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
 
         /// <remarks/>
         public event AddAdditionalGroupCompletedEventHandler AddAdditionalGroupCompleted;
+
+        /// <remarks/>
+        public event SetDefaultOrganizationCompletedEventHandler SetDefaultOrganizationCompleted;
 
 
         /// <remarks/>
@@ -2609,6 +2614,56 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
         }
 
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://tempuri.org/SetDefaultOrganization", RequestNamespace = "http://tempuri.org/", ResponseNamespace = "http://tempuri.org/", Use = System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle = System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void SetDefaultOrganization(int newDefaultOrganizationId, int currentDefaultOrganizationId)
+        {
+            this.Invoke("SetDefaultOrganization", new object[] {
+                    newDefaultOrganizationId,
+                    currentDefaultOrganizationId});
+        }
+
+        /// <remarks/>
+        public System.IAsyncResult BeginSetDefaultOrganization(int newDefaultOrganizationId, int currentDefaultOrganizationId, System.AsyncCallback callback, object asyncState)
+        {
+            return this.BeginInvoke("SetDefaultOrganization", new object[] {
+                    newDefaultOrganizationId,
+                    currentDefaultOrganizationId}, callback, asyncState);
+        }
+
+        /// <remarks/>
+        public void EndSetDefaultOrganization(System.IAsyncResult asyncResult)
+        {
+            this.EndInvoke(asyncResult);
+        }
+
+        /// <remarks/>
+        public void SetDefaultOrganizationAsync(int newDefaultOrganizationId, int currentDefaultOrganizationId)
+        {
+            this.SetDefaultOrganizationAsync(newDefaultOrganizationId, currentDefaultOrganizationId, null);
+        }
+
+        /// <remarks/>
+        public void SetDefaultOrganizationAsync(int newDefaultOrganizationId, int currentDefaultOrganizationId, object userState)
+        {
+            if ((this.SetDefaultOrganizationOperationCompleted == null))
+            {
+                this.SetDefaultOrganizationOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSetDefaultOrganizationOperationCompleted);
+            }
+            this.InvokeAsync("SetDefaultOrganization", new object[] {
+                    newDefaultOrganizationId,
+                    currentDefaultOrganizationId}, this.SetDefaultOrganizationOperationCompleted, userState);
+        }
+
+        private void OnSetDefaultOrganizationOperationCompleted(object arg)
+        {
+            if ((this.SetDefaultOrganizationCompleted != null))
+            {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SetDefaultOrganizationCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+
+        /// <remarks/>
         public new void CancelAsync(object userState)
         {
             base.CancelAsync(userState);
@@ -3732,4 +3787,8 @@ namespace WebsitePanel.EnterpriseServer.HostedSolution
             }
         }
     }
+
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void SetDefaultOrganizationCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
 }
