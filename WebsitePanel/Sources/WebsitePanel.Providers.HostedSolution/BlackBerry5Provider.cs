@@ -124,6 +124,7 @@ namespace WebsitePanel.Providers.HostedSolution
              //run handheldcleanup.exe           
             if (File.Exists(file2))
             {
+
             string arguments2 = string.Format("-u -p {0} {1}",
                                  MAPIProfile,
                                  " < servername.txt");
@@ -131,7 +132,7 @@ namespace WebsitePanel.Providers.HostedSolution
             {
                 string output;
 
-                int exitCode = Execute(file, arguments, out output);
+                int exitCode = Execute(file, arguments2, out output);
                 if (exitCode == 0)
                 {
                     Log.WriteInfo(output);
