@@ -3455,17 +3455,17 @@ GO
 
 
 
+
 -- Exchange2013 Archiving
 
 -- Exchange2013 Archiving Quotas
 
-IF EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'Exchange2013.AllowArchiving')
+IF EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaID] = 424)
 BEGIN
 UPDATE [dbo].[Quotas] SET [QuotaName]=N'Exchange2013.AllowRetentionPolicy', [QuotaDescription]=N'Allow Retention Policy'
-WHERE [QuotaName] = 'Exchange2013.AllowArchiving'
+WHERE [QuotaID] = 424
 END
 GO
-
 
 IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'Exchange2013.AllowRetentionPolicy')
 BEGIN
@@ -3473,7 +3473,6 @@ INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDe
 VALUES (424, 12, 27,N'Exchange2013.AllowRetentionPolicy',N'Allow Retention Policy',1, 0 , NULL, NULL)
 END
 GO
-
 
 IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'Exchange2013.ArchivingStorage')
 BEGIN
@@ -3489,6 +3488,14 @@ VALUES (426, 12, 28, N'Exchange2013.ArchivingMailboxes', N'Archiving Mailboxes p
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'Exchange2013.AllowArchiving')
+BEGIN
+INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID], [HideQuota])
+VALUES (427, 12, 27,N'Exchange2013.AllowArchiving',N'Allow Archiving',1, 0 , NULL, NULL)
+END
+GO
+
+
 -- Exchange2013 Archiving Plans
 IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='ExchangeMailboxPlans' AND COLS.name='Archiving')
 BEGIN
@@ -3503,6 +3510,15 @@ ALTER TABLE [dbo].[ExchangeMailboxPlans] ADD
 [EnableArchiving] [bit] NULL
 END
 GO
+
+IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='ExchangeMailboxPlans' AND COLS.name='ArchiveSizeMB')
+BEGIN
+ALTER TABLE [dbo].[ExchangeMailboxPlans] ADD
+[ArchiveSizeMB] [int] NULL,
+[ArchiveWarningPct] [int] NULL
+END
+GO
+
 
 ALTER PROCEDURE [dbo].[AddExchangeMailboxPlan] 
 (
@@ -3531,7 +3547,9 @@ ALTER PROCEDURE [dbo].[AddExchangeMailboxPlan]
 	@LitigationHoldUrl nvarchar(256),
 	@LitigationHoldMsg nvarchar(512),
 	@Archiving bit,
-	@EnableArchiving bit
+	@EnableArchiving bit,
+	@ArchiveSizeMB int,
+	@ArchiveWarningPct int
 )
 AS
 
@@ -3573,7 +3591,9 @@ INSERT INTO ExchangeMailboxPlans
 	LitigationHoldUrl,
 	LitigationHoldMsg,
 	Archiving,
-	EnableArchiving
+	EnableArchiving,
+	ArchiveSizeMB,
+	ArchiveWarningPct
 )
 VALUES
 (
@@ -3601,7 +3621,9 @@ VALUES
 	@LitigationHoldUrl,
 	@LitigationHoldMsg,
 	@Archiving,
-	@EnableArchiving
+	@EnableArchiving,
+	@ArchiveSizeMB,
+	@ArchiveWarningPct
 )
 
 SET @MailboxPlanId = SCOPE_IDENTITY()
@@ -3636,7 +3658,9 @@ ALTER PROCEDURE [dbo].[UpdateExchangeMailboxPlan]
 	@LitigationHoldUrl nvarchar(256),
 	@LitigationHoldMsg nvarchar(512),
 	@Archiving bit,
-	@EnableArchiving bit
+	@EnableArchiving bit,
+	@ArchiveSizeMB int,
+	@ArchiveWarningPct int
 )
 AS
 
@@ -3664,9 +3688,9 @@ UPDATE ExchangeMailboxPlans SET
 	LitigationHoldUrl = @LitigationHoldUrl,
 	LitigationHoldMsg = @LitigationHoldMsg,
 	Archiving = @Archiving,
-	EnableArchiving = @EnableArchiving
-
-
+	EnableArchiving = @EnableArchiving,
+	ArchiveSizeMB = @ArchiveSizeMB,
+	ArchiveWarningPct = @ArchiveWarningPct
 WHERE MailboxPlanId = @MailboxPlanId
 
 RETURN
@@ -3702,7 +3726,9 @@ SELECT
 	HideFromAddressBook,
 	MailboxPlanType,
 	Archiving,
-	EnableArchiving
+	EnableArchiving,
+	ArchiveSizeMB,
+	ArchiveWarningPct
 FROM
 	ExchangeMailboxPlans
 WHERE
@@ -3745,7 +3771,9 @@ SELECT
 	LitigationHoldUrl,
 	LitigationHoldMsg,
 	Archiving,
-	EnableArchiving
+	EnableArchiving,
+	ArchiveSizeMB,
+	ArchiveWarningPct
 FROM
 	ExchangeMailboxPlans
 WHERE
@@ -3760,6 +3788,13 @@ IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS
 BEGIN
 ALTER TABLE [dbo].[ExchangeAccounts] ADD
 [ArchivingMailboxPlanId] [int] NULL
+END
+GO
+
+IF NOT EXISTS(select 1 from sys.columns COLS INNER JOIN sys.objects OBJS ON OBJS.object_id=COLS.object_id and OBJS.type='U' AND OBJS.name='ExchangeAccounts' AND COLS.name='EnableArchiving')
+BEGIN
+ALTER TABLE [dbo].[ExchangeAccounts] ADD
+[EnableArchiving] [bit] NULL
 END
 GO
 
@@ -3785,7 +3820,8 @@ SELECT
 	E.SubscriberNumber,
 	E.UserPrincipalName,
 	E.ArchivingMailboxPlanId, 
-	AP.MailboxPlan as 'ArchivingMailboxPlan'
+	AP.MailboxPlan as 'ArchivingMailboxPlan',
+	E.EnableArchiving
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -3820,7 +3856,8 @@ SELECT
 	E.SubscriberNumber,
 	E.UserPrincipalName,
 	E.ArchivingMailboxPlanId, 
-	AP.MailboxPlan as 'ArchivingMailboxPlan'
+	AP.MailboxPlan as 'ArchivingMailboxPlan',
+	E.EnableArchiving
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -3861,7 +3898,8 @@ SELECT
 	E.SubscriberNumber,
 	E.UserPrincipalName,
 	E.ArchivingMailboxPlanId, 
-	AP.MailboxPlan as 'ArchivingMailboxPlan' 
+	AP.MailboxPlan as 'ArchivingMailboxPlan',
+	E.EnableArchiving
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -3892,7 +3930,8 @@ SELECT
 	E.SubscriberNumber,
 	E.UserPrincipalName,
 	E.ArchivingMailboxPlanId, 
-	AP.MailboxPlan as 'ArchivingMailboxPlan' 
+	AP.MailboxPlan as 'ArchivingMailboxPlan',
+	E.EnableArchiving
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -3919,7 +3958,8 @@ SELECT
 	E.SubscriberNumber,
 	E.UserPrincipalName,
 	E.ArchivingMailboxPlanId, 
-	AP.MailboxPlan as 'ArchivingMailboxPlan' 
+	AP.MailboxPlan as 'ArchivingMailboxPlan',
+	E.EnableArchiving
 FROM
 	ExchangeAccounts AS E
 LEFT OUTER JOIN ExchangeMailboxPlans AS P ON E.MailboxPlanId = P.MailboxPlanId	
@@ -4028,13 +4068,15 @@ ALTER PROCEDURE [dbo].[SetExchangeAccountMailboxplan]
 (
 	@AccountID int,
 	@MailboxPlanId int,
-	@ArchivingMailboxPlanId int
+	@ArchivingMailboxPlanId int,
+	@EnableArchiving bit
 )
 AS
 
 UPDATE ExchangeAccounts SET
 	MailboxPlanId = @MailboxPlanId,
-	ArchivingMailboxPlanId = @ArchivingMailboxPlanId
+	ArchivingMailboxPlanId = @ArchivingMailboxPlanId,
+	EnableArchiving = @EnableArchiving
 WHERE
 	AccountID = @AccountID
 
@@ -4056,7 +4098,8 @@ ALTER PROCEDURE [dbo].[UpdateExchangeAccount]
 	@Password varchar(200),
 	@MailboxPlanId int,
 	@ArchivingMailboxPlanId int,
-	@SubscriberNumber varchar(32)
+	@SubscriberNumber varchar(32),
+	@EnableArchiving bit
 )
 AS
 
@@ -4077,7 +4120,8 @@ UPDATE ExchangeAccounts SET
 	SamAccountName = @SamAccountName,
 	MailboxPlanId = @MailboxPlanId,
 	SubscriberNumber = @SubscriberNumber,
-	ArchivingMailboxPlanId = @ArchivingMailboxPlanId
+	ArchivingMailboxPlanId = @ArchivingMailboxPlanId,
+	EnableArchiving = @EnableArchiving
 
 WHERE
 	AccountID = @AccountID
@@ -4344,3 +4388,68 @@ BEGIN
 INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) VALUES (468, 44, 2, N'EnterpriseStorage.DriveMaps', N'Use Drive Maps', 1, 0, NULL)
 END
 GO
+
+-- Exchange2013 Archiving
+
+ALTER PROCEDURE [dbo].[GetExchangeOrganizationStatistics] 
+(
+	@ItemID int
+)
+AS
+
+DECLARE @ARCHIVESIZE INT
+IF -1 in (SELECT B.ArchiveSizeMB FROM ExchangeAccounts AS A INNER JOIN ExchangeMailboxPlans AS B ON A.MailboxPlanId = B.MailboxPlanId WHERE A.ItemID=@ItemID)
+BEGIN
+	SET @ARCHIVESIZE = -1
+END
+ELSE
+BEGIN
+	SET @ARCHIVESIZE = (SELECT SUM(B.ArchiveSizeMB) FROM ExchangeAccounts AS A INNER JOIN ExchangeMailboxPlans AS B ON A.MailboxPlanId = B.MailboxPlanId WHERE A.ItemID=@ItemID)
+END
+
+IF -1 IN (SELECT B.MailboxSizeMB FROM ExchangeAccounts AS A INNER JOIN ExchangeMailboxPlans AS B ON A.MailboxPlanId = B.MailboxPlanId WHERE A.ItemID=@ItemID)
+BEGIN
+SELECT
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE (AccountType = 1 OR AccountType = 5 OR AccountType = 6) AND ItemID = @ItemID) AS CreatedMailboxes,
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE AccountType = 2 AND ItemID = @ItemID) AS CreatedContacts,
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE AccountType = 3 AND ItemID = @ItemID) AS CreatedDistributionLists,
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE AccountType = 4 AND ItemID = @ItemID) AS CreatedPublicFolders,
+	(SELECT COUNT(*) FROM ExchangeOrganizationDomains WHERE ItemID = @ItemID) AS CreatedDomains,
+	(SELECT MIN(B.MailboxSizeMB) FROM ExchangeAccounts AS A INNER JOIN ExchangeMailboxPlans AS B ON A.MailboxPlanId = B.MailboxPlanId WHERE A.ItemID=@ItemID) AS UsedDiskSpace,
+	(SELECT MIN(B.RecoverableItemsSpace) FROM ExchangeAccounts AS A INNER JOIN ExchangeMailboxPlans AS B ON A.MailboxPlanId = B.MailboxPlanId WHERE A.ItemID=@ItemID) AS UsedLitigationHoldSpace,
+	@ARCHIVESIZE AS UsedArchingStorage
+END
+ELSE
+BEGIN
+SELECT
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE (AccountType = 1 OR AccountType = 5 OR AccountType = 6) AND ItemID = @ItemID) AS CreatedMailboxes,
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE AccountType = 2 AND ItemID = @ItemID) AS CreatedContacts,
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE AccountType = 3 AND ItemID = @ItemID) AS CreatedDistributionLists,
+	(SELECT COUNT(*) FROM ExchangeAccounts WHERE AccountType = 4 AND ItemID = @ItemID) AS CreatedPublicFolders,
+	(SELECT COUNT(*) FROM ExchangeOrganizationDomains WHERE ItemID = @ItemID) AS CreatedDomains,
+	(SELECT SUM(B.MailboxSizeMB) FROM ExchangeAccounts AS A INNER JOIN ExchangeMailboxPlans AS B ON A.MailboxPlanId = B.MailboxPlanId WHERE A.ItemID=@ItemID) AS UsedDiskSpace,
+	(SELECT SUM(B.RecoverableItemsSpace) FROM ExchangeAccounts AS A INNER JOIN ExchangeMailboxPlans AS B ON A.MailboxPlanId = B.MailboxPlanId WHERE A.ItemID=@ItemID) AS UsedLitigationHoldSpace,
+	@ARCHIVESIZE AS UsedArchingStorage
+END
+
+
+RETURN
+GO
+
+
+BEGIN
+DELETE FROM [dbo].[HostingPlanQuotas] WHERE QuotaID = 427
+END
+GO
+
+BEGIN
+DELETE FROM [dbo].[PackageQuotas] WHERE QuotaID = 427
+END
+GO
+
+
+BEGIN
+DELETE FROM [dbo].[Quotas] WHERE QuotaID = 427
+END
+GO
+
