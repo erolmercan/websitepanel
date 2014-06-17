@@ -45,6 +45,8 @@ namespace WebsitePanel.Portal.ExchangeServer
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
+
             if (!IsPostBack)
             {
                 password.SetPackagePolicy(PanelSecurity.PackageId, UserSettings.EXCHANGE_POLICY, "MailboxPasswordPolicy");
@@ -89,7 +91,6 @@ namespace WebsitePanel.Portal.ExchangeServer
                 if (plans.Length == 0)
                     btnCreate.Enabled = false;
 
-                PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
                 if (cntx.Quotas.ContainsKey(Quotas.EXCHANGE2007_ISCONSUMER))
                 {
                     if (cntx.Quotas[Quotas.EXCHANGE2007_ISCONSUMER].QuotaAllocatedValue != 1)
@@ -102,6 +103,14 @@ namespace WebsitePanel.Portal.ExchangeServer
 
                 rowRetentionPolicy.Visible = Utils.CheckQouta(Quotas.EXCHANGE2013_ALLOWRETENTIONPOLICY, cntx);
             }
+
+            rowArchiving.Visible = false;
+
+            int planId = -1;
+            int.TryParse(mailboxPlanSelector.MailboxPlanId, out planId);
+            ExchangeMailboxPlan plan = ES.Services.ExchangeServer.GetExchangeMailboxPlan(PanelRequest.ItemID, planId);
+            if (plan!=null)
+                rowArchiving.Visible = plan.EnableArchiving;
 
         }
 
@@ -120,6 +129,8 @@ namespace WebsitePanel.Portal.ExchangeServer
                 string name = IsNewUser ? email.AccountName : userSelector.GetPrimaryEmailAddress().Split('@')[0];
                 string displayName = IsNewUser ? txtDisplayName.Text.Trim() : userSelector.GetDisplayName();
                 string accountName = IsNewUser ? string.Empty : userSelector.GetAccount();
+
+                bool enableArchive = chkEnableArchiving.Checked;
 
                 ExchangeAccountType type = IsNewUser
                                                ? (ExchangeAccountType)Utils.ParseInt(rbMailboxType.SelectedValue, 1)
@@ -141,7 +152,7 @@ namespace WebsitePanel.Portal.ExchangeServer
                                     sendInstructionEmail.Text,
                                     Convert.ToInt32(mailboxPlanSelector.MailboxPlanId),
                                     Convert.ToInt32(archivingMailboxPlanSelector.MailboxPlanId),
-                                    subscriberNumber);
+                                    subscriberNumber, enableArchive);
 
 
                 if (accountId < 0)
@@ -218,6 +229,10 @@ namespace WebsitePanel.Portal.ExchangeServer
             NewUserTable.Visible = true;
             ExistingUserTable.Visible = false;
 
+        }
+
+        protected void mailboxPlanSelector_Change(object sender, EventArgs e)
+        {
         }
 
     }
