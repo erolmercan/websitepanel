@@ -2219,7 +2219,11 @@ namespace WebsitePanel.Providers.HostedSolution
                 }
             }
 
+            if (String.IsNullOrEmpty(database))
+                database = dagName;
+
             ExchangeLog.LogEnd("GetDatabase");
+
             return database;
         }
 
@@ -7317,7 +7321,6 @@ namespace WebsitePanel.Providers.HostedSolution
                     cmd.Parameters.Add("Identity", accountName);
                     cmd.Parameters.Add("Archive");
                     string database = GetDatabase(runSpace, PrimaryDomainController, ArchiveMailboxDatabase);
-                    if (String.IsNullOrEmpty(database)) database = ArchiveMailboxDatabase;
                     ExchangeLog.DebugInfo("archivedatabase: " + database);
                     if (database != string.Empty)
                     {
