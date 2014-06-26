@@ -81,10 +81,14 @@ namespace WebsitePanel.Portal.ExchangeServer
                     secLitigationHoldSettings.Visible = (Utils.CheckQouta(Quotas.EXCHANGE2007_ALLOWLITIGATIONHOLD, Cntx));
                 }
 
-                secRetentionPolicy.Visible = Utils.CheckQouta(Quotas.EXCHANGE2013_ALLOWRETENTIONPOLICY, cntx);
-
+                secRetentionPolicy.Visible = Utils.CheckQouta(Quotas.EXCHANGE2013_ALLOWRETENTIONPOLICY, Cntx);
             }
 
+            int planId = -1;
+            int.TryParse(mailboxPlanSelector.MailboxPlanId, out planId);
+            ExchangeMailboxPlan plan = ES.Services.ExchangeServer.GetExchangeMailboxPlan(PanelRequest.ItemID, planId);
+
+            secArchiving.Visible = plan.EnableArchiving;
         }
 
         private void BindSettings()
@@ -99,6 +103,8 @@ namespace WebsitePanel.Portal.ExchangeServer
                 ExchangeMailboxStatistics stats = ES.Services.ExchangeServer.GetMailboxStatistics(PanelRequest.ItemID,
                     PanelRequest.AccountID);
 
+                // mailbox plan
+
                 // title
                 litDisplayName.Text = mailbox.DisplayName;
 
@@ -110,6 +116,10 @@ namespace WebsitePanel.Portal.ExchangeServer
 
                 // get account meta
                 ExchangeAccount account = ES.Services.ExchangeServer.GetAccount(PanelRequest.ItemID, PanelRequest.AccountID);
+
+                // get mailbox plan
+                ExchangeMailboxPlan plan = ES.Services.ExchangeServer.GetExchangeMailboxPlan(PanelRequest.ItemID, account.MailboxPlanId);
+
                 chkPmmAllowed.Checked = (account.MailboxManagerActions & MailboxManagerActions.GeneralSettings) > 0;
 
                 if (account.MailboxPlanId == 0)
@@ -147,6 +157,13 @@ namespace WebsitePanel.Portal.ExchangeServer
                     ddDisclaimer.SelectedValue = disclaimerId.ToString();
                 }
 
+                int ArchivingMaxSize = -1;
+                if (plan != null) ArchivingMaxSize = plan.ArchiveSizeMB;
+                chkEnableArchiving.Checked = account.EnableArchiving;
+                archivingQuotaViewer.QuotaUsedValue = Convert.ToInt32(stats.ArchivingTotalSize / 1024 / 1024);
+                archivingQuotaViewer.QuotaValue = ArchivingMaxSize;
+                rowArchiving.Visible = chkEnableArchiving.Checked;
+
             }
             catch (Exception ex)
             {
@@ -183,8 +200,10 @@ namespace WebsitePanel.Portal.ExchangeServer
                     int policyId = -1;
                     int.TryParse(mailboxRetentionPolicySelector.MailboxPlanId, out policyId);
 
+                    bool EnableArchiving = chkEnableArchiving.Checked;
+
                     result = ES.Services.ExchangeServer.SetExchangeMailboxPlan(PanelRequest.ItemID, PanelRequest.AccountID, planId,
-                        policyId);
+                        policyId, EnableArchiving);
 
                     if (result < 0)
                     {
@@ -260,6 +279,10 @@ namespace WebsitePanel.Portal.ExchangeServer
                     }
 
             return result;
+        }
+
+        public void mailboxPlanSelector_Changed(object sender, EventArgs e)
+        {
         }
 
     }
