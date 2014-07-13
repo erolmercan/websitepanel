@@ -1198,9 +1198,11 @@ namespace WebsitePanel.Server
             {
                 Log.WriteStart("CheckLoadUserProfile");
 
-                return WebProvider.CheckLoadUserProfile();
+                bool bResult =  WebProvider.CheckLoadUserProfile();
 
                 Log.WriteEnd("CheckLoadUserProfile");
+
+                return bResult;
             }
             catch (Exception ex)
             {

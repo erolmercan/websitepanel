@@ -1322,7 +1322,7 @@ namespace WebsitePanel.Providers.HostedSolution
 
                 ExecuteShellCommand(runSpace, cmd);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 CloseRunspace(runSpace);
 
@@ -1406,7 +1406,7 @@ namespace WebsitePanel.Providers.HostedSolution
                      xml.Save(drivesXmlPath);
                  }
              }
-             catch (Exception ex)
+             catch (Exception)
              {
                  throw;
              }
@@ -1466,7 +1466,7 @@ namespace WebsitePanel.Providers.HostedSolution
                      xml.Save(drivesXmlPath);
                  }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 CloseRunspace(runSpace);
 
@@ -1517,7 +1517,7 @@ namespace WebsitePanel.Providers.HostedSolution
                 //create empty drives.xml file for for gpo drives mapping
                 CreateDrivesXmlEmpty(string.Format(GROUP_POLICY_MAPPED_DRIVES_FILE_PATH_TEMPLATE, RootDomain, gpoId), "Drives.xml");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 gpoId = null;
                 CloseRunspace(runSpace);
@@ -1553,7 +1553,7 @@ namespace WebsitePanel.Providers.HostedSolution
                     gpoId = ((Guid)GetPSObjectProperty(gpo, "Id")).ToString("B");
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 gpoId = null;
                 CloseRunspace(runSpace);
