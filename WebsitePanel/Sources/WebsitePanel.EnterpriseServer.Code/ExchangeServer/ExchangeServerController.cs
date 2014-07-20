@@ -1728,6 +1728,9 @@ namespace WebsitePanel.EnterpriseServer
                     if (plan.RecoverableItemsSpace == -1)
                         return BusinessErrorCodes.ERROR_EXCHANGE_STORAGE_QUOTAS_EXCEED_HOST_VALUES;
 
+                    if (plan.RecoverableItemsSpace < 6144)
+                        return BusinessErrorCodes.ERROR_EXCHANGE_INVALID_RECOVERABLEITEMS_QUOTA;
+
                     if ((quotaRecoverableItemsUsed + plan.RecoverableItemsSpace) > (maxRecoverableItemsSpace))
                         return BusinessErrorCodes.ERROR_EXCHANGE_STORAGE_QUOTAS_EXCEED_HOST_VALUES;
                 }
@@ -2701,6 +2704,9 @@ namespace WebsitePanel.EnterpriseServer
                 {
                     if (plan.RecoverableItemsSpace == -1)
                         return BusinessErrorCodes.ERROR_EXCHANGE_STORAGE_QUOTAS_EXCEED_HOST_VALUES;
+
+                    if (plan.RecoverableItemsSpace < 6144)
+                        return BusinessErrorCodes.ERROR_EXCHANGE_INVALID_RECOVERABLEITEMS_QUOTA;
 
                     if ((quotaRecoverableItemsUsed + plan.RecoverableItemsSpace) > (maxRecoverableItemsSpace))
                         return BusinessErrorCodes.ERROR_EXCHANGE_STORAGE_QUOTAS_EXCEED_HOST_VALUES;
