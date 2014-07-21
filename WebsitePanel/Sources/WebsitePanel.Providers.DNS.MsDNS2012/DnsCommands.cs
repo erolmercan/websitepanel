@@ -27,11 +27,15 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Management.Automation;
 using System.Management.Automation.Runspaces;
 using System.Net;
 using WebsitePanel.Server.Utils;
+using Microsoft.Management.Infrastructure;
+
 
 namespace WebsitePanel.Providers.DNS
 {
@@ -310,6 +314,76 @@ namespace WebsitePanel.Providers.DNS
 			ps.RunPipeline( cmd );
 		}
 
-		#endregion
+        public static void Update_DnsServerResourceRecordSOA(this PowerShellHelper ps, string zoneName,
+            TimeSpan ExpireLimit, TimeSpan MinimumTimeToLive, string PrimaryServer,
+            TimeSpan RefreshInterval, string ResponsiblePerson, TimeSpan RetryDelay, 
+            string PSComputerName)
+        {
+
+            var cmd = new Command("Get-DnsServerResourceRecord");
+            cmd.addParam("ZoneName", zoneName);
+            cmd.addParam("RRType", "SOA");
+            Collection<PSObject> soaRecords = ps.RunPipeline(cmd);
+
+            if (soaRecords.Count < 1)
+                return;
+
+            PSObject oldSOARecord = soaRecords[0];
+            PSObject newSOARecord = oldSOARecord.Copy();
+
+            CimInstance recordData = newSOARecord.Properties["RecordData"].Value as CimInstance;
+
+            if (recordData==null) return;
+            
+            if (ExpireLimit!=null)
+                recordData.CimInstanceProperties["ExpireLimit"].Value = ExpireLimit;
+
+            if (MinimumTimeToLive!=null)
+                recordData.CimInstanceProperties["MinimumTimeToLive"].Value = MinimumTimeToLive;
+
+            if (PrimaryServer!=null)
+                recordData.CimInstanceProperties["PrimaryServer"].Value = PrimaryServer;
+
+            if (RefreshInterval!=null)
+                recordData.CimInstanceProperties["RefreshInterval"].Value = RefreshInterval;
+
+            if (ResponsiblePerson!=null)
+                recordData.CimInstanceProperties["ResponsiblePerson"].Value = ResponsiblePerson;
+
+            if (RetryDelay!=null)
+                recordData.CimInstanceProperties["RetryDelay"].Value = RetryDelay;
+
+            if (PSComputerName!=null)
+                recordData.CimInstanceProperties["PSComputerName"].Value = PSComputerName;
+
+            UInt32 serialNumber = (UInt32)recordData.CimInstanceProperties["SerialNumber"].Value;
+
+            // update record's serial number
+            string sn = serialNumber.ToString();
+            string todayDate = DateTime.Now.ToString("yyyyMMdd");
+            if (sn.Length < 10 || !sn.StartsWith(todayDate))
+            {
+                // build a new serial number
+                sn = todayDate + "01";
+                serialNumber = UInt32.Parse(sn);
+            }
+            else
+            {
+                // just increment serial number
+                serialNumber += 1;
+            }
+
+            recordData.CimInstanceProperties["SerialNumber"].Value = serialNumber;
+
+            cmd = new Command("Set-DnsServerResourceRecord");
+            cmd.addParam("NewInputObject", newSOARecord);
+            cmd.addParam("OldInputObject", oldSOARecord);
+            cmd.addParam("Zone", zoneName);
+            ps.RunPipeline(cmd);
+
+        }
+
+        
+        #endregion
 	}
 }

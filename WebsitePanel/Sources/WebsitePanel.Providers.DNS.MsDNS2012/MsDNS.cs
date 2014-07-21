@@ -38,34 +38,36 @@ using WebsitePanel.Providers.Utils;
 namespace WebsitePanel.Providers.DNS
 {
 	public class MsDNS2012: HostingServiceProviderBase, IDnsServer
-	{
-		protected int ExpireLimit
+    {
+
+        #region Properties
+        protected TimeSpan ExpireLimit
 		{
-			get { return ProviderSettings.GetInt( "ExpireLimit" ); }
+			get { return ProviderSettings.GetTimeSpan( "ExpireLimit" ); }
 		}
 
-		protected int MinimumTTL
+        protected TimeSpan MinimumTTL
 		{
-			get { return ProviderSettings.GetInt( "MinimumTTL" ); }
+            get { return ProviderSettings.GetTimeSpan("MinimumTTL"); }
 		}
 
-		protected int RefreshInterval
+        protected TimeSpan RefreshInterval
 		{
-			get { return ProviderSettings.GetInt( "RefreshInterval" ); }
+            get { return ProviderSettings.GetTimeSpan("RefreshInterval"); }
 		}
 
-		protected int RetryDelay
+        protected TimeSpan RetryDelay
 		{
-			get { return ProviderSettings.GetInt( "RetryDelay" ); }
+            get { return ProviderSettings.GetTimeSpan("RetryDelay"); }
 		}
 
 		protected bool AdMode
 		{
 			get { return ProviderSettings.GetBool( "AdMode" ); }
 		}
+        #endregion
 
-		private PowerShellHelper ps = null;
-		private WmiHelper wmi = null;	//< We still need WMI because PowerShell doesn't support SOA updates.
+        private PowerShellHelper ps = null;
 		private bool bulkRecords;
 
 		public MsDNS2012()
@@ -74,9 +76,6 @@ namespace WebsitePanel.Providers.DNS
 			ps = new PowerShellHelper();
 			if( !this.IsInstalled() )
 				return;
-
-			// Create WMI helper
-			wmi = new WmiHelper( "root\\MicrosoftDNS" );
 		}
 
 		#region Zones
@@ -99,17 +98,11 @@ namespace WebsitePanel.Providers.DNS
 		public virtual void AddPrimaryZone( string zoneName, string[] secondaryServers )
 		{
 			ps.Add_DnsServerPrimaryZone( zoneName, secondaryServers );
-
-			// delete orphan NS records
-			DeleteOrphanNsRecords( zoneName );
 		}
 
 		public virtual void AddSecondaryZone( string zoneName, string[] masterServers )
 		{
 			ps.Add_DnsServerSecondaryZone( zoneName, masterServers );
-
-			// delete orphan NS records
-			DeleteOrphanNsRecords( zoneName );
 		}
 
 		public virtual void DeleteZone( string zoneName )
@@ -194,205 +187,38 @@ namespace WebsitePanel.Providers.DNS
 				DeleteZoneRecord( zoneName, record );
 		}
 
-		public void AddZoneRecord( string zoneName, string recordText )
-		{
-			try
-			{
-				Log.WriteStart( string.Format( "Adding MS DNS Server zone '{0}' record '{1}'", zoneName, recordText ) );
-				AddDnsRecord( zoneName, recordText );
-				Log.WriteEnd( "Added MS DNS Server zone record" );
-			}
-			catch( Exception ex )
-			{
-				Log.WriteError( ex );
-				throw;
-			}
-		}
 		#endregion
 
 		#region SOA Record
 		public virtual void UpdateSoaRecord( string zoneName, string host, string primaryNsServer, string primaryPerson )
 		{
-			host = CorrectHostName( zoneName, host );
+            try
+            {
+                ps.Update_DnsServerResourceRecordSOA(zoneName, ExpireLimit, MinimumTTL, primaryNsServer, RefreshInterval, primaryPerson, RetryDelay, null);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex);
+            }
+        }
 
-			// delete record if exists
-			DeleteSoaRecord( zoneName );
+        private void UpdateSoaRecord(string zoneName)
+        {
+            if (bulkRecords)
+                return;
 
-			// format record data
-			string recordText = GetSoaRecordText( host, primaryNsServer, primaryPerson );
-
-			// add record
-			AddDnsRecord( zoneName, recordText );
-
-			// update SOA record
-			UpdateSoaRecord( zoneName );
-		}
-
-		private void DeleteSoaRecord( string zoneName )
-		{
-			// TODO: find a PowerShell replacement
-
-			string query = String.Format( "SELECT * FROM MicrosoftDNS_SOAType " +
-	"WHERE OwnerName = '{0}'",
-	zoneName );
-			using( ManagementObjectCollection objRRs = wmi.ExecuteQuery( query ) )
-			{
-				foreach( ManagementObject objRR in objRRs ) using( objRR )
-						objRR.Delete();
-			}
-
-			// This doesn't work: no errors in PS, but the record stays in the DNS
-			/* try
-			{
-				ps.Remove_DnsServerResourceRecord( zoneName, "@", "Soa" );
-			}
-			catch( System.Exception ex )
-			{
-				Log.WriteWarning( "{0}", ex.Message );
-			} */
-		}
-
-		private string GetSoaRecordText( string host, string primaryNsServer, string primaryPerson )
-		{
-			return String.Format( "{0} IN SOA {1} {2} 1 900 600 86400 3600", host, primaryNsServer, primaryPerson );
-		}
-
-		private static string RemoveTrailingDot( string str )
-		{
-			return ( str.EndsWith( "." ) ) ? str.Substring( 0, str.Length - 1 ) : str;
-		}
-
-		private void UpdateSoaRecord( string zoneName )
-		{
-			if( bulkRecords )
-				return;
-
-			// TODO: find a PowerShell replacement
-
-			// get existing SOA record in order to read serial number
-			try
-			{
-
-				ManagementObject objSoa = wmi.GetWmiObject( "MicrosoftDNS_SOAType", "ContainerName = '{0}'", RemoveTrailingDot( zoneName ) );
-
-				if( objSoa != null )
-				{
-					if( objSoa.Properties[ "OwnerName" ].Value.Equals( zoneName ) )
-					{
-						string primaryServer = (string)objSoa.Properties[ "PrimaryServer" ].Value;
-						string responsibleParty = (string)objSoa.Properties[ "ResponsibleParty" ].Value;
-						UInt32 serialNumber = (UInt32)objSoa.Properties[ "SerialNumber" ].Value;
-
-						// update record's serial number
-						string sn = serialNumber.ToString();
-						string todayDate = DateTime.Now.ToString( "yyyyMMdd" );
-						if( sn.Length < 10 || !sn.StartsWith( todayDate ) )
-						{
-							// build a new serial number
-							sn = todayDate + "01";
-							serialNumber = UInt32.Parse( sn );
-						}
-						else
-						{
-							// just increment serial number
-							serialNumber += 1;
-						}
-
-						// update SOA record
-						using( ManagementBaseObject methodParams = objSoa.GetMethodParameters( "Modify" ) )
-						{
-							methodParams[ "ResponsibleParty" ] = responsibleParty;
-							methodParams[ "PrimaryServer" ] = primaryServer;
-							methodParams[ "SerialNumber" ] = serialNumber;
-
-							methodParams[ "ExpireLimit" ] = ExpireLimit;
-							methodParams[ "MinimumTTL" ] = MinimumTTL;
-							methodParams[ "TTL" ] = MinimumTTL;
-							methodParams[ "RefreshInterval" ] = RefreshInterval;
-							methodParams[ "RetryDelay" ] = RetryDelay;
-
-							ManagementBaseObject outParams = objSoa.InvokeMethod( "Modify", methodParams, null );
-						}
-						//
-						objSoa.Dispose();
-					}
-
-				}
-			}
-			catch( Exception ex )
-			{
-				Log.WriteError( ex );
-			}
-		}
+            try
+            {
+                ps.Update_DnsServerResourceRecordSOA(zoneName, ExpireLimit, MinimumTTL, null, RefreshInterval, null, RetryDelay, null);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(ex);
+            }
+        }
 
 		#endregion
 
-		private void DeleteOrphanNsRecords( string zoneName )
-		{
-			// TODO: find a PowerShell replacement
-			string machineName = System.Net.Dns.GetHostEntry( "LocalHost" ).HostName.ToLower();
-			string computerName = Environment.MachineName.ToLower();
-
-			using( ManagementObjectCollection objRRs = wmi.ExecuteQuery( String.Format( "SELECT * FROM MicrosoftDNS_NSType WHERE DomainName = '{0}'", zoneName ) ) )
-			{
-				foreach( ManagementObject objRR in objRRs )
-				{
-					using( objRR )
-					{
-						string ns = ( (string)objRR.Properties[ "NSHost" ].Value ).ToLower();
-						if( ns.StartsWith( machineName ) || ns.StartsWith( computerName ) )
-							objRR.Delete();
-
-					}
-				}
-			}
-		}
-
-		#region private helper methods
-
-		private string GetDnsServerName()
-		{
-			// TODO: find a PowerShell replacement
-			using( ManagementObject objServer = wmi.GetObject( "MicrosoftDNS_Server.Name=\".\"" ) )
-			{
-				return (string)objServer.Properties[ "Name" ].Value;
-			}
-		}
-
-		private string AddDnsRecord( string zoneName, string recordText )
-		{
-			// get the name of the server
-			string serverName = GetDnsServerName();
-
-			// TODO: find a PowerShell replacement
-			// add record
-			using( ManagementClass clsRR = wmi.GetClass( "MicrosoftDNS_ResourceRecord" ) )
-			{
-				object[] prms = new object[] { serverName, zoneName, recordText, null };
-				clsRR.InvokeMethod( "CreateInstanceFromTextRepresentation", prms );
-				return (string)prms[ 3 ];
-			}
-		}
-
-		private string CorrectHostName( string zoneName, string host )
-		{
-			// if host is empty or null
-			if( host == null || host == "" )
-				return zoneName;
-
-				// if there are not dot at all
-			else if( host.IndexOf( "." ) == -1 )
-				return host + "." + zoneName;
-
-				// if only one dot at the end
-			else if( host[ host.Length - 1 ] == '.' && host.IndexOf( "." ) == ( host.Length - 1 ) )
-				return host + zoneName;
-
-				// other cases
-			else
-				return host;
-		}
-		#endregion
 
 		public override void DeleteServiceItems( ServiceProviderItem[] items )
 		{

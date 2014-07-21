@@ -102,6 +102,15 @@ namespace WebsitePanel.Providers
             return result;
         }
 
+        public TimeSpan GetTimeSpan(string settingName)
+        {
+            double seconds;
+            if (!Double.TryParse(hash[settingName], out seconds))
+                seconds = 0;
+            return TimeSpan.FromSeconds(seconds);
+        }
+
+
         #region Public properties
         public int ProviderGroupID
         {
