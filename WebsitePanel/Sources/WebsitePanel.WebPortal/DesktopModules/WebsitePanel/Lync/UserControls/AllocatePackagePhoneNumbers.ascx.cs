@@ -149,7 +149,8 @@ namespace WebsitePanel.Portal.UserControls
 
         protected void btnCancel_Click(object sender, EventArgs e)
         {
-            Response.Redirect(HostModule.EditUrl("SpaceID", PanelSecurity.PackageId.ToString(), ListAddressesControl));
+            Response.Redirect(HostModule.EditUrl("ItemID", PanelRequest.ItemID.ToString(), ListAddressesControl,
+                PortalUtils.SPACE_ID_PARAM + "=" + PanelSecurity.PackageId));
         }
 
         protected void radioExternalSelected_CheckedChanged(object sender, EventArgs e)

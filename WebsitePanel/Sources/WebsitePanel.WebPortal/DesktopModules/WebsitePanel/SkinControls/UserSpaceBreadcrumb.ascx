@@ -18,11 +18,11 @@
 
         <asp:Image ID="imgSep2" runat="server" SkinID="PathSeparatorWhite" /> <asp:HyperLink ID="lnkCurrentPage" runat="server"></asp:HyperLink>
 
-        <span id="spanOrgn" runat="server">
+        <span id="spanOrgn" class="OrgSpan" runat="server">
             <asp:Image ID="imgSep3" runat="server" SkinID="PathSeparatorWhite" />
 		    <asp:HyperLink ID="lnkOrgn" runat="server">Organization</asp:HyperLink>
             <asp:Image ID="imgSep4" runat="server" SkinID="PathSeparatorWhite" />
-            <asp:Label ID="lbOrgCurPage" runat="server" ForeColor="#000000">Home</asp:Label>
+            <asp:HyperLink ID="lnkOrgCurPage" runat="server">Home</asp:HyperLink>
 	    </span>
         
         <wsp:SpaceOrgsSelector ID="SpaceOrgs" runat="server" />

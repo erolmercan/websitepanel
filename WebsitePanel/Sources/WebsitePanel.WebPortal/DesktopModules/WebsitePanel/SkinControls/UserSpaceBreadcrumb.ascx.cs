@@ -127,7 +127,10 @@ namespace WebsitePanel.Portal.SkinControls
                     "SpaceID=" + PanelSecurity.PackageId.ToString());
                 lnkOrgn.Text = org.Name;
 
-                string ctrlKey = Request[DefaultPage.CONTROL_ID_PARAM].ToLower(System.Globalization.CultureInfo.InvariantCulture);
+                string curCtrlKey = PanelRequest.Ctl.ToLower();
+                string ctrlKey = PortalUtils.GetGeneralESControlKey(Request[DefaultPage.CONTROL_ID_PARAM].ToLower(System.Globalization.CultureInfo.InvariantCulture));
+
+                if (curCtrlKey == "edit_user") ctrlKey = PanelRequest.Context.ToLower() == "user" ? "users" : "mailboxes";
 
                 ModuleDefinition definition = PortalConfiguration.ModuleDefinitions[EXCHANGE_SERVER_MODULE_DEFINTION_ID];
                 ModuleControl control = null;
@@ -136,7 +139,10 @@ namespace WebsitePanel.Portal.SkinControls
                 
                 if (!String.IsNullOrEmpty(control.Src))
                 {
-                    lbOrgCurPage.Text = PortalUtils.GetLocalizedString(DM_FOLDER_VIRTUAL_PATH + control.Src, PAGE_NANE_KEY);
+                    lnkOrgCurPage.Text = PortalUtils.GetLocalizedString(DM_FOLDER_VIRTUAL_PATH + control.Src, PAGE_NANE_KEY);
+                    lnkOrgCurPage.NavigateUrl = PortalUtils.EditUrl(
+                        "ItemID", PanelRequest.ItemID.ToString(), ctrlKey,
+                        "SpaceID=" + PanelSecurity.PackageId.ToString());
                 }
             }
         }

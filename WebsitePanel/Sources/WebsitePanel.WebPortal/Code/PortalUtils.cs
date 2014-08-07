@@ -56,9 +56,11 @@ namespace WebsitePanel.Portal
         public const string CONFIG_FOLDER = "~/App_Data/";
         public const string SUPPORTED_THEMES_FILE = "SupportedThemes.config";
         public const string SUPPORTED_LOCALES_FILE = "SupportedLocales.config";
+        public const string EXCHANGE_SERVER_HIERARCHY_FILE = "ESModule_ControlsHierarchy.config";
         public const string USER_ID_PARAM = "UserID";
         public const string SPACE_ID_PARAM = "SpaceID";
         public const string SEARCH_QUERY_PARAM = "Query";
+
 
         public static string CultureCookieName
         {
@@ -981,6 +983,34 @@ namespace WebsitePanel.Portal
             return "~/Default.aspx?" + String.Join("&", url.ToArray());
         }
         #endregion
+
+        public static string GetGeneralESControlKey(string controlKey)
+        {
+            string generalControlKey = string.Empty;
+
+            string appData = HttpContext.Current.Server.MapPath(CONFIG_FOLDER);
+            string xmlFilePath = Path.Combine(appData, EXCHANGE_SERVER_HIERARCHY_FILE);
+            if (File.Exists(xmlFilePath))
+            {
+                try
+                {
+                    XmlDocument xmlDoc = new XmlDocument();
+                    xmlDoc.Load(xmlFilePath);
+
+                    XmlElement xmlNode = (XmlElement)xmlDoc.SelectSingleNode(string.Format("/Controls/Control[@key='{0}']", controlKey));
+
+                    if (xmlNode.HasAttribute("general_key"))
+                    {
+                        generalControlKey = xmlNode.GetAttribute("general_key");
+                    }
+                    else generalControlKey = xmlNode.GetAttribute("key");
+                }
+                catch
+                {
+                }
+            }
+            return generalControlKey;
+        }
     }
 }
 

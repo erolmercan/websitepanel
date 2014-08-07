@@ -124,6 +124,9 @@
     <value>Quotas</value>
   </data>
   <data name="Text.PageName" xml:space="preserve">
-    <value>Phone Numbers</value>
+    <value>Lync Phone Numbers</value>
+  </data>
+  <data name="locTitle.Text" xml:space="preserve">
+    <value>Lync Phone Numbers</value>
   </data>
 </root>

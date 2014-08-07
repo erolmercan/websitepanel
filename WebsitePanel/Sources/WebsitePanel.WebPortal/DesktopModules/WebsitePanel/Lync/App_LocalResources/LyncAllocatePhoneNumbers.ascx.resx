@@ -126,4 +126,7 @@
   <data name="Text.PageName" xml:space="preserve">
     <value>Phone Numbers</value>
   </data>
+  <data name="locTitle.Text" xml:space="preserve">
+    <value>Lync Allocate Phone Numbers</value>
+  </data>
 </root>
