@@ -164,6 +164,10 @@ namespace WebsitePanel.Portal
             string quota = GetXmlAttribute(xmlNode, "quota");
             bool disabled = Utils.ParseBool(GetXmlAttribute(xmlNode, "disabled"), false);
 
+            string titleresourcekey = GetXmlAttribute(xmlNode, "titleresourcekey");
+            if (!String.IsNullOrEmpty(titleresourcekey))
+                title = GetLocalizedString(titleresourcekey + ".Text");
+
             // get custom page parameters
             XmlNodeList xmlParameters = xmlNode.SelectNodes("Parameters/Add");
             List<string> parameters = new List<string>();

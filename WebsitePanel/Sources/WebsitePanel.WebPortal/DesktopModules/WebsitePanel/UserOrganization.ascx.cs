@@ -129,8 +129,8 @@ namespace WebsitePanel.Portal
 
             item.Text = GetLocalizedString("Text." + text);
             item.NavigateUrl = PortalUtils.NavigatePageURL( PID_SPACE_EXCHANGE_SERVER, "ItemID", ItemID.ToString(),
-                PortalUtils.SPACE_ID_PARAM + "=" + PackageId, DefaultPage.CONTROL_ID_PARAM + "=" + key
-                /*, DefaultPage.MODULE_ID_PARAM + "=" + */ );
+                PortalUtils.SPACE_ID_PARAM + "=" + PackageId, DefaultPage.CONTROL_ID_PARAM + "=" + key,
+                "moduleDefId=exchangeserver");
 
             if (img == null)
                 item.ImageUrl = PortalUtils.GetThemedIcon("Icons/tool_48.png");

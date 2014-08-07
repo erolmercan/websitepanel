@@ -25,7 +25,7 @@
 
                     <asp:Repeater ID="PackageGroups" runat="server" DataSource='<%# GetIconsDataSource((int)Eval("PackageID"))  %>' > 
                         <ItemTemplate>
-                            <asp:hyperlink id="lnkGroup" runat="server">
+                            <asp:hyperlink id="lnkGroup" runat="server" NavigateUrl='<%# Eval("NavigateURL") %>'>
 		                        <%# Eval("Text") %>
 	                        </asp:hyperlink>
 
@@ -55,11 +55,11 @@
                     </asp:Repeater>
 
                 </div>
-                <asp:Panel ID="OrgPanel" runat="server" Visible='<%# IsOrgPanelVisible((int)Eval("PackageID")) %>'>
-                    <asp:hyperlink ID="linkOrg" runat="server" NavigateUrl='<%# GetOrgPageUrl((int)Eval("PackageID")) %>' meta:resourcekey="linkOrg" Text="Hosted Organization" />
-                    <wsp:UserOrganization ID="UserOrganization" runat="server" PackageId='<%# (int)Eval("PackageID") %>' />
-                </asp:Panel>
             </div>
+            <asp:Panel ID="OrgPanel" runat="server" Visible='<%# IsOrgPanelVisible((int)Eval("PackageID")) %>'>
+                <asp:hyperlink ID="linkOrg" runat="server" NavigateUrl='<%# GetOrgPageUrl((int)Eval("PackageID")) %>' meta:resourcekey="linkOrg" Text="Hosted Organization" />
+                <wsp:UserOrganization ID="UserOrganization" runat="server" PackageId='<%# (int)Eval("PackageID") %>' />
+            </asp:Panel>
         </ItemTemplate>
     </asp:Repeater>
     <asp:Panel ID="EmptyPackagesList" runat="server" Visible="false" CssClass="FormBody">
