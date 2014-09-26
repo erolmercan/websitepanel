@@ -190,7 +190,7 @@ namespace WebsitePanel.Portal
                     col1.Attributes["nowrap"] = "nowrap";
                 Label lbl = new Label();
                 lbl.ID = "lbl_" + quota.QuotaName.Replace(Quotas.SERVICE_LEVELS, "").Replace(" ", string.Empty).Trim();
-                    lbl.Text = quota.QuotaDescription;
+                    lbl.Text = quota.QuotaDescription + ":";
 
                     col1.Controls.Add(lbl);
 

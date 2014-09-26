@@ -116,7 +116,6 @@
                     </div>
                     <asp:Repeater ID="dlServiceLevelQuotas" runat="server" EnableViewState="false">
                         <ItemTemplate>
-                            <br />
                             <div>
                                 <asp:Localize ID="locServiceLevelQuota" runat="server" Text='<%# Eval("QuotaDescription") %>'></asp:Localize>
                                 &nbsp;&nbsp;&nbsp;
