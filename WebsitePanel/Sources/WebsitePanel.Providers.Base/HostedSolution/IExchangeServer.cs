@@ -37,7 +37,9 @@ namespace WebsitePanel.Providers.HostedSolution
         bool CheckAccountCredentials(string username, string password);
         // Organizations
 
-        string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName, ExchangeAccountType accountType,
+        string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName,
+                                    string securityGroup, string organizationDomain,
+                                    ExchangeAccountType accountType,
                                     string mailboxDatabase, string offlineAddressBook, string addressBookPolicy,
                                     string accountName, bool enablePOP, bool enableIMAP,
                                     bool enableOWA, bool enableMAPI, bool enableActiveSync,

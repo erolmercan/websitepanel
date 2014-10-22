@@ -1782,7 +1782,9 @@ namespace WebsitePanel.EnterpriseServer
                 //GetServiceSettings
                 StringDictionary primSettings = ServerController.GetServiceSettings(exchangeServiceId);
 
-                string samAccount = exchange.CreateMailEnableUser(email, org.OrganizationId, org.DistinguishedName, accountType, primSettings["mailboxdatabase"],
+                string samAccount = exchange.CreateMailEnableUser(email, org.OrganizationId, org.DistinguishedName,
+                                                org.SecurityGroup, org.DefaultDomain,
+                                                accountType, primSettings["mailboxdatabase"],
                                                 org.OfflineAddressBook,
                                                 org.AddressBookPolicy,
                                                 retUser.SamAccountName,

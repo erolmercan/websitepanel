@@ -1871,14 +1871,18 @@ namespace WebsitePanel.Providers.HostedSolution
         }
 
 
-        public string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName, ExchangeAccountType accountType,
+        public string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName,
+            string securityGroup, string organizationDomain,
+            ExchangeAccountType accountType,
             string mailboxDatabase, string offlineAddressBook, string addressBookPolicy,
             string accountName, bool enablePOP, bool enableIMAP,
             bool enableOWA, bool enableMAPI, bool enableActiveSync,
             long issueWarningKB, long prohibitSendKB, long prohibitSendReceiveKB, int keepDeletedItemsDays,
             int maxRecipients, int maxSendMessageSizeKB, int maxReceiveMessageSizeKB, bool hideFromAddressBook, bool IsConsumer, bool enabledLitigationHold, long recoverabelItemsSpace, long recoverabelItemsWarning)
         {
-            return CreateMailEnableUserInternal(upn, organizationId, organizationDistinguishedName, accountType,
+            return CreateMailEnableUserInternal(upn, organizationId, organizationDistinguishedName, 
+                                                securityGroup, organizationDomain,
+                                                accountType,
                                                 mailboxDatabase, offlineAddressBook, addressBookPolicy,
                                                 accountName, enablePOP, enableIMAP,
                                                 enableOWA, enableMAPI, enableActiveSync,
@@ -1886,7 +1890,9 @@ namespace WebsitePanel.Providers.HostedSolution
                                                 keepDeletedItemsDays, maxRecipients, maxSendMessageSizeKB, maxReceiveMessageSizeKB, hideFromAddressBook, IsConsumer, enabledLitigationHold, recoverabelItemsSpace, recoverabelItemsWarning);
         }
 
-        internal virtual string CreateMailEnableUserInternal(string upn, string organizationId, string organizationDistinguishedName, ExchangeAccountType accountType,
+        internal virtual string CreateMailEnableUserInternal(string upn, string organizationId, string organizationDistinguishedName,
+            string securityGroup, string organizationDomain,
+            ExchangeAccountType accountType,
             string mailboxDatabase, string offlineAddressBook, string addressBookPolicy,
             string accountName, bool enablePOP, bool enableIMAP,
             bool enableOWA, bool enableMAPI, bool enableActiveSync,
@@ -1955,7 +1961,18 @@ namespace WebsitePanel.Providers.HostedSolution
 
                 transaction.RegisterEnableMailbox(id);
 
+                // default public folder
+                string orgCanonicalName = ConvertADPathToCanonicalName(organizationDistinguishedName);
+
+                //create organization public folder mailbox if required
+                CheckOrganizationPublicFolderMailbox(runSpace, orgCanonicalName, organizationId, organizationDomain);
+
+                //create organization root folder if required
+                CheckOrganizationRootFolder(runSpace, organizationId, securityGroup, orgCanonicalName, organizationId);
+
                 string windowsEmailAddress = ObjToString(GetPSObjectProperty(result[0], "WindowsEmailAddress"));
+
+                string defaultPublicFolderMailbox = orgCanonicalName + "/" + GetPublicFolderMailboxName(organizationId);
 
                 //update mailbox
                 cmd = new Command("Set-Mailbox");
@@ -1986,6 +2003,8 @@ namespace WebsitePanel.Providers.HostedSolution
                     cmd.Parameters.Add("RecoverableItemsQuota", ConvertKBToUnlimited(recoverabelItemsSpace));
                     cmd.Parameters.Add("RecoverableItemsWarningQuota", ConvertKBToUnlimited(recoverabelItemsWarning));
                 }
+
+                cmd.Parameters.Add("DefaultPublicFolderMailbox", defaultPublicFolderMailbox);
 
                 ExecuteShellCommand(runSpace, cmd);
 

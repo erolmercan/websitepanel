@@ -1784,7 +1784,9 @@ namespace WebsitePanel.Providers.HostedSolution
         }
 
 
-        public string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName, ExchangeAccountType accountType,
+        public string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName,
+            string securityGroup, string organizationDomain,
+            ExchangeAccountType accountType,
             string mailboxDatabase, string offlineAddressBook, string addressBookPolicy,
             string accountName, bool enablePOP, bool enableIMAP,
             bool enableOWA, bool enableMAPI, bool enableActiveSync,

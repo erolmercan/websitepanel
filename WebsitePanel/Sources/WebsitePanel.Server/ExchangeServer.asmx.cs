@@ -90,7 +90,9 @@ namespace WebsitePanel.Server
         }
 
         [WebMethod, SoapHeader("settings")]
-        public string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName, ExchangeAccountType accountType,
+        public string CreateMailEnableUser(string upn, string organizationId, string organizationDistinguishedName,
+            string securityGroup, string organizationDomain,
+            ExchangeAccountType accountType,
             string mailboxDatabase, string offlineAddressBook, string addressBookPolicy,
             string accountName, bool enablePOP, bool enableIMAP,
             bool enableOWA, bool enableMAPI, bool enableActiveSync,
@@ -100,7 +102,9 @@ namespace WebsitePanel.Server
             try
             {
                 LogStart("CreateMailEnableUser");
-                string ret = ES.CreateMailEnableUser(upn, organizationId, organizationDistinguishedName, accountType,
+                string ret = ES.CreateMailEnableUser(upn, organizationId, organizationDistinguishedName, 
+                                                           securityGroup, organizationDomain,
+                                                           accountType,
                                                            mailboxDatabase, offlineAddressBook, addressBookPolicy,
                                                            accountName, enablePOP, enableIMAP,
                                                            enableOWA, enableMAPI, enableActiveSync,
