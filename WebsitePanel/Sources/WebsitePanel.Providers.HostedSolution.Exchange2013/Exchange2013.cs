@@ -4790,6 +4790,10 @@ namespace WebsitePanel.Providers.HostedSolution
                 }
 
                 CheckOrganizationRootPublicFolderPermission(runSpace, organizationId);
+
+                // exchange transport needs access to create new items in order to deliver email 
+                AddPublicFolderClientPermission(runSpace, folder, "Anonymous", "CreateItems");
+
             }
             finally
             {
