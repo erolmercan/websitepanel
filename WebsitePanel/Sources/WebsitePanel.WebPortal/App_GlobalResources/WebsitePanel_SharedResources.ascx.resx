@@ -5593,4 +5593,7 @@
   <data name="Error.RDS_CREATE_COLLECTION_RDSSERVER_REQUAIRED" xml:space="preserve">
     <value>Error creating rds collection. You need to add at least 1 rds server to collection</value>
   </data>
+  <data name="SchedulerTask.SCHEDULE_TASK_DOMAIN_LOOKUP" xml:space="preserve">
+    <value>Check MX and NS on DNS servers</value>
+  </data>
 </root>

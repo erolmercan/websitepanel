@@ -34,6 +34,8 @@ using Microsoft.Win32;
 
 using WebsitePanel.Server.Utils;
 using WebsitePanel.Providers.Utils;
+using WebsitePanel.Providers.DomainLookup;
+using WebsitePanel.Providers.DNS;
 
 namespace WebsitePanel.Providers.OS
 {
@@ -744,6 +746,10 @@ namespace WebsitePanel.Providers.OS
         }
         #endregion
 
+        public virtual DnsRecordInfo[] GetDomainDnsRecords(string domain, string dnsServer, DnsRecordType recordType)
+        {
+            return new DnsRecordInfo[0];
+        }
 
         public override bool IsInstalled()
         {

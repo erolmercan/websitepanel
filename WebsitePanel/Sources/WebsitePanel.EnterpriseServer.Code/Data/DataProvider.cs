@@ -36,6 +36,8 @@ using Microsoft.ApplicationBlocks.Data;
 using System.Collections.Generic;
 using Microsoft.Win32;
 using WebsitePanel.Providers.RemoteDesktopServices;
+using WebsitePanel.Providers.DNS;
+using WebsitePanel.Providers.DomainLookup;
 
 namespace WebsitePanel.EnterpriseServer
 {
@@ -4718,5 +4720,54 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         #endregion
+
+        #region MX|NX Services
+
+        public static IDataReader GetAllPackagesIds()
+        {
+            return SqlHelper.ExecuteReader(
+                ConnectionString,
+                CommandType.StoredProcedure,
+                "GetAllPackageIds"
+            );
+        }
+
+        public static IDataReader GetDomainMXRecords(int domainId, DnsRecordType recordType)
+        {
+            return SqlHelper.ExecuteReader(
+                ConnectionString,
+                CommandType.StoredProcedure,
+                "GetDomainDnsRecords",
+                new SqlParameter("@DomainId", domainId),
+                new SqlParameter("@RecordType", recordType)
+            );
+        }
+
+        public static IDataReader AddDomainDnsRecord(DnsRecordInfo domainDnsRecord)
+        {
+            return SqlHelper.ExecuteReader(
+                ConnectionString,
+                CommandType.StoredProcedure,
+                "AddDomainDnsRecord",
+                new SqlParameter("@DomainId", domainDnsRecord.DomainId),
+                new SqlParameter("@RecordType", domainDnsRecord.RecordType),
+                new SqlParameter("@DnsServer", domainDnsRecord.DnsServer),
+                new SqlParameter("@Value", domainDnsRecord.Value),
+                new SqlParameter("@Date", domainDnsRecord.Date)
+            );
+        }
+
+        public static IDataReader DeleteDomainDnsRecord(int id)
+        {
+            return SqlHelper.ExecuteReader(
+                ConnectionString,
+                CommandType.StoredProcedure,
+                "DeleteDomainDnsRecord",
+                new SqlParameter("@Id", id)
+            );
+        } 
+
+        #endregion
+
     }
 }

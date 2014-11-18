@@ -288,6 +288,18 @@
     <Compile Include="RDS\UserControls\RDSCollectionUsers.ascx.designer.cs">
       <DependentUpon>RDSCollectionUsers.ascx</DependentUpon>
     </Compile>
+    <Compile Include="ScheduleTaskControls\App_LocalResources\DomainLookupView.ascx.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DomainLookupView.ascx.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ScheduleTaskControls\DomainLookupView.ascx.cs">
+      <DependentUpon>DomainLookupView.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ScheduleTaskControls\DomainLookupView.ascx.designer.cs">
+      <DependentUpon>DomainLookupView.ascx</DependentUpon>
+    </Compile>
     <Compile Include="SettingsServiceLevels.ascx.cs">
       <DependentUpon>SettingsServiceLevels.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -4234,6 +4246,11 @@
     <Content Include="RDS\UserControls\RDSCollectionApps.ascx" />
     <Content Include="RDS\UserControls\RDSCollectionServers.ascx" />
     <Content Include="RDS\UserControls\RDSCollectionUsers.ascx" />
+    <EmbeddedResource Include="ScheduleTaskControls\App_LocalResources\DomainLookupView.ascx.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DomainLookupView.ascx.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <Content Include="ScheduleTaskControls\DomainLookupView.ascx" />
     <Content Include="SettingsServiceLevels.ascx" />
     <Content Include="CRM\CRMStorageSettings.ascx" />
     <Content Include="ExchangeServer\EnterpriseStorageCreateDriveMap.ascx" />

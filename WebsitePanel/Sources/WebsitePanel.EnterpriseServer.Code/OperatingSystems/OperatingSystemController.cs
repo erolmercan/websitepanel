@@ -40,6 +40,9 @@ using WebsitePanel.Providers;
 using WebsitePanel.Providers.OS;
 using OS = WebsitePanel.Providers.OS;
 using System.Collections;
+using WebsitePanel.Providers.DomainLookup;
+using WebsitePanel.Providers.DNS;
+using System.Linq;
 
 
 namespace WebsitePanel.EnterpriseServer
@@ -811,5 +814,24 @@ namespace WebsitePanel.EnterpriseServer
       
        
         #endregion
+
+        #region Domain DNS Records lookup
+
+        public static List<DnsRecordInfo> GetDomainRecords(int packageId, string domain, string dnsServer, DnsRecordType recordType)
+        {
+            List<DnsRecordInfo> records = new List<DnsRecordInfo>();
+
+            // load OS service
+            int serviceId = PackageController.GetPackageServiceId(packageId, ResourceGroups.Os);
+
+            var os = GetOS(serviceId);
+
+            records = os.GetDomainDnsRecords(domain, dnsServer, recordType).ToList();
+
+            return records;
+        }
+
+        #endregion
+
     }
 }

@@ -143,6 +143,7 @@
     <Compile Include="SchedulerTasks\FTPFilesTask.cs" />
     <Compile Include="SchedulerTasks\GenerateInvoicesTask.cs" />
     <Compile Include="SchedulerTasks\HostedSolutionReport.cs" />
+    <Compile Include="SchedulerTasks\DomainLookupViewTask.cs" />
     <Compile Include="SchedulerTasks\NotifyOverusedDatabasesTask.cs" />
     <Compile Include="SchedulerTasks\RunPaymentQueueTask.cs" />
     <Compile Include="SchedulerTasks\RunSystemCommandTask.cs" />

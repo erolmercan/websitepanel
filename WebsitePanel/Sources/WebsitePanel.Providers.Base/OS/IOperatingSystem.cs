@@ -28,6 +28,9 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using WebsitePanel.Providers.DNS;
+using WebsitePanel.Providers.DomainLookup;
 
 namespace WebsitePanel.Providers.OS
 {
@@ -88,5 +91,8 @@ namespace WebsitePanel.Providers.OS
 
         // File Services
         bool CheckFileServicesInstallation();
+
+        //DNS
+        DnsRecordInfo[] GetDomainDnsRecords(string domain, string dnsServer, DnsRecordType recordType);
     }
 }

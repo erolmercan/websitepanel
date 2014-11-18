@@ -6082,3 +6082,134 @@ set Php4Path='%PROGRAMFILES(x86)%\PHP\ph.exe'
 where ProviderId in(101, 105)
 
 GO
+
+-- Domain lookup tasks
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ScheduleTasks] WHERE [TaskID] = N'SCHEDULE_TASK_DOMAIN_LOOKUP')
+BEGIN
+INSERT [dbo].[ScheduleTasks] ([TaskID], [TaskType], [RoleID]) VALUES (N'SCHEDULE_TASK_DOMAIN_LOOKUP', N'WebsitePanel.EnterpriseServer.DomainLookupViewTask, WebsitePanel.EnterpriseServer.Code', 1)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ScheduleTaskViewConfiguration] WHERE [TaskID] = N'SCHEDULE_TASK_DOMAIN_LOOKUP')
+BEGIN
+INSERT [dbo].[ScheduleTaskViewConfiguration] ([TaskID], [ConfigurationID], [Environment], [Description]) VALUES (N'SCHEDULE_TASK_DOMAIN_LOOKUP', N'ASP_NET', N'ASP.NET', N'~/DesktopModules/WebsitePanel/ScheduleTaskControls/DomainLookupView.ascx')
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ScheduleTaskParameters] WHERE [TaskID] = N'SCHEDULE_TASK_DOMAIN_LOOKUP' AND [ParameterID]= N'DNS_SERVERS' )
+BEGIN
+INSERT [dbo].[ScheduleTaskParameters] ([TaskID], [ParameterID], [DataTypeID], [DefaultValue], [ParameterOrder]) VALUES (N'SCHEDULE_TASK_DOMAIN_LOOKUP', N'DNS_SERVERS', N'String', NULL, 1)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ScheduleTaskParameters] WHERE [TaskID] = N'SCHEDULE_TASK_DOMAIN_LOOKUP' AND [ParameterID]= N'MAIL_TO' )
+BEGIN
+INSERT [dbo].[ScheduleTaskParameters] ([TaskID], [ParameterID], [DataTypeID], [DefaultValue], [ParameterOrder]) VALUES (N'SCHEDULE_TASK_DOMAIN_LOOKUP', N'MAIL_TO', N'String', NULL, 2)
+END
+GO
+
+-- Domain lookup tables
+
+IF EXISTS (SELECT * FROM SYS.TABLES WHERE name = 'DomainDnsRecords')
+DROP TABLE DomainDnsRecords
+GO
+CREATE TABLE DomainDnsRecords
+(
+	ID INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
+	DomainId INT NOT NULL,
+	RecordType INT NOT NULL,
+	DnsServer NVARCHAR(255),
+	Value NVARCHAR(255),
+	Date DATETIME
+)
+GO
+
+ALTER TABLE [dbo].[DomainDnsRecords]  WITH CHECK ADD  CONSTRAINT [FK_DomainDnsRecords_DomainId] FOREIGN KEY([DomainId])
+REFERENCES [dbo].[Domains] ([DomainID])
+ON DELETE CASCADE
+GO
+
+-- Procedures for Domai lookup service
+
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'GetAllPackageIds')
+DROP PROCEDURE GetAllPackageIds
+GO
+CREATE PROCEDURE [dbo].GetAllPackageIds
+
+AS
+SELECT
+  [PackageID]
+  FROM [dbo].[Packages]
+GO
+
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'GetDomainDnsRecords')
+DROP PROCEDURE GetDomainDnsRecords
+GO
+CREATE PROCEDURE [dbo].GetDomainDnsRecords
+(
+	@DomainId INT,
+	@RecordType INT
+)
+AS
+SELECT
+	ID,
+	DomainId,
+	DnsServer,
+	RecordType,
+	Value,
+	Date
+  FROM [dbo].[DomainDnsRecords]
+  WHERE [DomainId]  = @DomainId AND [RecordType] = @RecordType
+GO
+
+
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'AddDomainDnsRecord')
+DROP PROCEDURE AddDomainDnsRecord
+GO
+CREATE PROCEDURE [dbo].[AddDomainDnsRecord]
+(
+	@DomainId INT,
+	@RecordType INT,
+	@DnsServer NVARCHAR(255),
+	@Value NVARCHAR(255),
+	@Date DATETIME
+)
+AS
+
+INSERT INTO DomainDnsRecords
+(
+	DomainId,
+	DnsServer,
+	RecordType,
+	Value,
+	Date
+)
+VALUES
+(
+	@DomainId,
+	@DnsServer,
+	@RecordType,
+	@Value,
+	@Date
+)
+GO
+
+
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'DeleteDomainDnsRecord')
+DROP PROCEDURE DeleteDomainDnsRecord
+GO
+CREATE PROCEDURE [dbo].[DeleteDomainDnsRecord]
+(
+	@Id  INT
+)
+AS
+
+
+DELETE FROM DomainDnsRecords
+WHERE Id = @Id
+GO

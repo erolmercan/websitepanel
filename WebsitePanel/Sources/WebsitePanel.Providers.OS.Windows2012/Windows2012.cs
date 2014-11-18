@@ -49,6 +49,9 @@ using System.Management.Automation.Runspaces;
 using WebsitePanel.Providers.Common;
 
 using System.Runtime.InteropServices;
+using System.Linq;
+using WebsitePanel.Providers.DomainLookup;
+using WebsitePanel.Providers.DNS;
 
 
 namespace WebsitePanel.Providers.OS
@@ -295,6 +298,76 @@ namespace WebsitePanel.Providers.OS
 
             ExecuteShellCommand(runSpace, cmd, false);
         }
+        
+        #region Domain LookUp
+
+        public override DnsRecordInfo[] GetDomainDnsRecords(string domain, string dnsServer, DnsRecordType recordType)
+        {
+            List<DnsRecordInfo> records = new List<DnsRecordInfo>();
+
+            Runspace runSpace = null;
+
+            try
+            {
+                runSpace = OpenRunspace();
+
+                Command cmd = new Command("Resolve-DnsName");
+                cmd.Parameters.Add("Name", domain);
+                cmd.Parameters.Add("Server", dnsServer);
+                cmd.Parameters.Add("Type", recordType.ToString());
+
+                var dnsRecordsPs = ExecuteShellCommand(runSpace, cmd, false);
+
+                if (dnsRecordsPs != null)
+                {
+                    foreach (var dnsRecordPs in dnsRecordsPs)
+                    {
+                        DnsRecordInfo newRecord;
+
+                        switch (recordType)
+                        {
+                            case DnsRecordType.MX: { newRecord = CreateMxDnsRecordFromPsObject(dnsRecordPs); break; }
+                            case DnsRecordType.NS: { newRecord = CreateNsDnsRecordFromPsObject(dnsRecordPs); break; }
+                            default: continue;
+                        }
+
+                        newRecord.DnsServer = dnsServer;
+                        newRecord.RecordType = recordType;
+
+                        records.Add(newRecord);
+                    }
+                    
+                }
+            }
+            finally
+            {
+                CloseRunspace(runSpace);
+            }
+
+            return records.ToArray();
+        }
+
+        private DnsRecordInfo CreateMxDnsRecordFromPsObject(PSObject psObject)
+        {
+            var dnsRecord = new DnsRecordInfo
+            {
+                Value = Convert.ToString(GetPSObjectProperty(psObject, "NameExchange")),
+            };
+
+            return dnsRecord;
+        }
+
+        private DnsRecordInfo CreateNsDnsRecordFromPsObject(PSObject psObject)
+        {
+            var dnsRecord = new DnsRecordInfo
+            {
+                Value = Convert.ToString(GetPSObjectProperty(psObject, "NameHost")),
+            };
+
+            return dnsRecord;
+        }
+
+        #endregion
 
         #region PowerShell integration
         private static InitialSessionState session = null;
