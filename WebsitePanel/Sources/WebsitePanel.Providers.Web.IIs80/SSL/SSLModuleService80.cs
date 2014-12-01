@@ -281,12 +281,15 @@ namespace WebsitePanel.Providers.Web.Iis
 
                 if (!dedicatedIp)
                 {
-                    hostNames.AddRange(from extension in certificate.Extensions.Cast<X509Extension>() where extension.Oid.FriendlyName == "Subject Alternative Name" select extension.Format(true));
+                    hostNames.AddRange(certificate.Extensions.Cast<X509Extension>()
+                        .Where(e => e.Oid.FriendlyName == "Subject Alternative Name")
+                        .Select(e => e.Format(true).Replace("DNS Name=", "")));
                 }
 
-                if (!hostNames.Any())
+                var simpleName = certificate.GetNameInfo(X509NameType.SimpleName, false);
+                if (hostNames.All(h => h != simpleName))
                 {
-                    hostNames.Add(certificate.GetNameInfo(X509NameType.SimpleName, false));
+                    hostNames.Add(simpleName);
                 }
 
                 // For every hostname (only one if using old school dedicated IP binding)
