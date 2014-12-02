@@ -164,34 +164,60 @@ namespace WebsitePanel.Import.Enterprise
 				type = null;
 				email = null;
 				name = (string)child.Properties["name"].Value;
+
 				//account type
 				typeProp = child.Properties["msExchRecipientDisplayType"];
+
+                int typeDetails = 0;
+                PropertyValueCollection typeDetailsProp = child.Properties["msExchRecipientTypeDetails"];
+                if (typeDetailsProp != null)
+                {
+                    if (typeDetailsProp.Value != null)
+                    {
+                        try
+                        {
+                            object adsLargeInteger = typeDetailsProp.Value;
+                            typeDetails = (Int32)adsLargeInteger.GetType().InvokeMember("LowPart", System.Reflection.BindingFlags.GetProperty, null, adsLargeInteger, null);
+                        }
+                        catch { } // just skip
+                    }
+                }
+
 				
 				switch (child.SchemaClassName)
 				{
 					case "user":
 						email = (string)child.Properties["userPrincipalName"].Value;
-						if (typeProp == null || typeProp.Value == null)
-						{
-							type = "User";
-						}
-						else
-						{
-							int mailboxType = (int)typeProp.Value;
 
-							switch (mailboxType)
-							{
-								case 1073741824:
-									type = "User Mailbox";
-									break;
-								case 7:
-									type = "Room Mailbox";
-									break;
-								case 8:
-									type = "Equipment Mailbox";
-									break;
-							}
-						}
+                        if (typeDetails == 4)
+                        {
+                            type = "Shared Mailbox";
+                        }
+                        else
+                        {
+
+                            if (typeProp == null || typeProp.Value == null)
+                            {
+                                type = "User";
+                            }
+                            else
+                            {
+                                int mailboxType = (int)typeProp.Value;
+
+                                switch (mailboxType)
+                                {
+                                    case 1073741824:
+                                        type = "User Mailbox";
+                                        break;
+                                    case 7:
+                                        type = "Room Mailbox";
+                                        break;
+                                    case 8:
+                                        type = "Equipment Mailbox";
+                                        break;
+                                }
+                            }
+                        }
 						if (!string.IsNullOrEmpty(type))
 						{
 

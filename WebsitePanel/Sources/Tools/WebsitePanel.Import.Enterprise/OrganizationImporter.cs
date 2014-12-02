@@ -781,12 +781,20 @@ namespace WebsitePanel.Import.Enterprise
 			}
 			int mailboxType = (int)type.Value;
 
-            PropertyValueCollection typeDetails = entry.Properties["msExchRecipientTypeDetails"];
             int mailboxTypeDetails = 0;
+            PropertyValueCollection typeDetails = entry.Properties["msExchRecipientTypeDetails"];
             if (typeDetails!=null)
             {
                 if (typeDetails.Value != null)
-                    mailboxTypeDetails = (int)typeDetails.Value;
+                {
+                    try
+                    {
+                        object adsLargeInteger = typeDetails.Value;
+                        mailboxTypeDetails = (Int32)adsLargeInteger.GetType().InvokeMember("LowPart", System.Reflection.BindingFlags.GetProperty, null, adsLargeInteger, null);
+                    }
+                    catch { } // just skip
+
+                }
             }
 
 			ExchangeAccountType accountType = ExchangeAccountType.Undefined;
@@ -831,18 +839,16 @@ namespace WebsitePanel.Import.Enterprise
 					if (emailAddress.ToLower().StartsWith("smtp:"))
 						emailAddress = emailAddress.Substring(5);
 
-	
-					if (!emailAddress.Equals(defaultEmail, StringComparison.InvariantCultureIgnoreCase))
+					if (EmailAddressExists(emailAddress))
 					{
-						if (EmailAddressExists(emailAddress))
-						{
-							Log.WriteInfo(string.Format("Email address {0} already exists. Skipped", emailAddress));
-							continue;
-						}
-						// register email address
-						Log.WriteInfo(string.Format("Importing email {0}", emailAddress));
-						AddAccountEmailAddress(userId, emailAddress);
+                        if ((!emailAddress.Equals(defaultEmail, StringComparison.InvariantCultureIgnoreCase)) && (!emailAddress.Equals(email, StringComparison.InvariantCultureIgnoreCase)))
+                            Log.WriteInfo(string.Format("Email address {0} already exists. Skipped", emailAddress));
+
+                        continue;
 					}
+					// register email address
+					Log.WriteInfo(string.Format("Importing email {0}", emailAddress));
+					AddAccountEmailAddress(userId, emailAddress);
 				}
 			}
 			Log.WriteEnd("User imported");
