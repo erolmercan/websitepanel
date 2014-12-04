@@ -117,22 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="buttonPanel.OnSaveClientClick" xml:space="preserve">
-    <value>ShowProgressDialog('Updating mailbox permissions...');</value>
+  <data name="btnSave.Text" xml:space="preserve">
+    <value>Save Changes</value>
   </data>
-  <data name="FormComments.Text" xml:space="preserve">
-    <value />
-  </data>
-  <data name="grandPermission.Text" xml:space="preserve">
-    <value>Grant this permission to:</value>
-  </data>
-  <data name="secFullAccessPermission.Text" xml:space="preserve">
-    <value>Full Access</value>
-  </data>
-  <data name="secSendAsPermission.Text" xml:space="preserve">
-    <value>Send As</value>
-  </data>
-  <data name="Text.PageName" xml:space="preserve">
-    <value>Permissions</value>
+  <data name="btnSaveExit.Text" xml:space="preserve">
+    <value>Save Changes and Exit</value>
   </data>
 </root>

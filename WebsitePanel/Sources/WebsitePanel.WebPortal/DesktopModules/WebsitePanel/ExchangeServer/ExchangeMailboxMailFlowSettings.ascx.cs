@@ -49,6 +49,8 @@ namespace WebsitePanel.Portal.ExchangeServer
             if (!IsPostBack)
             {
                 BindSettings();
+
+                buttonPanel.OnSaveClientClick = GetLocalizedString("buttonPanel.OnSaveClientClick"); 
             }
 
         }

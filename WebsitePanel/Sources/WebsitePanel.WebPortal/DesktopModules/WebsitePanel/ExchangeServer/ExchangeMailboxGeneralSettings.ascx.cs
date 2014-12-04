@@ -81,6 +81,8 @@ namespace WebsitePanel.Portal.ExchangeServer
                 }
 
                 secRetentionPolicy.Visible = Utils.CheckQouta(Quotas.EXCHANGE2013_ALLOWRETENTIONPOLICY, Cntx);
+
+                buttonPanel.OnSaveClientClick = GetLocalizedString("buttonPanel.OnSaveClientClick"); 
             }
 
             int planId = -1;

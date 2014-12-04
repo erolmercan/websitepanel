@@ -760,6 +760,13 @@
     <Compile Include="Lync\UserControls\AllocatePackagePhoneNumbers.ascx.designer.cs">
       <DependentUpon>AllocatePackagePhoneNumbers.ascx</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\ItemButtonPanel.ascx.cs">
+      <DependentUpon>ItemButtonPanel.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="UserControls\ItemButtonPanel.ascx.designer.cs">
+      <DependentUpon>ItemButtonPanel.ascx</DependentUpon>
+    </Compile>
     <Compile Include="UserOrganization.ascx.cs">
       <DependentUpon>UserOrganization.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -4302,6 +4309,7 @@
     <Content Include="UserControls\OrgPolicyEditor.ascx" />
     <Content Include="UserControls\PackagePhoneNumbers.ascx" />
     <Content Include="Lync\UserControls\AllocatePackagePhoneNumbers.ascx" />
+    <Content Include="UserControls\ItemButtonPanel.ascx" />
     <Content Include="UserOrganization.ascx" />
     <Content Include="VPSForPC\MonitoringPage.aspx" />
     <Content Include="VPSForPC\VdcAccountVLanAdd.ascx" />
@@ -5455,6 +5463,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Lync\UserControls\App_LocalResources\AllocatePackagePhoneNumbers.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="UserControls\App_LocalResources\ItemButtonPanel.ascx.resx">
       <SubType>Designer</SubType>
     </Content>
     <None Include="Resources\Windows2008_Settings.ascx.resx" />

@@ -37,7 +37,11 @@ namespace WebsitePanel.Portal.ExchangeServer
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
+            {
                 BindPermissions();
+
+                buttonPanel.OnSaveClientClick = GetLocalizedString("buttonPanel.OnSaveClientClick"); 
+            }
 
         }
 
