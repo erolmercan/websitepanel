@@ -123,6 +123,12 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         [WebMethod]
+        public ResultObject SetRDServerNewConnectionAllowed(int itemId, bool newConnectionAllowed, int rdsSeverId)
+        {
+            return RemoteDesktopServicesController.SetRDServerNewConnectionAllowed(itemId, newConnectionAllowed, rdsSeverId);
+        }
+
+        [WebMethod]
         public List<RdsServer> GetCollectionRdsServers(int collectionId)
         {
             return RemoteDesktopServicesController.GetCollectionRdsServers(collectionId);
