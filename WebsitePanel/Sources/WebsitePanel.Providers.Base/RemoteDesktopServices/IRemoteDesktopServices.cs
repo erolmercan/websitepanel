@@ -48,6 +48,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         void RemoveSessionHostServerFromCollection(string organizationId, string collectionName, RdsServer server);
         void RemoveSessionHostServersFromCollection(string organizationId, string collectionName, List<RdsServer> servers);
 
+        void SetRDServerNewConnectionAllowed(bool newConnectionAllowed, RdsServer server);
+
         List<StartMenuApp> GetAvailableRemoteApplications(string collectionName);
         List<RemoteApplication> GetCollectionRemoteApplications(string collectionName);
         bool AddRemoteApplication(string collectionName, RemoteApplication remoteApp);
