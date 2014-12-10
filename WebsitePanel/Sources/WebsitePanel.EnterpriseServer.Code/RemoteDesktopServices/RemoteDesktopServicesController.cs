@@ -108,6 +108,11 @@ namespace WebsitePanel.EnterpriseServer
             return GetRdsServerInternal(rdsSeverId);
         }
 
+        public static ResultObject SetRDServerNewConnectionAllowed(int itemId, bool newConnectionAllowed, int rdsSeverId)
+        {
+            return SetRDServerNewConnectionAllowedInternal(itemId, newConnectionAllowed, rdsSeverId);
+        }
+
         public static List<RdsServer> GetCollectionRdsServers(int collectionId)
         {
             return GetCollectionRdsServersInternal(collectionId);
@@ -457,6 +462,52 @@ namespace WebsitePanel.EnterpriseServer
             return ObjectUtils.FillObjectFromDataReader<RdsServer>(DataProvider.GetRDSServerById(rdsSeverId));
         }
 
+        private static ResultObject SetRDServerNewConnectionAllowedInternal(int itemId, bool newConnectionAllowed, int rdsSeverId)
+        {
+            ResultObject result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "SET_RDS_SERVER_NEW_CONNECTIONS_ALLOWED"); ;
+            try
+            {
+                // load organization
+                Organization org = OrganizationController.GetOrganization(itemId);
+                if (org == null)
+                {
+                    result.IsSuccess = false;
+                    result.AddError("", new NullReferenceException("Organization not found"));
+                    return result;
+                }
+
+                var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
+
+                var rdsServer = GetRdsServer(rdsSeverId);
+
+                if (rdsServer == null)
+                {
+                    result.IsSuccess = false;
+                    result.AddError("", new NullReferenceException("RDS Server not found"));
+                    return result;
+                }
+
+                rds.SetRDServerNewConnectionAllowed(newConnectionAllowed, rdsServer);
+            }
+            catch (Exception ex)
+            {
+                result.AddError("REMOTE_DESKTOP_SERVICES_SET_RDS_SERVER_NEW_CONNECTIONS_ALLOWED", ex);
+            }
+            finally
+            {
+                if (!result.IsSuccess)
+                {
+                    TaskManager.CompleteResultTask(result);
+                }
+                else
+                {
+                    TaskManager.CompleteResultTask();
+                }
+            }
+
+            return result;
+        }
+
         private static int GetOrganizationRdsUsersCountInternal(int itemId)
         {
             return DataProvider.GetOrganizationRdsUsersCount(itemId);
@@ -639,7 +690,7 @@ namespace WebsitePanel.EnterpriseServer
 
                 RdsServer rdsServer = GetRdsServer(serverId);
 
-                if (!rds.CheckSessionHostFeatureInstallation(rdsServer.FqdName))
+                //if (!rds.CheckSessionHostFeatureInstallation(rdsServer.FqdName))
                 {
                     rds.AddSessionHostFeatureToServer(rdsServer.FqdName);
                 }

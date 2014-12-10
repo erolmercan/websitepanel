@@ -370,7 +370,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             }
         }
 
-       public void AddSessionHostServersToCollection(string organizationId, string collectionName, List<RdsServer> servers)
+        public void AddSessionHostServersToCollection(string organizationId, string collectionName, List<RdsServer> servers)
         {
             foreach (var server in servers)
             {
@@ -410,6 +410,30 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         }
 
         #endregion
+
+        public void SetRDServerNewConnectionAllowed(bool newConnectionAllowed, RdsServer server)
+        {
+            Runspace runSpace = null;
+
+            try
+            {
+                runSpace = OpenRunspace();
+
+                Command cmd = new Command("Set-RDSessionHost");
+                cmd.Parameters.Add("SessionHost", server.FqdName);
+                cmd.Parameters.Add("NewConnectionAllowed", string.Format("${0}", newConnectionAllowed.ToString()));
+
+                ExecuteShellCommand(runSpace, cmd, false);
+            }
+            catch (Exception e)
+            {
+
+            }
+            finally
+            {
+                CloseRunspace(runSpace);
+            }
+        }
 
         #region Remote Applications
 
@@ -635,8 +659,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             ExecuteShellCommand(runSpace, cmd, false);
         }
 
+   
 
-    
         private bool ExistRdsServerInDeployment(Runspace runSpace, RdsServer server)
         {
             Command cmd = new Command("Get-RDserver");
@@ -737,6 +761,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                     ActiveDirectoryUtils.AddObjectToGroup(computerPath, GetComputerGroupPath(organizationId, collectionName));
                 }
             }
+
+            SetRDServerNewConnectionAllowed(false, server);
         }
 
         private void RemoveComputerFromCollectionAdComputerGroup(string organizationId, string collectionName, RdsServer server)
@@ -766,14 +792,35 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             bool installationResult = false;
 
             Runspace runSpace = null;
+            PSObject feature = null;
 
             try
-            {
-                runSpace = OpenRunspace();
+            {                
+                if (!CheckSessionHostFeatureInstallation(hostName))
+                {
+                    runSpace = OpenRunspace();
+                    
+                    feature = AddFeature(runSpace, hostName, "RDS-RD-Server", true, true);
+                    installationResult = (bool)GetPSObjectProperty(feature, "Success");
+                }
+                else
+                {
+                    runSpace = OpenRunspace();   
+                    installationResult = true;
+                }
+                
 
-                var feature = AddFeature(runSpace, hostName, "RDS-RD-Server", true, true);
+                if (installationResult && !IsFeatureInstalled(hostName, "Desktop-Experience", runSpace))
+                {
+                    feature = AddFeature(runSpace, hostName, "Desktop-Experience", true, false);
+                    installationResult = (bool) GetPSObjectProperty(feature, "Success");
+                }
 
-                installationResult = (bool) GetPSObjectProperty(feature, "Success");
+                if (installationResult && !IsFeatureInstalled(hostName, "NET-Framework-45-Core", runSpace))
+                {
+                    feature = AddFeature(runSpace, hostName, "NET-Framework-45-Core", true, false);
+                    installationResult = (bool)GetPSObjectProperty(feature, "Success");
+                }
             }
             finally
             {
@@ -1087,60 +1134,37 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
         #region Windows Feature PowerShell
 
-        internal bool IsFeatureInstalled(string hostName, string featureName)
+        internal bool IsFeatureInstalled(string hostName, string featureName, Runspace runSpace)
         {
-            bool isInstalled = false;
-
-            Runspace runSpace = null;
-            try
+            bool isInstalled = false;            
+            Command cmd = new Command("Get-WindowsFeature");
+            cmd.Parameters.Add("Name", featureName);
+            var feature = ExecuteRemoteShellCommand(runSpace, hostName, cmd).FirstOrDefault();
+            
+            if (feature != null)
             {
-                runSpace = OpenRunspace();
-
-                Command cmd = new Command("Get-WindowsFeature");
-                cmd.Parameters.Add("Name", featureName);
-
-                var feature = ExecuteRemoteShellCommand(runSpace, hostName, cmd).FirstOrDefault();
-
-                if (feature != null)
-                {
-                    isInstalled = (bool) GetPSObjectProperty(feature, "Installed");
-                }
-            }
-            finally
-            {
-                CloseRunspace(runSpace);
-            }
+                isInstalled = (bool) GetPSObjectProperty(feature, "Installed");
+            }            
 
             return isInstalled;
         }
 
         internal PSObject AddFeature(Runspace runSpace, string hostName, string featureName, bool includeAllSubFeature = true, bool restart = false)
-        {
-            PSObject feature;
+        {                       
+            Command cmd = new Command("Add-WindowsFeature");
+            cmd.Parameters.Add("Name", featureName);
 
-            try
+            if (includeAllSubFeature)
             {
-                Command cmd = new Command("Add-WindowsFeature");
-                cmd.Parameters.Add("Name", featureName);
-
-                if (includeAllSubFeature)
-                {
-                    cmd.Parameters.Add("IncludeAllSubFeature", "");
-                }
-
-                if (restart)
-                {
-                    cmd.Parameters.Add("Restart", "");
-                }
-
-                feature = ExecuteRemoteShellCommand(runSpace, hostName, cmd).FirstOrDefault();
+                cmd.Parameters.Add("IncludeAllSubFeature", "");
             }
-            finally
+            
+            if (restart)
             {
-                CloseRunspace(runSpace);
+                cmd.Parameters.Add("Restart", "");
             }
 
-            return feature;
+            return ExecuteRemoteShellCommand(runSpace, hostName, cmd).FirstOrDefault();            
         }
 
         #endregion
