@@ -1,6 +1,5 @@
 ﻿USE [${install.database}]
 GO
-
 -- update database version
 DECLARE @build_version nvarchar(10), @build_date datetime
 SET @build_version = N'${release.version}'
@@ -5451,7 +5450,8 @@ CREATE TABLE RDSServers
 	Name NVARCHAR(255),
 	FqdName NVARCHAR(255),
 	Description NVARCHAR(255),
-	RDSCollectionId INT/* FOREIGN KEY REFERENCES RDSCollection (ID)*/
+	RDSCollectionId INT,
+	ConnectionEnabled BIT NOT NULL DEFAULT(1)
 )
 GO
 
@@ -5525,31 +5525,6 @@ CREATE PROCEDURE [dbo].[DeleteRDSServer]
 AS
 DELETE FROM RDSServers
 WHERE Id = @Id
-GO
-
-
-IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'UpdateRDSServer')
-DROP PROCEDURE UpdateRDSServer
-GO
-CREATE PROCEDURE [dbo].[UpdateRDSServer]
-(
-	@Id  INT,
-	@ItemID INT,
-	@Name NVARCHAR(255),
-	@FqdName NVARCHAR(255),
-	@Description NVARCHAR(255),
-	@RDSCollectionId INT
-)
-AS
-
-UPDATE RDSServers
-SET
-	ItemID = @ItemID,
-	Name = @Name,
-	FqdName = @FqdName,
-	Description = @Description,
-	RDSCollectionId = @RDSCollectionId
-WHERE ID = @Id
 GO
 
 
@@ -5704,76 +5679,6 @@ GO
 
 
 
-
-
-
-IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'GetRDSServersPaged')
-DROP PROCEDURE GetRDSServersPaged
-GO
-CREATE PROCEDURE [dbo].[GetRDSServersPaged]
-(
-	@FilterColumn nvarchar(50) = '',
-	@FilterValue nvarchar(50) = '',
-	@ItemID int,
-	@IgnoreItemId bit,
-	@RdsCollectionId int,
-	@IgnoreRdsCollectionId bit,
-	@SortColumn nvarchar(50),
-	@StartRow int,
-	@MaximumRows int
-)
-AS
--- build query and run it to the temporary table
-DECLARE @sql nvarchar(2000)
-
-SET @sql = '
-
-DECLARE @EndRow int
-SET @EndRow = @StartRow + @MaximumRows
-
-DECLARE @RDSServer TABLE
-(
-	ItemPosition int IDENTITY(0,1),
-	RDSServerId int
-)
-INSERT INTO @RDSServer (RDSServerId)
-SELECT
-	S.ID
-FROM RDSServers AS S
-WHERE 
-	((((@ItemID is Null AND S.ItemID is null) or @IgnoreItemId = 1)
-		or (@ItemID is not Null AND S.ItemID = @ItemID))
-	and
-	(((@RdsCollectionId is Null AND S.RDSCollectionId is null) or @IgnoreRdsCollectionId = 1)
-		or (@RdsCollectionId is not Null AND S.RDSCollectionId = @RdsCollectionId)))'
-
-IF @FilterColumn <> '' AND @FilterValue <> ''
-SET @sql = @sql + ' AND ' + @FilterColumn + ' LIKE @FilterValue '
-
-IF @SortColumn <> '' AND @SortColumn IS NOT NULL
-SET @sql = @sql + ' ORDER BY ' + @SortColumn + ' '
-
-SET @sql = @sql + ' SELECT COUNT(RDSServerId) FROM @RDSServer;
-SELECT
-	ST.ID,
-	ST.ItemID,
-	ST.Name, 
-	ST.FqdName,
-	ST.Description,
-	ST.RdsCollectionId,
-	SI.ItemName
-FROM @RDSServer AS S
-INNER JOIN RDSServers AS ST ON S.RDSServerId = ST.ID
-LEFT OUTER JOIN  ServiceItems AS SI ON SI.ItemId = ST.ItemId
-WHERE S.ItemPosition BETWEEN @StartRow AND @EndRow'
-
-exec sp_executesql @sql, N'@StartRow int, @MaximumRows int,  @FilterValue nvarchar(50),  @ItemID int, @RdsCollectionId int, @IgnoreItemId bit, @IgnoreRdsCollectionId bit',
-@StartRow, @MaximumRows,  @FilterValue,  @ItemID, @RdsCollectionId, @IgnoreItemId , @IgnoreRdsCollectionId 
-
-
-RETURN
-
-GO
 SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
@@ -6908,3 +6813,101 @@ exec sp_executesql @sql, N'@StartRow int, @MaximumRows int, @PackageID int, @Fil
 
 
 RETURN
+
+GO
+
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'GetRDSServersPaged')
+DROP PROCEDURE GetRDSServersPaged
+GO
+CREATE PROCEDURE [dbo].[GetRDSServersPaged]
+(
+	@FilterColumn nvarchar(50) = '',
+	@FilterValue nvarchar(50) = '',
+	@ItemID int,
+	@IgnoreItemId bit,
+	@RdsCollectionId int,
+	@IgnoreRdsCollectionId bit,
+	@SortColumn nvarchar(50),
+	@StartRow int,
+	@MaximumRows int
+)
+AS
+-- build query and run it to the temporary table
+DECLARE @sql nvarchar(2000)
+
+SET @sql = '
+
+DECLARE @EndRow int
+SET @EndRow = @StartRow + @MaximumRows
+
+DECLARE @RDSServer TABLE
+(
+	ItemPosition int IDENTITY(0,1),
+	RDSServerId int
+)
+INSERT INTO @RDSServer (RDSServerId)
+SELECT
+	S.ID
+FROM RDSServers AS S
+WHERE 
+	((((@ItemID is Null AND S.ItemID is null) or @IgnoreItemId = 1)
+		or (@ItemID is not Null AND S.ItemID = @ItemID))
+	and
+	(((@RdsCollectionId is Null AND S.RDSCollectionId is null) or @IgnoreRdsCollectionId = 1)
+		or (@RdsCollectionId is not Null AND S.RDSCollectionId = @RdsCollectionId)))'
+
+IF @FilterColumn <> '' AND @FilterValue <> ''
+SET @sql = @sql + ' AND ' + @FilterColumn + ' LIKE @FilterValue '
+
+IF @SortColumn <> '' AND @SortColumn IS NOT NULL
+SET @sql = @sql + ' ORDER BY ' + @SortColumn + ' '
+
+SET @sql = @sql + ' SELECT COUNT(RDSServerId) FROM @RDSServer;
+SELECT
+	ST.ID,
+	ST.ItemID,
+	ST.Name, 
+	ST.FqdName,
+	ST.Description,
+	ST.RdsCollectionId,
+	SI.ItemName,
+	ST.ConnectionEnabled
+FROM @RDSServer AS S
+INNER JOIN RDSServers AS ST ON S.RDSServerId = ST.ID
+LEFT OUTER JOIN  ServiceItems AS SI ON SI.ItemId = ST.ItemId
+WHERE S.ItemPosition BETWEEN @StartRow AND @EndRow'
+
+exec sp_executesql @sql, N'@StartRow int, @MaximumRows int,  @FilterValue nvarchar(50),  @ItemID int, @RdsCollectionId int, @IgnoreItemId bit, @IgnoreRdsCollectionId bit',
+@StartRow, @MaximumRows,  @FilterValue,  @ItemID, @RdsCollectionId, @IgnoreItemId , @IgnoreRdsCollectionId 
+
+
+RETURN
+
+GO
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'UpdateRDSServer')
+DROP PROCEDURE UpdateRDSServer
+GO
+CREATE PROCEDURE [dbo].[UpdateRDSServer]
+(
+	@Id  INT,
+	@ItemID INT,
+	@Name NVARCHAR(255),
+	@FqdName NVARCHAR(255),
+	@Description NVARCHAR(255),
+	@RDSCollectionId INT,
+	@ConnectionEnabled BIT
+)
+AS
+
+UPDATE RDSServers
+SET
+	ItemID = @ItemID,
+	Name = @Name,
+	FqdName = @FqdName,
+	Description = @Description,
+	RDSCollectionId = @RDSCollectionId,
+	ConnectionEnabled = @ConnectionEnabled
+WHERE ID = @Id
+GO

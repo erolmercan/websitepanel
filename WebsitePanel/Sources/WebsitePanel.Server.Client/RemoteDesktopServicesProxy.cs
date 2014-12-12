@@ -45,6 +45,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         
         private System.Threading.SendOrPostCallback RemoveSessionHostServersFromCollectionOperationCompleted;
         
+        private System.Threading.SendOrPostCallback SetRDServerNewConnectionAllowedOperationCompleted;
+        
         private System.Threading.SendOrPostCallback GetAvailableRemoteApplicationsOperationCompleted;
         
         private System.Threading.SendOrPostCallback GetCollectionRemoteApplicationsOperationCompleted;
@@ -89,6 +91,9 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         
         /// <remarks/>
         public event RemoveSessionHostServersFromCollectionCompletedEventHandler RemoveSessionHostServersFromCollectionCompleted;
+        
+        /// <remarks/>
+        public event SetRDServerNewConnectionAllowedCompletedEventHandler SetRDServerNewConnectionAllowedCompleted;
         
         /// <remarks/>
         public event GetAvailableRemoteApplicationsCompletedEventHandler GetAvailableRemoteApplicationsCompleted;
@@ -475,6 +480,49 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
             if ((this.RemoveSessionHostServersFromCollectionCompleted != null)) {
                 System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
                 this.RemoveSessionHostServersFromCollectionCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/server/SetRDServerNewConnectionAllowed", RequestNamespace="http://smbsaas/websitepanel/server/", ResponseNamespace="http://smbsaas/websitepanel/server/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void SetRDServerNewConnectionAllowed(bool newConnectionAllowed, RdsServer server) {
+            this.Invoke("SetRDServerNewConnectionAllowed", new object[] {
+                        newConnectionAllowed,
+                        server});
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginSetRDServerNewConnectionAllowed(bool newConnectionAllowed, RdsServer server, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("SetRDServerNewConnectionAllowed", new object[] {
+                        newConnectionAllowed,
+                        server}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public void EndSetRDServerNewConnectionAllowed(System.IAsyncResult asyncResult) {
+            this.EndInvoke(asyncResult);
+        }
+        
+        /// <remarks/>
+        public void SetRDServerNewConnectionAllowedAsync(bool newConnectionAllowed, RdsServer server) {
+            this.SetRDServerNewConnectionAllowedAsync(newConnectionAllowed, server, null);
+        }
+        
+        /// <remarks/>
+        public void SetRDServerNewConnectionAllowedAsync(bool newConnectionAllowed, RdsServer server, object userState) {
+            if ((this.SetRDServerNewConnectionAllowedOperationCompleted == null)) {
+                this.SetRDServerNewConnectionAllowedOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSetRDServerNewConnectionAllowedOperationCompleted);
+            }
+            this.InvokeAsync("SetRDServerNewConnectionAllowed", new object[] {
+                        newConnectionAllowed,
+                        server}, this.SetRDServerNewConnectionAllowedOperationCompleted, userState);
+        }
+        
+        private void OnSetRDServerNewConnectionAllowedOperationCompleted(object arg) {
+            if ((this.SetRDServerNewConnectionAllowedCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SetRDServerNewConnectionAllowedCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
             }
         }
         
@@ -948,6 +996,10 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
     public delegate void RemoveSessionHostServersFromCollectionCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void SetRDServerNewConnectionAllowedCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
     
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
