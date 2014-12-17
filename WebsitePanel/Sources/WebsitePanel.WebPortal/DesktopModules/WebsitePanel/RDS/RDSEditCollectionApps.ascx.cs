@@ -48,7 +48,7 @@ namespace WebsitePanel.Portal.RDS
 
                 locCName.Text = collection.Name;
 
-                remoreApps.SetApps(collectionApps);
+                remoreApps.SetApps(collectionApps, Module);
             }
         }
 

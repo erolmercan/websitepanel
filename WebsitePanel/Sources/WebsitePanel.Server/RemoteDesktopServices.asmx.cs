@@ -359,6 +359,39 @@ namespace WebsitePanel.Server
                 throw;
             }
         }
-    }
 
+        [WebMethod, SoapHeader("settings")]
+        public string[] GetApplicationUsers(string collectionName, string applicationName)
+        {
+            try
+            {
+                Log.WriteStart("'{0}' GetApplicationUsers", ProviderSettings.ProviderName);
+                var result = RDSProvider.GetApplicationUsers(collectionName, applicationName);
+                Log.WriteEnd("'{0}' GetApplicationUsers", ProviderSettings.ProviderName);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(String.Format("'{0}' GetApplicationUsers", ProviderSettings.ProviderName), ex);
+                throw;
+            }
+        }
+
+        [WebMethod, SoapHeader("settings")]
+        public bool SetApplicationUsers(string collectionName, RemoteApplication remoteApp, string[] users)
+        {
+            try
+            {
+                Log.WriteStart("'{0}' SetApplicationUsers", ProviderSettings.ProviderName);
+                var result = RDSProvider.SetApplicationUsers(collectionName, remoteApp, users);
+                Log.WriteEnd("'{0}' SetApplicationUsers", ProviderSettings.ProviderName);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(String.Format("'{0}' SetApplicationUsers", ProviderSettings.ProviderName), ex);
+                throw;
+            }
+        }
+    }
 }
