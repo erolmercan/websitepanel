@@ -203,6 +203,16 @@ namespace WebsitePanel.EnterpriseServer
             return GetOrganizationRdsUsersCountInternal(itemId);
         }
 
+        public static List<string> GetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp)
+        {
+            return GetApplicationUsersInternal(itemId, collectionId, remoteApp);
+        }
+
+        public static ResultObject SetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp, List<string> users)
+        {
+            return SetApplicationUsersInternal(itemId, collectionId, remoteApp, users);
+        }
+
         private static RdsCollection GetRdsCollectionInternal(int collectionId)
         {
             var collection = ObjectUtils.FillObjectFromDataReader<RdsCollection>(DataProvider.GetRDSCollectionById(collectionId));
@@ -832,7 +842,7 @@ namespace WebsitePanel.EnterpriseServer
         private static List<OrganizationUser> GetRdsCollectionUsersInternal(int collectionId)
         {
             return ObjectUtils.CreateListFromDataReader<OrganizationUser>(DataProvider.GetRDSCollectionUsersByRDSCollectionId(collectionId));
-        }
+        }        
 
         private static ResultObject SetUsersToRdsCollectionInternal(int itemId, int collectionId, List<OrganizationUser> users)
         {
@@ -896,6 +906,61 @@ namespace WebsitePanel.EnterpriseServer
             catch (Exception ex)
             {
                 result.AddError("REMOTE_DESKTOP_SERVICES_ADD_USER_TO_RDS_COLLECTION", ex);
+            }
+            finally
+            {
+                if (!result.IsSuccess)
+                {
+                    TaskManager.CompleteResultTask(result);
+                }
+                else
+                {
+                    TaskManager.CompleteResultTask();
+                }
+            }
+
+            return result;
+        }
+
+        private static List<string> GetApplicationUsersInternal(int itemId, int collectionId, RemoteApplication remoteApp)
+        {
+            var result = new List<string>();
+            Organization org = OrganizationController.GetOrganization(itemId);
+
+            if (org == null)
+            {
+                return result;
+            }
+
+            var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
+            var collection = GetRdsCollection(collectionId);
+
+            result.AddRange(rds.GetApplicationUsers(collection.Name, remoteApp.DisplayName));
+
+            return result;
+        }
+
+        private static ResultObject SetApplicationUsersInternal(int itemId, int collectionId, RemoteApplication remoteApp, List<string> users)
+        {
+            var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "SET_REMOTE_APP_USERS");
+
+            try
+            {                
+                Organization org = OrganizationController.GetOrganization(itemId);
+                if (org == null)
+                {
+                    result.IsSuccess = false;
+                    result.AddError("", new NullReferenceException("Organization not found"));
+                    return result;
+                }
+
+                var collection = GetRdsCollection(collectionId);
+                var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
+                rds.SetApplicationUsers(collection.Name, remoteApp, users.ToArray());
+            }
+            catch (Exception ex)
+            {
+                result.AddError("REMOTE_DESKTOP_SERVICES_SET_REMOTE_APP_USERS", ex);
             }
             finally
             {

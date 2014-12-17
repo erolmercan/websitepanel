@@ -236,5 +236,16 @@ namespace WebsitePanel.EnterpriseServer
             return RemoteDesktopServicesController.GetOrganizationRdsUsersCount(itemId);
         }
 
+        [WebMethod]
+        public List<string> GetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp)
+        {
+            return RemoteDesktopServicesController.GetApplicationUsers(itemId, collectionId, remoteApp);
+        }
+
+        [WebMethod]
+        public ResultObject SetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp, List<string> users)
+        {
+            return RemoteDesktopServicesController.SetApplicationUsers(itemId, collectionId, remoteApp, users);
+        }
     }
 }
