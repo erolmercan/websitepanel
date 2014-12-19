@@ -88,6 +88,10 @@ namespace WebsitePanel.EnterpriseServer {
         
         private System.Threading.SendOrPostCallback GetOrganizationRdsUsersCountOperationCompleted;
         
+        private System.Threading.SendOrPostCallback GetApplicationUsersOperationCompleted;
+        
+        private System.Threading.SendOrPostCallback SetApplicationUsersOperationCompleted;
+        
         /// <remarks/>
         public esRemoteDesktopServices() {
             this.Url = "http://localhost:9002/esRemoteDesktopServices.asmx";
@@ -179,6 +183,12 @@ namespace WebsitePanel.EnterpriseServer {
         
         /// <remarks/>
         public event GetOrganizationRdsUsersCountCompletedEventHandler GetOrganizationRdsUsersCountCompleted;
+        
+        /// <remarks/>
+        public event GetApplicationUsersCompletedEventHandler GetApplicationUsersCompleted;
+        
+        /// <remarks/>
+        public event SetApplicationUsersCompletedEventHandler SetApplicationUsersCompleted;
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/GetRdsCollection", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -1504,6 +1514,103 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/GetApplicationUsers", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public string[] GetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp) {
+            object[] results = this.Invoke("GetApplicationUsers", new object[] {
+                        itemId,
+                        collectionId,
+                        remoteApp});
+            return ((string[])(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginGetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("GetApplicationUsers", new object[] {
+                        itemId,
+                        collectionId,
+                        remoteApp}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public string[] EndGetApplicationUsers(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((string[])(results[0]));
+        }
+        
+        /// <remarks/>
+        public void GetApplicationUsersAsync(int itemId, int collectionId, RemoteApplication remoteApp) {
+            this.GetApplicationUsersAsync(itemId, collectionId, remoteApp, null);
+        }
+        
+        /// <remarks/>
+        public void GetApplicationUsersAsync(int itemId, int collectionId, RemoteApplication remoteApp, object userState) {
+            if ((this.GetApplicationUsersOperationCompleted == null)) {
+                this.GetApplicationUsersOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetApplicationUsersOperationCompleted);
+            }
+            this.InvokeAsync("GetApplicationUsers", new object[] {
+                        itemId,
+                        collectionId,
+                        remoteApp}, this.GetApplicationUsersOperationCompleted, userState);
+        }
+        
+        private void OnGetApplicationUsersOperationCompleted(object arg) {
+            if ((this.GetApplicationUsersCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.GetApplicationUsersCompleted(this, new GetApplicationUsersCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/SetApplicationUsers", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public ResultObject SetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp, string[] users) {
+            object[] results = this.Invoke("SetApplicationUsers", new object[] {
+                        itemId,
+                        collectionId,
+                        remoteApp,
+                        users});
+            return ((ResultObject)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginSetApplicationUsers(int itemId, int collectionId, RemoteApplication remoteApp, string[] users, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("SetApplicationUsers", new object[] {
+                        itemId,
+                        collectionId,
+                        remoteApp,
+                        users}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public ResultObject EndSetApplicationUsers(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((ResultObject)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void SetApplicationUsersAsync(int itemId, int collectionId, RemoteApplication remoteApp, string[] users) {
+            this.SetApplicationUsersAsync(itemId, collectionId, remoteApp, users, null);
+        }
+        
+        /// <remarks/>
+        public void SetApplicationUsersAsync(int itemId, int collectionId, RemoteApplication remoteApp, string[] users, object userState) {
+            if ((this.SetApplicationUsersOperationCompleted == null)) {
+                this.SetApplicationUsersOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSetApplicationUsersOperationCompleted);
+            }
+            this.InvokeAsync("SetApplicationUsers", new object[] {
+                        itemId,
+                        collectionId,
+                        remoteApp,
+                        users}, this.SetApplicationUsersOperationCompleted, userState);
+        }
+        
+        private void OnSetApplicationUsersOperationCompleted(object arg) {
+            if ((this.SetApplicationUsersCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.SetApplicationUsersCompleted(this, new SetApplicationUsersCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
@@ -2259,6 +2366,58 @@ namespace WebsitePanel.EnterpriseServer {
             get {
                 this.RaiseExceptionIfNecessary();
                 return ((int)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void GetApplicationUsersCompletedEventHandler(object sender, GetApplicationUsersCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class GetApplicationUsersCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal GetApplicationUsersCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public string[] Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((string[])(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void SetApplicationUsersCompletedEventHandler(object sender, SetApplicationUsersCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class SetApplicationUsersCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal SetApplicationUsersCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ResultObject Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ResultObject)(this.results[0]));
             }
         }
     }

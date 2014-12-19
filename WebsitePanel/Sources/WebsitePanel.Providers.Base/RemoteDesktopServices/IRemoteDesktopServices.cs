@@ -61,5 +61,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         bool CheckSessionHostFeatureInstallation(string hostName);
 
         bool CheckServerAvailability(string hostName);
+        string[] GetApplicationUsers(string collectionName, string applicationName);
+        bool SetApplicationUsers(string collectionName, RemoteApplication remoteApp, string[] users);
     }
 }

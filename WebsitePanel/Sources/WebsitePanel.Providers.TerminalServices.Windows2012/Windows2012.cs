@@ -496,6 +496,70 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
         #region Remote Applications
 
+        public string[] GetApplicationUsers(string collectionName, string applicationName)
+        {
+            Runspace runspace = null;
+            List<string> result = new List<string>();
+
+            try
+            {
+                runspace = OpenRunspace();
+
+                Command cmd = new Command("Get-RDRemoteApp");
+                cmd.Parameters.Add("CollectionName", collectionName);
+                cmd.Parameters.Add("ConnectionBroker", ConnectionBroker);
+                cmd.Parameters.Add("DisplayName", applicationName);
+
+                var application = ExecuteShellCommand(runspace, cmd, false).FirstOrDefault();
+
+                if (application != null)
+                {
+                    var users = (string[])(GetPSObjectProperty(application, "UserGroups"));
+
+                    if (users != null)
+                    {
+                        result.AddRange(users);
+                    }
+                }
+            }
+            finally
+            {
+                CloseRunspace(runspace);
+            }
+
+            return result.ToArray();
+        }
+
+        public bool SetApplicationUsers(string collectionName, RemoteApplication remoteApp, string[] users)
+        {
+            Runspace runspace = null;
+            bool result = true;
+
+            try
+            {
+                runspace = OpenRunspace();
+
+                Command cmd = new Command("Set-RDRemoteApp");
+                cmd.Parameters.Add("CollectionName", collectionName);
+                cmd.Parameters.Add("ConnectionBroker", ConnectionBroker);
+                cmd.Parameters.Add("DisplayName", remoteApp.DisplayName);
+                cmd.Parameters.Add("UserGroups", users);
+                cmd.Parameters.Add("Alias", remoteApp.Alias);
+
+                ExecuteShellCommand(runspace, cmd, false).FirstOrDefault();
+            }
+            catch(Exception)
+            {
+                result = false;
+            }
+            finally
+            {
+                CloseRunspace(runspace);
+            }
+
+            return result;
+        }
+
         public List<StartMenuApp> GetAvailableRemoteApplications(string collectionName)
         {
             var startApps = new List<StartMenuApp>();
