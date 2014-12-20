@@ -23,10 +23,13 @@ namespace WebsitePanel.EnterpriseServer
         private static readonly string MailBodyTemplateParameter = "MAIL_BODY";
         private static readonly string MailBodyDomainRecordTemplateParameter = "MAIL_DOMAIN_RECORD";
         private static readonly string ServerNameParameter = "SERVER_NAME";
+        private static readonly string PauseBetweenQueriesParameter = "PAUSE_BETWEEN_QUERIES";
 
         private const string MxRecordPattern = @"mail exchanger = (.+)";
         private const string NsRecordPattern = @"nameserver = (.+)";
-
+        private const string DnsTimeOutMessage = @"dns request timed out";
+        private const int DnsTimeOutRetryCount = 3;
+        
         public override void DoWork()
         {
             BackgroundTask topTask = TaskManager.TopTask;
@@ -38,7 +41,9 @@ namespace WebsitePanel.EnterpriseServer
             string dnsServersString = (string)topTask.GetParamValue(DnsServersParameter);
             string serverName = (string)topTask.GetParamValue(ServerNameParameter);
 
-            // check input parameters
+            int pause;
+
+                        // check input parameters
             if (String.IsNullOrEmpty(dnsServersString))
             {
                 TaskManager.WriteWarning("Specify 'DNS' task parameter.");
@@ -48,6 +53,13 @@ namespace WebsitePanel.EnterpriseServer
             if (String.IsNullOrEmpty((string)topTask.GetParamValue("MAIL_TO")))
             {
                 TaskManager.WriteWarning("The e-mail message has not been sent because 'Mail To' is empty.");
+                return;
+            }
+
+
+            if (!int.TryParse((string)topTask.GetParamValue(PauseBetweenQueriesParameter), out pause))
+            {
+                TaskManager.WriteWarning("The 'pause between queries' parameter is not valid.");
                 return;
             }
 
@@ -100,8 +112,8 @@ namespace WebsitePanel.EnterpriseServer
                     //execute server
                     foreach (var dnsServer in dnsServers)
                     {
-                        var dnsMxRecords = GetDomainDnsRecords(winServer, domain.DomainName, dnsServer, DnsRecordType.MX);
-                        var dnsNsRecords = GetDomainDnsRecords(winServer, domain.DomainName, dnsServer, DnsRecordType.NS);
+                        var dnsMxRecords = GetDomainDnsRecords(winServer, domain.DomainName, dnsServer, DnsRecordType.MX, pause) ?? dbDnsRecords.Where(x => x.RecordType == DnsRecordType.MX).ToList();
+                        var dnsNsRecords = GetDomainDnsRecords(winServer, domain.DomainName, dnsServer, DnsRecordType.NS, pause) ?? dbDnsRecords.Where(x => x.RecordType == DnsRecordType.NS).ToList();
 
                         FillRecordData(dnsMxRecords, domain, dnsServer);
                         FillRecordData(dnsNsRecords, domain, dnsServer);
@@ -304,14 +316,29 @@ namespace WebsitePanel.EnterpriseServer
             MailHelper.SendMessage(from, mailTo, bcc, subject, body, priority, isHtml);
         }
 
-        public List<DnsRecordInfo> GetDomainDnsRecords(WindowsServer winServer, string domain, string dnsServer, DnsRecordType recordType)
+        public List<DnsRecordInfo> GetDomainDnsRecords(WindowsServer winServer, string domain, string dnsServer, DnsRecordType recordType, int pause)
         {
+            Thread.Sleep(pause);
+
             //nslookup -type=mx google.com 195.46.39.39
             var command = "nslookup";
             var args = string.Format("-type={0} {1} {2}", recordType, domain, dnsServer);
 
             // execute system command
-            var raw = winServer.ExecuteSystemCommand(command, args);
+            var raw  = string.Empty;
+            int triesCount = 0;
+
+            do
+            {
+                raw = winServer.ExecuteSystemCommand(command, args);
+            } 
+            while (raw.ToLowerInvariant().Contains(DnsTimeOutMessage) && ++triesCount < DnsTimeOutRetryCount);
+
+            //timeout check 
+            if (raw.ToLowerInvariant().Contains(DnsTimeOutMessage))
+            {
+                return null;
+            }
 
             var records = ParseNsLookupResult(raw, dnsServer, recordType);
 
