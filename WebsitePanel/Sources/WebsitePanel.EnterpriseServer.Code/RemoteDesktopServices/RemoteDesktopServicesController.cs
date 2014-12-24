@@ -599,7 +599,7 @@ namespace WebsitePanel.EnterpriseServer
 
             try
             {
-                if (1 == 1)//(CheckRDSServerAvaliable(rdsServer.FqdName))
+                if (CheckRDSServerAvaliable(rdsServer.FqdName))
                 {
                     rdsServer.Id = DataProvider.AddRDSServer(rdsServer.Name, rdsServer.FqdName, rdsServer.Description);
                 }
