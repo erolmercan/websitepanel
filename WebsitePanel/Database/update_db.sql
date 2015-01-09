@@ -7451,4 +7451,12 @@ LEFT OUTER JOIN
 WHERE GD.Diskspace <> 0
 ORDER BY RG.GroupOrder
 
-RETURN 
+RETURN
+GO
+
+-- Hyper-V 2012 R2
+IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE [ProviderName] = 'Microsoft Hyper-V 2012 R2')
+BEGIN
+INSERT [dbo].[Providers] ([ProviderID], [GroupID], [ProviderName], [DisplayName], [ProviderType], [EditorControl], [DisableAutoDiscovery]) VALUES (350, 30, N'HyperV2012R2', N'Microsoft Hyper-V 2012 R2', N'WebsitePanel.Providers.Virtualization.HyperV2012R2, WebsitePanel.Providers.Virtualization.HyperV2012R2', N'HyperV', 1)
+END
+GO 
