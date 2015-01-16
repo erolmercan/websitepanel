@@ -1,4 +1,4 @@
-// Copyright (c) 2014, Outercurve Foundation.
+// Copyright (c) 2015, Outercurve Foundation.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -393,12 +393,18 @@ namespace WebsitePanel.Providers.HostedSolution
             get { return allocatedDeletedUsersBackupStorageSpace; }
             set { allocatedDeletedUsersBackupStorageSpace = value; }
         }
-
         public int UsedDeletedUsersBackupStorageSpace
         {
             get { return usedDeletedUsersBackupStorageSpace; }
             set { usedDeletedUsersBackupStorageSpace = value; }
         }
+        
+        public int CreatedRdsServers { get; set; }
+        public int CreatedRdsCollections { get; set; }
+        public int CreatedRdsUsers { get; set; }
+        public int AllocatedRdsServers { get; set; }
+        public int AllocatedRdsCollections { get; set; }
+        public int AllocatedRdsUsers { get; set; }
 	}
 }
 
