@@ -40,9 +40,9 @@ namespace WebsitePanel.WebDavPortal.Controllers
         {
             var user = _authenticationService.LogIn(model.Login, model.Password);
             
-            ViewBag.LdapIsAuthentication = user.Identity.IsAuthenticated;
+            ViewBag.LdapIsAuthentication = user != null;
 
-            if (user.Identity.IsAuthenticated)
+            if (user != null && user.Identity.IsAuthenticated)
             {
                 _authenticationService.CreateAuthenticationTicket(user);
 

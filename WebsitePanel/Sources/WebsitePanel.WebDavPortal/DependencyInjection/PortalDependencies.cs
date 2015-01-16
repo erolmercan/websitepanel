@@ -7,6 +7,7 @@ using System.Web.SessionState;
 using WebsitePanel.WebDav.Core.Interfaces.Managers;
 using WebsitePanel.WebDav.Core.Interfaces.Owa;
 using WebsitePanel.WebDav.Core.Interfaces.Security;
+using WebsitePanel.WebDav.Core.Managers;
 using WebsitePanel.WebDav.Core.Owa;
 using WebsitePanel.WebDav.Core.Security;
 using WebsitePanel.WebDav.Core.Security.Authentication;
@@ -23,7 +24,7 @@ namespace WebsitePanel.WebDavPortal.DependencyInjection
             kernel.Bind<HttpSessionState>().ToProvider<HttpSessionStateProvider>();
             kernel.Bind<ICryptography>().To<CryptoUtils>();
             kernel.Bind<IAuthenticationService>().To<FormsAuthenticationService>();
-            kernel.Bind<IWebDavManager>().ToProvider<WebDavManagerProvider>();
+            kernel.Bind<IWebDavManager>().To<WebDavManager>();
             kernel.Bind<IWopiServer>().To<WopiServer>();
         }
     }

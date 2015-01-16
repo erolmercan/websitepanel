@@ -41,19 +41,21 @@ namespace WebsitePanel.WebDavPortal.Controllers
         public ActionResult ShowContent(string org, string pathPart = "")
         {
             if (org != WspContext.User.OrganizationId)
-                return new HttpStatusCodeResult(HttpStatusCode.NoContent);
-            
-            string fileName = pathPart.Split('/').Last();
-            if (_webdavManager.IsFile(fileName))
             {
-                var fileBytes = _webdavManager.GetFileBytes(fileName);
+                return new HttpStatusCodeResult(HttpStatusCode.NoContent);
+            }
+
+            string fileName = pathPart.Split('/').Last();
+
+            if (_webdavManager.IsFile(pathPart))
+            {
+                var fileBytes = _webdavManager.GetFileBytes(pathPart);
                 return File(fileBytes, MediaTypeNames.Application.Octet, fileName);
             }
 
             try
             {
-                _webdavManager.OpenFolder(pathPart);
-                IEnumerable<IHierarchyItem> children = _webdavManager.GetChildren().Where(x => !WebDavAppConfigManager.Instance.ElementsRendering.ElementsToIgnore.Contains(x.DisplayName.Trim('/')));
+                IEnumerable<IHierarchyItem> children = _webdavManager.OpenFolder(pathPart).Where(x => !WebDavAppConfigManager.Instance.ElementsRendering.ElementsToIgnore.Contains(x.DisplayName.Trim('/')));
 
                 var model = new ModelForWebDav { Items = children.Take(WebDavAppConfigManager.Instance.ElementsRendering.DefaultCount), UrlSuffix = pathPart };
                 Session[WebDavAppConfigManager.Instance.SessionKeys.ResourseRenderCount] = WebDavAppConfigManager.Instance.ElementsRendering.DefaultCount;
@@ -70,7 +72,7 @@ namespace WebsitePanel.WebDavPortal.Controllers
         {
             var owaOpener = WebDavAppConfigManager.Instance.OfficeOnline.Single(x => x.Extension == Path.GetExtension(pathPart));
 
-            string fileUrl = _webdavManager.RootPath.TrimEnd('/') + "/" + pathPart.TrimStart('/');
+            string fileUrl = WebDavAppConfigManager.Instance.WebdavRoot+ org + "/" + pathPart.TrimStart('/');
             string accessToken = _authenticationService.CreateAccessToken(WspContext.User);
 
             string wopiSrc = Server.UrlDecode(Url.RouteUrl(OwaRouteNames.CheckFileInfo, new { encodedPath = _webdavManager.CreateFileId(pathPart) }, Request.Url.Scheme));
@@ -81,13 +83,13 @@ namespace WebsitePanel.WebDavPortal.Controllers
         }
 
         [HttpPost]
-        public ActionResult ShowAdditionalContent()
+        public ActionResult ShowAdditionalContent(string path)
         {
             if (Session[WebDavAppConfigManager.Instance.SessionKeys.ResourseRenderCount] != null)
             {
                 var renderedElementsCount = (int)Session[WebDavAppConfigManager.Instance.SessionKeys.ResourseRenderCount];
 
-                IEnumerable<IHierarchyItem> children = _webdavManager.GetChildren();
+                IEnumerable<IHierarchyItem> children = _webdavManager.OpenFolder(path);
 
                 var result = children.Skip(renderedElementsCount).Take(WebDavAppConfigManager.Instance.ElementsRendering.AddElementsCount);
 

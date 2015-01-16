@@ -25,12 +25,17 @@ namespace WebsitePanel.WebDav.Core.Security.Authentication
 
         public WspPrincipal LogIn(string login, string password)
         {
-            if (_principalContext.ValidateCredentials(login, password) == false)
+            if (string.IsNullOrEmpty(login) || string.IsNullOrEmpty(password))
             {
                 return null;
             }
 
-            //var user = UserPrincipal.FindByIdentity(_principalContext, IdentityType.UserPrincipalName, login);
+            var user = UserPrincipal.FindByIdentity(_principalContext, IdentityType.UserPrincipalName, login);
+
+            if (_principalContext.ValidateCredentials(login, password) == false && user != null)
+            {
+                return null;
+            }
 
             var principal = new WspPrincipal(login);
             

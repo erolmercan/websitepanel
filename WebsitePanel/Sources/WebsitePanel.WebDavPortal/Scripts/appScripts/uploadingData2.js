@@ -15,7 +15,7 @@ function GetResources() {
     $.ajax({
         type: 'POST',
         url: '/FileSystem/ShowAdditionalContent',
-        data: '',
+        data: { path: window.location.pathname },
         dataType: "html",
         success: function (result) {
             var domElement = $(result);
