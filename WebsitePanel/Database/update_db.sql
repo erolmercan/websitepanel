@@ -2416,6 +2416,12 @@ INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDe
 END
 GO
 
+IF NOT EXISTS (SELECT * FROM [dbo].[Quotas] WHERE [QuotaName] = 'RDS.Collections')
+BEGIN
+INSERT [dbo].[Quotas]  ([QuotaID], [GroupID],[QuotaOrder], [QuotaName], [QuotaDescription], [QuotaTypeID], [ServiceQuota], [ItemTypeID]) VALUES (491, 45, 2, N'RDS.Collections',N'Remote Desktop Servers',2, 0 , NULL)
+END
+GO
+
 -- RDS Provider
 
 IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE [DisplayName] = 'Remote Desktop Services Windows 2012')
@@ -6003,6 +6009,36 @@ SELECT
 RETURN
 GO
 
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'GetOrganizationRdsCollectionsCount')
+DROP PROCEDURE GetOrganizationRdsCollectionsCount
+GO
+CREATE PROCEDURE [dbo].GetOrganizationRdsCollectionsCount
+(
+	@ItemID INT,
+	@TotalNumber int OUTPUT
+)
+AS
+SELECT
+  @TotalNumber = Count([Id])
+  FROM [dbo].[RDSCollections] WHERE [ItemId]  = @ItemId
+RETURN
+GO
+
+
+IF EXISTS (SELECT * FROM SYS.OBJECTS WHERE type = 'P' AND name = 'GetOrganizationRdsServersCount')
+DROP PROCEDURE GetOrganizationRdsServersCount
+GO
+CREATE PROCEDURE [dbo].GetOrganizationRdsServersCount
+(
+	@ItemID INT,
+	@TotalNumber int OUTPUT
+)
+AS
+SELECT
+  @TotalNumber = Count([Id])
+  FROM [dbo].[RDSServers] WHERE [ItemId]  = @ItemId
+RETURN
+GO
 
 
 IF OBJECTPROPERTY(object_id('dbo.GetExchangeAccountByAccountNameWithoutItemId'), N'IsProcedure') = 1
