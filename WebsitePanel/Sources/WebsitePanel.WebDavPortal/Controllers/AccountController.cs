@@ -46,8 +46,6 @@ namespace WebsitePanel.WebDavPortal.Controllers
             {
                 _authenticationService.CreateAuthenticationTicket(user);
 
-                Session[WebDavAppConfigManager.Instance.SessionKeys.WebDavManager] = null;
-
                 return RedirectToRoute(FileSystemRouteNames.FilePath, new { org = WspContext.User.OrganizationId });
             }
 
@@ -58,8 +56,6 @@ namespace WebsitePanel.WebDavPortal.Controllers
         public ActionResult Logout()
         {
             _authenticationService.LogOut();
-
-            Session[WebDavAppConfigManager.Instance.SessionKeys.WebDavManager] = null;
 
             return RedirectToRoute(AccountRouteNames.Login);
         }

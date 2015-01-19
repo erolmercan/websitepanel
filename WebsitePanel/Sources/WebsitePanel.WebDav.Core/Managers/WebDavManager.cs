@@ -51,7 +51,7 @@ namespace WebsitePanel.WebDav.Core.Managers
                     _currentFolder = _webDavSession.OpenFolder(string.Format("{0}{1}/{2}", WebDavAppConfigManager.Instance.WebdavRoot, WspContext.User.OrganizationId, pathPart));
                 }
 
-                children = _currentFolder.GetChildren();
+                children = _currentFolder.GetChildren().Where(x => !WebDavAppConfigManager.Instance.ElementsRendering.ElementsToIgnore.Contains(x.DisplayName.Trim('/'))).ToArray();
             }
 
             List<IHierarchyItem> sortedChildren = children.Where(x => x.ItemType == ItemType.Folder).OrderBy(x => x.DisplayName).ToList();

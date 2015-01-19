@@ -43,7 +43,7 @@ namespace WebsitePanel.WebDavPortal
             #endregion
 
             routes.MapRoute(
-                name: "Office365DocumentRoute",
+                name: FileSystemRouteNames.OfficeOnlinePath,
                 url: "office365/{org}/{*pathPart}",
                 defaults: new { controller = "FileSystem", action = "ShowOfficeDocument", pathPart = UrlParameter.Optional }
                 );

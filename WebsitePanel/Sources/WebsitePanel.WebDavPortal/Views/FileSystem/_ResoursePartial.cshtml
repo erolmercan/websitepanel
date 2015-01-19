@@ -1,7 +1,9 @@
-﻿@using WebsitePanel.WebDav.Core.Client
+﻿@using WebsitePanel.WebDav.Core
+@using WebsitePanel.WebDav.Core.Client
 @using WebsitePanel.WebDav.Core.Config
 @using WebsitePanel.WebDavPortal.FileOperations
 @using Ninject;
+@using WebsitePanel.WebDavPortal.UI.Routes
 @model IHierarchyItem
   
 @{
@@ -14,7 +16,8 @@
     {
         case FileOpenerType.OfficeOnline:
             isTargetBlank = true;
-            href = string.Concat(Url.Action("ShowOfficeDocument", "FileSystem"), Model.DisplayName); 
+            var pathPart = Model.Href.AbsolutePath.Replace("/" + WspContext.User.OrganizationId, "");
+            href = string.Concat(Url.RouteUrl(FileSystemRouteNames.OfficeOnlinePath, new { org = WspContext.User.OrganizationId, pathPart = "" }), pathPart);
             break;
         default:
             isTargetBlank = false;
