@@ -49,6 +49,7 @@ namespace WebsitePanel.Portal
         XmlNodeList xmlIcons = null;
         DataSet myPackages;
         int currentPackage;
+        int currentUser;
         protected void Page_Load(object sender, EventArgs e)
         {
             
@@ -69,13 +70,15 @@ namespace WebsitePanel.Portal
                     ddlPackageSelect.DataTextField = myPackages.Tables[0].Columns[2].ColumnName;
                     ddlPackageSelect.DataValueField = myPackages.Tables[0].Columns[0].ColumnName;
                     ddlPackageSelect.DataBind();
-                    if(Session["currentPackage"] == null) {
+                    if(Session["currentPackage"] == null || ((int)Session["currentUser"]) != PanelSecurity.SelectedUserId) {
                         if(ddlPackageSelect.Items.Count > 0) {
                             Session["currentPackage"] = ddlPackageSelect.Items[0].Value;
+                            Session["currentUser"] = PanelSecurity.SelectedUserId;
                             currentPackage = int.Parse(Session["currentPackage"].ToString());
                         }
                     } else {
                         currentPackage = int.Parse(Session["currentPackage"].ToString());
+                        currentUser = int.Parse(Session["currentUser"].ToString());
                         ddlPackageSelect.SelectedValue = currentPackage.ToString();
                     }
                 }
