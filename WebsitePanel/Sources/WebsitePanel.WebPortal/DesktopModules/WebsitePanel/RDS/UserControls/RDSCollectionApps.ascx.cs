@@ -50,7 +50,7 @@ namespace WebsitePanel.Portal.RDS.UserControls
 		}
 
         public void SetApps(RemoteApplication[] apps)
-		{
+		{            
             BindApps(apps, false);
 		}
 
@@ -104,8 +104,24 @@ namespace WebsitePanel.Portal.RDS.UserControls
             List<RemoteApplication> selectedApps = GetPopUpGridViewApps();
 
             BindApps(selectedApps.ToArray(), true);
-
 		}
+
+        protected void btnFullDesktopConnection_Click(object sender, EventArgs e)
+        {            
+            var newApps = new RemoteApplication[]
+            {
+                new RemoteApplication
+                {
+                    DisplayName = "Session Host",
+                    FilePath = "%SystemRoot%\\system32\\mstsc.exe",
+                    Alias = "mstsc",
+                    RequiredCommandLine = "/v:",
+                    ShowInWebAccess = true                    
+                }
+            };
+
+            BindApps(newApps, true);
+        }
 
         protected void BindPopupApps()
 		{
@@ -127,7 +143,7 @@ namespace WebsitePanel.Portal.RDS.UserControls
 		}
 
         protected void BindApps(RemoteApplication[] newApps, bool preserveExisting)
-		{
+		{            
 			// get binded addresses
             List<RemoteApplication> apps = new List<RemoteApplication>();
 			if(preserveExisting)
@@ -156,6 +172,11 @@ namespace WebsitePanel.Portal.RDS.UserControls
 				}
 			}
 
+            if (apps.Any(a => a.DisplayName.Equals("session host", StringComparison.CurrentCultureIgnoreCase)))
+            {
+                btnFullDesktopConnection.Enabled = false;
+            }
+
             gvApps.DataSource = apps;
             gvApps.DataBind();
 		}
@@ -174,6 +195,7 @@ namespace WebsitePanel.Portal.RDS.UserControls
                 app.Alias = (string)gvApps.DataKeys[i][0];
                 app.DisplayName = ((Literal)row.FindControl("litDisplayName")).Text;
                 app.FilePath = ((HiddenField)row.FindControl("hfFilePath")).Value;
+                app.RequiredCommandLine = ((HiddenField)row.FindControl("hfRequiredCommandLine")).Value;
 
                 if (state == SelectedState.All ||
                     (state == SelectedState.Selected && chkSelect.Checked) ||

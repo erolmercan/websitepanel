@@ -742,6 +742,12 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                 cmd.Parameters.Add("FilePath", remoteApp.FilePath);
                 cmd.Parameters.Add("ShowInWebAccess", remoteApp.ShowInWebAccess);
 
+                if (!string.IsNullOrEmpty(remoteApp.RequiredCommandLine))
+                {
+                    cmd.Parameters.Add("CommandLineSetting", "Require");
+                    cmd.Parameters.Add("RequiredCommandLine", remoteApp.RequiredCommandLine);
+                }
+
                 ExecuteShellCommand(runSpace, cmd, false);
 
                 result = true;
@@ -1157,6 +1163,9 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                 ShowInWebAccess = Convert.ToBoolean(GetPSObjectProperty(psObject, "ShowInWebAccess"))
             };
 
+            var requiredCommandLine = GetPSObjectProperty(psObject, "RequiredCommandLine");
+            remoteApp.RequiredCommandLine = requiredCommandLine == null ? null : requiredCommandLine.ToString();
+            
             return remoteApp;
         }
 

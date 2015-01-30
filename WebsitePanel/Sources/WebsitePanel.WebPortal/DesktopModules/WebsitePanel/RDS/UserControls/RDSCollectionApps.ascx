@@ -6,6 +6,7 @@
 	<div class="FormButtonsBarClean">
 		<asp:Button ID="btnAdd" runat="server" Text="Add..." CssClass="Button1"  OnClick="btnAdd_Click" meta:resourcekey="btnAdd"  />
 		<asp:Button ID="btnDelete" runat="server" Text="Delete" CssClass="Button1" OnClick="btnDelete_Click" meta:resourcekey="btnDelete"/>
+        <asp:Button ID="btnFullDesktopConnection" runat="server" Text="" CssClass="Button1" OnClick="btnFullDesktopConnection_Click" meta:resourcekey="btnFullDesktopConnection"/>
 	</div>
 	<asp:GridView ID="gvApps" runat="server" meta:resourcekey="gvApps" AutoGenerateColumns="False"
 		Width="600px" CssSelectorClass="NormalGridView"
@@ -26,6 +27,7 @@
 				<ItemTemplate>
                     <asp:Literal ID="litDisplayName" runat="server" Text='<%# Eval("DisplayName") %>'></asp:Literal>
                     <asp:HiddenField ID="hfFilePath" runat="server"  Value='<%# Eval("FilePath") %>'/>
+                    <asp:HiddenField ID="hfRequiredCommandLine" runat="server"  Value='<%# Eval("RequiredCommandLine") %>'/>
 				</ItemTemplate>
 			</asp:TemplateField>
             <asp:TemplateField>
