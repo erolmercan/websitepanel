@@ -283,5 +283,11 @@ namespace WebsitePanel.EnterpriseServer
         {
             return RemoteDesktopServicesController.LogOffRdsUser(itemId, unifiedSessionId, hostServer);
         }
+
+        [WebMethod]
+        public List<string> GetRdsCollectionSessionHosts(int collectionId)
+        {
+            return RemoteDesktopServicesController.GetRdsCollectionSessionHosts(collectionId);
+        }
     }
 }

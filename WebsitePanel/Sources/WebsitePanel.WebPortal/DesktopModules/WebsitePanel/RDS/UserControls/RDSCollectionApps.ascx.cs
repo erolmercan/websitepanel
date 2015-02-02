@@ -110,15 +110,10 @@ namespace WebsitePanel.Portal.RDS.UserControls
 		{
             RdsCollection collection = ES.Services.RDS.GetRdsCollection(PanelRequest.CollectionID);
             List<StartMenuApp> apps = ES.Services.RDS.GetAvailableRemoteApplications(PanelRequest.ItemID, collection.Name).ToList();
+            var sessionHosts = ES.Services.RDS.GetRdsCollectionSessionHosts(PanelRequest.CollectionID);            
 
-            var fullRemote = new StartMenuApp
-            {
-                DisplayName = "Session Host",
-                FilePath = "%SystemRoot%\\system32\\mstsc.exe",
-                RequiredCommandLine = string.Format("/v:{0}", collection.Servers.First().FqdName)
-            };
-
-            var displayNames = GetApps().Select(p => p.DisplayName);
+            var addedApplications = GetApps();
+            var displayNames = addedApplications.Select(p => p.DisplayName);
             apps = apps.Where(x => !displayNames.Contains(x.DisplayName)).ToList();          
 
             if (Direction == SortDirection.Ascending)
@@ -132,15 +127,27 @@ namespace WebsitePanel.Portal.RDS.UserControls
                 Direction = SortDirection.Ascending;
             }
 
-            if (!displayNames.Contains(fullRemote.DisplayName))
+            var requiredParams = addedApplications.Select(a => a.RequiredCommandLine.ToLower());
+
+            foreach (var host in sessionHosts)
             {
-                if (apps.Count > 0)
+                if (!requiredParams.Contains(string.Format("/v:{0}", host.ToLower())))
                 {
-                    apps.Insert(0, fullRemote);
-                }
-                else
-                {
-                    apps.Add(fullRemote);
+                    var fullRemote = new StartMenuApp
+                    {
+                        DisplayName = string.Format("Full Desktop - {0}", host.ToLower()),
+                        FilePath = "%SystemRoot%\\system32\\mstsc.exe",
+                        RequiredCommandLine = string.Format("/v:{0}", host.ToLower())
+                    };
+
+                    if (apps.Count > 0)
+                    {
+                        apps.Insert(0, fullRemote);
+                    }
+                    else
+                    {
+                        apps.Add(fullRemote);
+                    }
                 }
             }
 

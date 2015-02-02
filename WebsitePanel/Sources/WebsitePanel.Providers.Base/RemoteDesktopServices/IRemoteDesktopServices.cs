@@ -68,5 +68,6 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         void EditRdsCollectionSettings(RdsCollection collection);
         List<RdsUserSession> GetRdsUserSessions(string collectionName);
         void LogOffRdsUser(string unifiedSessionId, string hostServer);
+        List<string> GetRdsCollectionSessionHosts(string collectionName);
     }
 }

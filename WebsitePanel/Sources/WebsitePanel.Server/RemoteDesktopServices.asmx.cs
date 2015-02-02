@@ -477,5 +477,23 @@ namespace WebsitePanel.Server
                 throw;
             }
         }
+
+        [WebMethod, SoapHeader("settings")]
+        public List<string> GetRdsCollectionSessionHosts(string collectionName)
+        {
+            try
+            {
+                Log.WriteStart("'{0}' GetRdsCollectionSessionHosts", ProviderSettings.ProviderName);
+                var result = RDSProvider.GetRdsCollectionSessionHosts(collectionName);
+                Log.WriteEnd("'{0}' GetRdsCollectionSessionHosts", ProviderSettings.ProviderName);
+
+                return result;
+            }
+            catch(Exception ex)
+            {
+                Log.WriteError(String.Format("'{0}' GetRdsCollectionSessionHosts", ProviderSettings.ProviderName), ex);
+                throw;
+            }
+        }
     }
 }

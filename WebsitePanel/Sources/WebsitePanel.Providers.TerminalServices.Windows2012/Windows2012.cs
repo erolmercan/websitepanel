@@ -184,6 +184,35 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
         #region RDS Collections
 
+        public List<string> GetRdsCollectionSessionHosts(string collectionName)
+        {
+            var result = new List<string>();
+            Runspace runspace = null;
+
+            try
+            {
+                runspace = OpenRunspace();
+
+                Command cmd = new Command("Get-RDSessionHost");
+                cmd.Parameters.Add("CollectionName", collectionName);                
+                cmd.Parameters.Add("ConnectionBroker", ConnectionBroker);
+                object[] errors;
+
+                var hosts = ExecuteShellCommand(runspace, cmd, false, out errors);
+
+                foreach (var host in hosts)
+                {
+                    result.Add(GetPSObjectProperty(host, "SessionHost").ToString());
+                }
+            }            
+            finally
+            {
+                CloseRunspace(runspace);
+            }
+
+            return result;
+        }
+
         public bool AddRdsServersToDeployment(RdsServer[] servers)
         {
             var result = true;
