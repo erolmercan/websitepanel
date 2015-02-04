@@ -116,6 +116,26 @@ namespace WebsitePanel.WebDavPortal.Controllers
             return PartialView("_ResourseCollectionPartial", result);
         }
 
+        [HttpGet]
+        public ActionResult DownloadFile(string org, string pathPart)
+        {
+            if (org != WspContext.User.OrganizationId)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.NoContent);
+            }
+
+            string fileName = pathPart.Split('/').Last();
+
+            if (_webdavManager.IsFile(pathPart) == false)
+            {
+                throw new Exception(Resources.NotAFile);
+            }
+
+            var fileBytes = _webdavManager.GetFileBytes(pathPart);
+
+            return File(fileBytes, MediaTypeNames.Application.Octet, fileName);
+        }
+
         [HttpPost]
         public ActionResult UploadFile(string org, string pathPart)
         {
