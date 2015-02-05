@@ -14,5 +14,7 @@ namespace WebsitePanel.WebDavPortal.UI.Routes
         public const string UploadFile = "UplaodFIleRoute";
 
         public const string DeleteFiles = "DeleteFilesRoute";
+
+        public const string DownloadFile = "DownloadFileRoute";
     }
 }

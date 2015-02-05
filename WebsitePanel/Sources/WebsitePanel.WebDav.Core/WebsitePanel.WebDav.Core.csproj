@@ -104,6 +104,7 @@
     <Compile Include="Config\Entities\FileIconsDictionary.cs" />
     <Compile Include="Config\Entities\HttpErrorsCollection.cs" />
     <Compile Include="Config\Entities\OfficeOnlineCollection.cs" />
+    <Compile Include="Config\Entities\OwaSupportedBrowsersCollection.cs" />
     <Compile Include="Config\Entities\SessionKeysCollection.cs" />
     <Compile Include="Config\Entities\WebsitePanelConstantUserParameters.cs" />
     <Compile Include="Config\IWebDavAppConfig.cs" />
@@ -114,6 +115,8 @@
     <Compile Include="Config\WebConfigSections\FileIconsElementCollection.cs" />
     <Compile Include="Config\WebConfigSections\OfficeOnlineElement.cs" />
     <Compile Include="Config\WebConfigSections\OfficeOnlineElementCollection.cs" />
+    <Compile Include="Config\WebConfigSections\OwaSupportedBrowsersElement.cs" />
+    <Compile Include="Config\WebConfigSections\OwaSupportedBrowsersElementCollection.cs" />
     <Compile Include="Config\WebConfigSections\SessionKeysElement.cs" />
     <Compile Include="Config\WebConfigSections\SessionKeysElementCollection.cs" />
     <Compile Include="Config\WebConfigSections\UserDomainElement.cs" />

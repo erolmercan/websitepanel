@@ -39,6 +39,12 @@ namespace WebsitePanel.WebDavPortal
                 );
 
             routes.MapRoute(
+                name: FileSystemRouteNames.DownloadFile,
+                url: "download-file/{org}/{*pathPart}",
+                defaults: new { controller = "FileSystem", action = "DownloadFile" }
+                );
+
+            routes.MapRoute(
                 name: FileSystemRouteNames.ShowOfficeOnlinePath,
                 url: "office365/{org}/{*pathPart}",
                 defaults: new { controller = "FileSystem", action = "ShowOfficeDocument", pathPart = UrlParameter.Optional }

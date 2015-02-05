@@ -106,6 +106,12 @@ namespace WebsitePanel.WebDavPortal.Controllers.Api
         }
 
         [HttpPost]
+        public HttpResponseMessage Refresh_Lock(int accessTokenId)
+        {
+            return new HttpResponseMessage(HttpStatusCode.OK);
+        }
+
+        [HttpPost]
         public HttpResponseMessage UnLock(int accessTokenId)
         {
             return new HttpResponseMessage(HttpStatusCode.OK);
