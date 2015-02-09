@@ -8,15 +8,16 @@
 <asp:UpdatePanel ID="tblActions" runat="server" CssClass="NormalBold" UpdateMode="Conditional" ChildrenAsTriggers="true" >
     <ContentTemplate>
 
-        <asp:DropDownList ID="ddlUserActions" runat="server" CssClass="NormalTextBox" resourcekey="ddlUserActions" 
-            AutoPostBack="True" OnSelectedIndexChanged="ddlUserActions_OnSelectedIndexChanged">
-            <asp:ListItem Value="0">Actions</asp:ListItem>
+        <asp:DropDownList ID="ddlUserActions" runat="server" CssClass="NormalTextBox" resourcekey="ddlUserActions" style="margin-right: 0px" >
+            <%--<asp:ListItem Value="0">Actions</asp:ListItem>--%>
             <asp:ListItem Value="1">Disable</asp:ListItem>
             <asp:ListItem Value="2">Enable</asp:ListItem>
             <asp:ListItem Value="3">SetServiceLevel</asp:ListItem>
             <asp:ListItem Value="4">SetVIP</asp:ListItem>
         </asp:DropDownList>
         
+        <asp:ImageButton ID="cmdApply" Runat="server" meta:resourcekey="cmdApply" SkinID="ApplySmall" CausesValidation="false" OnClick="cmdApply_OnClick"/>
+
         <ajaxToolkit:ModalPopupExtender ID="Modal" runat="server" EnableViewState="true" TargetControlID="FakeModalPopupTarget"
              PopupControlID="EnablePanel" BackgroundCssClass="modalBackground" DropShadow="false" />
 
@@ -39,7 +40,7 @@
                     <asp:Button ID="btnEnableOk" runat="server" CssClass="Button1" meta:resourcekey="btnEnableOk" Text="Ok" 
                         OnClientClick="return CloseAndShowProgressDialog('Enabling users...')" OnClick="btnModalOk_Click" />
                     <asp:Button ID="btnEnableCancel" runat="server" CssClass="Button1" meta:resourcekey="btnEnableCancel" Text="Cancel"
-                        OnClick="btnModalCancel_OnClick" CausesValidation="false" />
+                        CausesValidation="false" />
                 </div>
             </div>
         </asp:Panel>
@@ -63,7 +64,7 @@
                     <asp:Button ID="btnDisableOk" runat="server" CssClass="Button1" meta:resourcekey="btnDisableOk" Text="Ok" 
                         OnClientClick="return CloseAndShowProgressDialog('Disabling users...')" OnClick="btnModalOk_Click" />
                     <asp:Button ID="btnDisableCancel" runat="server" CssClass="Button1" meta:resourcekey="btnDisableCancel" Text="Cancel"
-                        OnClick="btnModalCancel_OnClick" CausesValidation="false" />
+                        CausesValidation="false" />
                 </div>
             </div>
         </asp:Panel>
@@ -89,7 +90,7 @@
                     <asp:Button ID="btnServiceLevelOk" runat="server" CssClass="Button1" meta:resourcekey="btnServiceLevelOk" Text="Ok" 
                         OnClientClick="return CloseAndShowProgressDialog('Setting Service Level...')" OnClick="btnModalOk_Click" />
                     <asp:Button ID="btnServiceLevelCancel" runat="server" CssClass="Button1" meta:resourcekey="btnServiceLevelCancel" Text="Cancel"
-                        OnClick="btnModalCancel_OnClick" CausesValidation="false" />
+                        CausesValidation="false" />
                 </div>
             </div>
         </asp:Panel>
@@ -118,7 +119,7 @@
                     <asp:Button ID="btnVIPOk" runat="server" CssClass="Button1" meta:resourcekey="btnVIPOk" Text="Ok" 
                         OnClientClick="return CloseAndShowProgressDialog('Setting VIP...')" OnClick="btnModalOk_Click" />
                     <asp:Button ID="btnVIPCancel" runat="server" CssClass="Button1" meta:resourcekey="btnVIPCancel" Text="Cancel"
-                        OnClick="btnModalCancel_OnClick" CausesValidation="false" />
+                        CausesValidation="false" />
                 </div>
             </div>
         </asp:Panel>
