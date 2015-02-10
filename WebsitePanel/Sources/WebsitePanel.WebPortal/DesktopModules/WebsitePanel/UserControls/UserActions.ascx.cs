@@ -77,7 +77,7 @@ namespace WebsitePanel.Portal
             }
         }
 
-        protected void ddlUserActions_OnSelectedIndexChanged(object sender, EventArgs e)
+        protected void cmdApply_OnClick(object sender, ImageClickEventArgs e)
         {
             switch (SelectedAction)
             {
@@ -94,6 +94,8 @@ namespace WebsitePanel.Portal
                 case UserActionTypes.SetVIP:
                     Modal.PopupControlID = VIPPanel.ID;
                     break;
+                default:
+                    return;
             }
 
             Modal.Show();
@@ -120,15 +122,6 @@ namespace WebsitePanel.Portal
         {
             if (ExecutingUserAction != null)
                 ExecutingUserAction(this, new EventArgs());
-        }
-        protected void btnModalCancel_OnClick(object sender, EventArgs e)
-        {
-            ResetSelection();
-        }
-
-        public void ResetSelection()
-        {
-            ddlUserActions.ClearSelection();
         }
 
         protected int ChangeUsersSettings(List<int> userIds, bool? disable, int? serviceLevelId, bool? isVIP)
