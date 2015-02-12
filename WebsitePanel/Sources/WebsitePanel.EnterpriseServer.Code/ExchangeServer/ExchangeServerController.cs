@@ -5537,7 +5537,7 @@ namespace WebsitePanel.EnterpriseServer
                         res += id + " has a value \"" + defaultPublicFoldes[0] + "\"" + Environment.NewLine;
 
                     if (defaultPublicFoldes.Length == 2)
-                        res += id + " changed from \"" + defaultPublicFoldes[0] + "\" to \"" + defaultPublicFoldes[1] + "\"" + Environment.NewLine;
+                        res += id + " changed \"" + defaultPublicFoldes[0] + "\" to \"" + defaultPublicFoldes[1] + "\"" + Environment.NewLine;
 
                 }
 
