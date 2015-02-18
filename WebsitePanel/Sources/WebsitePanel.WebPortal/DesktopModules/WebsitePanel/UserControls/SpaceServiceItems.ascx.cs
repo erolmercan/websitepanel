@@ -91,12 +91,6 @@ namespace WebsitePanel.Portal.UserControls
             set { EnsureChildControls(); QuotasPanel.Visible = value; }
         }
 
-        public bool ShowActions
-        {
-            get { EnsureChildControls(); return QuotasPanel.Visible; }
-            set { EnsureChildControls(); websiteActions.Visible = value; }
-        }
-
         protected void Page_Load(object sender, EventArgs e)
         {
             //HideServiceColumns(gvWebSites);
@@ -119,6 +113,14 @@ namespace WebsitePanel.Portal.UserControls
                                          (PanelSecurity.SelectedUser.Role != UserRole.User) && chkRecursive.Checked;
             gvItems.Columns[5].Visible = (PanelSecurity.SelectedUser.Role == UserRole.Administrator);
             gvItems.Columns[6].Visible = (PanelSecurity.EffectiveUser.Role == UserRole.Administrator);
+            if (QuotaName == "Web.Sites")
+            {
+                websiteActions.Visible = true;
+            }
+            else
+            {
+                websiteActions.Visible = false;
+            }
 
             if (!IsPostBack)
             {
