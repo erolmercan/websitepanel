@@ -44,6 +44,15 @@ namespace WebsitePanel.WebDav.Core
                 AllowWriteStreamBuffering = false;
             }
 
+            public WebDavResource(ICredentials credentials, IHierarchyItem item)
+            {
+                SendChunked = false;
+                AllowWriteStreamBuffering = false;
+
+                SetCredentials(credentials);
+                SetHierarchyItem(item);
+            }
+
             public Uri BaseUri
             {
                 get { return _baseUri; }

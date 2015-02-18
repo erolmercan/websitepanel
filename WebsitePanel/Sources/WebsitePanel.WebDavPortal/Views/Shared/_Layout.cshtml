@@ -12,9 +12,10 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>@ViewBag.Title</title>
+    <title>@(ViewBag.Title ?? WebDavAppConfigManager.Instance.ApplicationName)</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+
 </head>
 <body>
     <div class="navbar navbar-inverse navbar-fixed-top prevent-deselect">
@@ -26,7 +27,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 <a href="@Url.RouteUrl(FileSystemRouteNames.ShowContentPath, new { pathPart = string.Empty })">
-                    <img class="header-logo" src="@Url.Content("~/Content/Images/logo.png")" />
+                    <img class="header-logo processing-dialog" src="@Url.Content("~/Content/Images/logo.png")" />
                 </a>
             </div>
             <div class="navbar-collapse collapse">
@@ -53,8 +54,6 @@
     @Scripts.Render("~/bundles/jqueryval")
     @Scripts.Render("~/bundles/bootstrap")
     @Scripts.Render("~/bundles/appScripts")
-
-    
 
     @if (WspContext.User != null)
     {

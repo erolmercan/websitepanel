@@ -5,11 +5,10 @@
 };
 
 
-$(document).ready(function () {
-    $('.processing-dialog').click(function () {
-        wsp.dialogs.showProcessDialog();
-    });
+$(document).on('click', '.processing-dialog', function (e) {
+    wsp.dialogs.showProcessDialog();
 });
+
 
 //Toggle file select + Ctrl multiselect
 $(document).on('click', '.element-container', function (e) {
@@ -43,6 +42,7 @@ $(document).on('touchstart', '.element-container', function(e) {
 //Double click file open
 $(document).on('dblclick', '.element-container', function (e) {
     wsp.fileBrowser.openItem(this);
+    wsp.dialogs.showProcessDialog();
 });
 
 
@@ -59,13 +59,14 @@ $(document).on('click', '.file-deletion #delete-button', function (e) {
 });
 
 
-$(document).click(function (event) {
+$(document).click(function(event) {
     if (!$(event.target).closest('.element-container, .prevent-deselect').length) {
         wsp.fileBrowser.clearAllSelectedItems();
         wsp.fileBrowser.refreshDeletionBlock();
     }
-})
+});
 
 function isMobileDevice() {
     return (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent.toLowerCase()));
 }
+

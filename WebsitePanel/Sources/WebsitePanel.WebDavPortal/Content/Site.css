@@ -25,7 +25,7 @@ textarea {
 
 .element-container {
 	margin-bottom: 15px;
-	text-align:center;
+	/*text-align:center;*/
     cursor: pointer;
 }
 
@@ -54,6 +54,29 @@ textarea {
     pointer-events: none;
 }
 
+tr.selected-file {
+    background-color:#E7F0FC!important; 
+}
+
+.table-icon {
+    height: 30px;
+}
+
+#webdav-items-table tr td {
+    vertical-align: middle !important;
+}
+
+#webdav-items-table .file-link {
+    padding-left: 5px;
+    vertical-align: middle !important;
+}
+
+.change-view-block {
+    display: inline-block;
+    vertical-align: bottom;
+    height: 32px;
+}
+
 #errorMessage {
         color: red;
         font-weight: bold;
@@ -79,8 +102,13 @@ textarea {
     margin-bottom: 0px;
 }
 
-.modal-vertical-centered {
-    margin-top: 25%;
+
+#processDialog .modal-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -8px;
+    margin-left: -100px;
 }
 
 
@@ -95,6 +123,15 @@ textarea {
 
 #message-area {
     margin-top: 15px;
+}
+
+#processDialog .dialog-text {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+#processDialog .modal-dialog {
+    width: 200px;
 }
 
 /* Theme Mods */

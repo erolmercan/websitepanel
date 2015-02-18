@@ -135,6 +135,9 @@
   <data name="DeleteFileQuestion" xml:space="preserve">
     <value>Delete File?</value>
   </data>
+  <data name="Details" xml:space="preserve">
+    <value>Details</value>
+  </data>
   <data name="DialogsContentConfrimFileDeletion" xml:space="preserve">
     <value>Are you sure you want to delete {0} item(s)?</value>
   </data>
@@ -147,17 +150,35 @@
   <data name="ItemsWasRemovedFormat" xml:space="preserve">
     <value>{0} items was removed.</value>
   </data>
+  <data name="Modified" xml:space="preserve">
+    <value>Modified</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
   <data name="NoFilesAreSelected" xml:space="preserve">
     <value>No files are selected.</value>
   </data>
   <data name="NotAFile" xml:space="preserve">
     <value>Not a file.</value>
   </data>
+  <data name="PleaseWaitWithDots" xml:space="preserve">
+    <value>Please wait...</value>
+  </data>
   <data name="Processing" xml:space="preserve">
     <value>Processing</value>
   </data>
   <data name="ProcessingWithDots" xml:space="preserve">
     <value>Processing...</value>
+  </data>
+  <data name="Size" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="Table" xml:space="preserve">
+    <value>Table</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
   </data>
   <data name="Upload" xml:space="preserve">
     <value>Upload</value>

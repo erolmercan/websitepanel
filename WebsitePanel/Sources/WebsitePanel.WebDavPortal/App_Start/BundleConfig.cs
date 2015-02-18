@@ -7,9 +7,14 @@ namespace WebsitePanel.WebDavPortal
         // For more information on bundling, visit http://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
-            bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
+            var jQueryBundle = new ScriptBundle("~/bundles/jquery").Include(
                 "~/Scripts/jquery-{version}.js",
-                "~/Scripts/jquery.cookie.js"));
+                "~/Scripts/jquery.cookie.js");
+
+            jQueryBundle.IncludeDirectory("~/Scripts", "jquery.dataTables.min.js", true);
+            jQueryBundle.IncludeDirectory("~/Scripts", "dataTables.bootstrap.js", true);
+
+            bundles.Add(jQueryBundle);
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                 "~/Scripts/jquery.validate*"));
@@ -24,21 +29,34 @@ namespace WebsitePanel.WebDavPortal
                 "~/Scripts/respond.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/appScripts").Include(
-                "~/Scripts/appScripts/recalculateResourseHeight.js",
-                "~/Scripts/appScripts/uploadingData2.js",
                 "~/Scripts/appScripts/authentication.js",
                 "~/Scripts/appScripts/messages.js",
-                 "~/Scripts/appScripts/fileBrowsing.js",
+                "~/Scripts/appScripts/fileBrowsing.js",
                 "~/Scripts/appScripts/dialogs.js",
                 "~/Scripts/appScripts/wsp.js"
                ));
 
+            bundles.Add(new ScriptBundle("~/bundles/appScripts/storage/bigIcons").Include(
+                "~/Scripts/appScripts/recalculateResourseHeight.js",
+                "~/Scripts/appScripts/uploadingData2.js"
+               ));
+
+            //bundles.Add(new ScriptBundle("~/bundles/appScripts/storage/table-view").Include(
+            //  ));
+
             bundles.Add(new ScriptBundle("~/bundles/authScripts").Include(
                "~/Scripts/appScripts/authentication.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css").Include(
+            var styleBundle = new StyleBundle("~/Content/css");
+
+            styleBundle.Include(
                 "~/Content/bootstrap.css",
-                "~/Content/site.css"));
+                "~/Content/site.css");
+
+            styleBundle.IncludeDirectory("~/Content", "jquery.datatables.css", true);
+            styleBundle.IncludeDirectory("~/Content", "dataTables.bootstrap.css", true);
+
+            bundles.Add(styleBundle);
 
             // Set EnableOptimizations to false for debugging. For more information,
             // visit http://go.microsoft.com/fwlink/?LinkId=301862
