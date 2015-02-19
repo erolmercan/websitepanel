@@ -117,22 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Tab.RdsApplications" xml:space="preserve">
-    <value>Remote Applications</value>
-  </data>
-  <data name="Tab.RdsServers" xml:space="preserve">
-    <value>RDS Servers</value>
-  </data>
-  <data name="Tab.RdsUsers" xml:space="preserve">
-    <value>RDS Users</value>
-  </data>
-  <data name="Tab.Settings" xml:space="preserve">
-    <value>Settings</value>
-  </data>
-  <data name="Tab.UserSessions" xml:space="preserve">
-    <value>User Sessions</value>
-  </data>
-  <data name="Tab.LocalAdmins" xml:space="preserve">
+  <data name="secRdsLocalAdmins" xml:space="preserve">
     <value>Local Administrators</value>
   </data>
 </root>
