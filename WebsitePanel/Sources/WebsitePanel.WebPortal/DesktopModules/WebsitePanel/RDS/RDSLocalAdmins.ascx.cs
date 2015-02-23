@@ -12,9 +12,8 @@ namespace WebsitePanel.Portal.RDS
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
-            {
-                var organizationUsers = ES.Services.Organizations.GetOrganizationUsersPaged(PanelRequest.ItemID, null, null, null, 0, Int32.MaxValue).PageUsers;
-                var collectionLocalAdmins = ES.Services.RDS.GetRdsCollectionLocalAdmins(PanelRequest.ItemID);
+            {                
+                var collectionLocalAdmins = ES.Services.RDS.GetRdsCollectionLocalAdmins(PanelRequest.CollectionID);
                 var collection = ES.Services.RDS.GetRdsCollection(PanelRequest.CollectionID);
 
                 litCollectionName.Text = collection.DisplayName;
@@ -26,11 +25,11 @@ namespace WebsitePanel.Portal.RDS
         {
             try
             {
-                ES.Services.RDS.SaveRdsCollectionLocalAdmins(users.GetUsers(), PanelRequest.ItemID);
+                ES.Services.RDS.SaveRdsCollectionLocalAdmins(users.GetUsers(), PanelRequest.CollectionID);
             }
             catch (Exception ex)
             {
-                messageBox.ShowErrorMessage(ex.Message);
+                ShowErrorMessage("RDSLOCALADMINS_NOT_ADDED", ex);
                 return false;
             }
 

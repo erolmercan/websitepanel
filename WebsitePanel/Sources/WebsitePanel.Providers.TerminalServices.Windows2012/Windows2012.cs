@@ -49,6 +49,7 @@ using System.Management.Automation.Runspaces;
 using System.Collections.ObjectModel;
 using System.DirectoryServices;
 using System.Security.Cryptography.X509Certificates;
+using System.Collections;
 
 
 namespace WebsitePanel.Providers.RemoteDesktopServices
@@ -66,8 +67,11 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         private const string RdsGroupFormat = "rds-{0}-{1}";
         private const string RdsModuleName = "RemoteDesktopServices";
         private const string AddNpsString = "netsh nps add np name=\"\"{0}\"\" policysource=\"1\" processingorder=\"{1}\" conditionid=\"0x3d\" conditiondata=\"^5$\" conditionid=\"0x1fb5\" conditiondata=\"{2}\" conditionid=\"0x1e\" conditiondata=\"UserAuthType:(PW|CA)\" profileid=\"0x1005\" profiledata=\"TRUE\" profileid=\"0x100f\" profiledata=\"TRUE\" profileid=\"0x1009\" profiledata=\"0x7\" profileid=\"0x1fe6\" profiledata=\"0x40000000\"";
-        private const string WspAdministratorsGroupName = "WSPAdministrators";
-        private const string RdsServersOU = "RDSServers";        
+        private const string WspAdministratorsGroupName = "WSP-Administrators";
+        private const string WspAdministratorsGroupDescription = "WSP Administrators";
+        private const string RdsServersOU = "RDSServers";
+        private const uint ADS_GROUP_TYPE_UNIVERSAL_GROUP = 0x00000008;
+        private const uint ADS_GROUP_TYPE_SECURITY_ENABLED = 0x80000000;
 
         #endregion
 
@@ -954,101 +958,206 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
         #region Local Admins
 
-        public void SaveRdsCollectionLocalAdmins(List<string> users, string organizationId)
+        public void SaveRdsCollectionLocalAdmins(List<OrganizationUser> users, List<string> hosts)
         {
-            if (!CheckAdminsGroup(organizationId))
-            {
-                CreateAdminsGroup(organizationId);
-            }
+            Runspace runspace = null;
 
-            var orgPath = GetOrganizationPath(organizationId);
-            var orgEntry = ActiveDirectoryUtils.GetADObject(orgPath);
-            var existingAdmins = ActiveDirectoryUtils.GetGroupObjects(WspAdministratorsGroupName, "user", orgEntry);
-            var adminsGroupPath = GetWspAdminsGroupPath(organizationId);
-
-            foreach (string userPath in existingAdmins)
+            try
             {
-                ActiveDirectoryUtils.RemoveObjectFromGroup(userPath, adminsGroupPath);
-            }
-            
-            foreach (var user in users)
-            {
-                var userPath = GetUserPath(organizationId, user);
+                runspace = OpenRunspace();
+                var index = ServerSettings.ADRootDomain.LastIndexOf(".");
+                var domainName = ServerSettings.ADRootDomain;
 
-                if (ActiveDirectoryUtils.AdObjectExists(userPath))
+                if (index > 0)
                 {
-                    var userObject = ActiveDirectoryUtils.GetADObject(userPath);
-                    var samName = (string)ActiveDirectoryUtils.GetADObjectProperty(userObject, "sAMAccountName");                    
-                    ActiveDirectoryUtils.AddObjectToGroup(userPath, adminsGroupPath);
+                    domainName = ServerSettings.ADRootDomain.Substring(0, index);
                 }
+
+                foreach (var hostName in hosts)
+                {
+                    if (!CheckLocalAdminsGroupExists(hostName, runspace))
+                    {
+                        var errors = CreateLocalAdministratorsGroup(hostName, runspace);
+                        
+                        if (errors.Any())
+                        {
+                            Log.WriteWarning(string.Join("\r\n", errors.Select(e => e.ToString()).ToArray()));
+                            throw new Exception(string.Join("\r\n", errors.Select(e => e.ToString()).ToArray()));
+                        }                        
+                    }
+
+                    var existingAdmins = GetExistingLocalAdmins(hostName, runspace).Select(e => e.ToLower());
+                    var formUsers = users.Select(u => string.Format("{0}\\{1}", domainName, u.SamAccountName).ToLower());
+                    var newUsers = users.Where(u => !existingAdmins.Contains(string.Format("{0}\\{1}", domainName, u.SamAccountName).ToLower()));
+                    var removedUsers = existingAdmins.Where(e => !formUsers.Contains(e));
+
+                    foreach (var user in newUsers)
+                    {
+                        AddNewLocalAdmin(hostName, user.SamAccountName, runspace);
+                    }
+
+                    foreach (var user in removedUsers)
+                    {
+                        RemoveLocalAdmin(hostName, user, runspace);
+                    }
+                }                
             }
+            finally
+            {
+                CloseRunspace(runspace);
+            }                       
         }
 
-        public List<string> GetRdsCollectionLocalAdmins(string organizationId)
-        {
-            var adminsGroupPath = GetWspAdminsGroupPath(organizationId);
-            var orgPath = GetOrganizationPath(organizationId);
-            var orgEntry = ActiveDirectoryUtils.GetADObject(orgPath);
-            var rdsAdmins = ActiveDirectoryUtils.GetGroupObjects(WspAdministratorsGroupName, "user", orgEntry);
-            var rootPath = GetRootOUPath();
-            var rootEntry = ActiveDirectoryUtils.GetADObject(rootPath);
-
-            var collectionUsers = ActiveDirectoryUtils.GetGroupObjects(organizationId, "user", rootEntry);
-            var orgAdmins = collectionUsers.Intersect(rdsAdmins);
+        public List<string> GetRdsCollectionLocalAdmins(string hostName)
+        {            
+            Runspace runspace = null;
             var result = new List<string>();
 
-            foreach (var admin in orgAdmins)
+            try
             {
-                var userObject = ActiveDirectoryUtils.GetADObject(admin);
-                var samName = (string)ActiveDirectoryUtils.GetADObjectProperty(userObject, "sAMAccountName");
-                result.Add(samName);
+                runspace = OpenRunspace();
+                
+                if (CheckLocalAdminsGroupExists(hostName, runspace))
+                {
+                    result = GetExistingLocalAdmins(hostName, runspace);
+                }
+            }
+            finally
+            {
+                CloseRunspace(runspace);
             }            
 
             return result;
         }
 
-        private bool CheckAdminsGroup(string organizationId)
+        private bool CheckLocalAdminsGroupExists(string hostName, Runspace runspace)
         {
-            var adminsGroupPath = GetWspAdminsGroupPath(organizationId);
-            return ActiveDirectoryUtils.AdObjectExists(adminsGroupPath);
+            var scripts = new List<string>
+            {
+                string.Format("net localgroup {0}", WspAdministratorsGroupName)
+            };
+
+            object[] errors = null;
+            var result = ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
+
+            if (!errors.Any())
+            {
+                return true;
+            }
+
+            return false;
         }
 
-        private void CreateAdminsGroup(string organizationId)
+        private object[] CreateLocalAdministratorsGroup(string hostName, Runspace runspace)
         {
-            var adminsRootGroupPath = GetWspAdminsRootGroupPath(organizationId);
-            ActiveDirectoryUtils.CreateGroup(adminsRootGroupPath, WspAdministratorsGroupName);
-
-            string groupPath = string.Format("WinNT://{0}/{1}/{2},group", ServerSettings.ADRootDomain, PrimaryDomainController, WspAdministratorsGroupName);
-
-            using (var userGroup = new DirectoryEntry(groupPath))
+            var scripts = new List<string>
             {
-                string localAdministratorsPath = string.Format("WinNT://{0}/{1},group", PrimaryDomainController, "Administrators");
+                string.Format("$cn = [ADSI]\"WinNT://{0}\"", hostName),
+                string.Format("$group = $cn.Create(\"Group\", \"{0}\")", WspAdministratorsGroupName),
+                "$group.setinfo()",
+                string.Format("$group.description = \"{0}\"", WspAdministratorsGroupDescription),
+                "$group.setinfo()"
+            };
 
-                using (DirectoryEntry group = new DirectoryEntry(localAdministratorsPath))
+            object[] errors = null;
+            ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
+
+            if (!errors.Any())
+            {
+                scripts = new List<string>
                 {
-                    group.Invoke("Add", groupPath);
-                    group.CommitChanges();
+                    string.Format("$GroupObj = [ADSI]\"WinNT://{0}/Administrators\"", hostName),
+                    string.Format("$GroupObj.Add(\"WinNT://{0}/{1}\")", hostName.ToLower().Replace(string.Format(".{0}", ServerSettings.ADRootDomain.ToLower()), ""), WspAdministratorsGroupName)
+                };
+            
+                errors = null;
+                ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
+            }
+
+            return errors;
+        }
+
+        private List<string> GetExistingLocalAdmins(string hostName, Runspace runspace)
+        {
+            var result = new List<string>();
+
+            var scripts = new List<string>
+            {
+                string.Format("net localgroup {0} | select -skip 6", WspAdministratorsGroupName)
+            };
+
+            object[] errors = null;
+            var exitingAdmins = ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);            
+
+            if (!errors.Any())
+            {
+                foreach(var user in exitingAdmins.Take(exitingAdmins.Count - 2))
+                {
+                    result.Add(user.ToString());
                 }
             }
+
+            return result;
         }
 
+        private object[] AddNewLocalAdmin(string hostName, string samAccountName, Runspace runspace)
+        {
+            var scripts = new List<string>
+            {
+                string.Format("$GroupObj = [ADSI]\"WinNT://{0}/{1}\"", hostName, WspAdministratorsGroupName),
+                string.Format("$GroupObj.Add(\"WinNT://{0}/{1}\")", ServerSettings.ADRootDomain, samAccountName)
+            };
+
+            object[] errors = null;
+            ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
+
+            return errors;
+        }
+
+        private object[] RemoveLocalAdmin(string hostName, string user, Runspace runspace)
+        {
+            var userObject = user.Split('\\');
+
+            var scripts = new List<string>
+            {
+                string.Format("$GroupObj = [ADSI]\"WinNT://{0}/{1}\"", hostName, WspAdministratorsGroupName),
+                string.Format("$GroupObj.Remove(\"WinNT://{0}/{1}\")", userObject[0], userObject[1])
+            };
+
+            object[] errors = null;
+            ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
+
+            return errors;
+        }
+        
         #endregion
 
         #region SSL
 
         public void InstallCertificate(byte[] certificate, string password, string hostName)
         {
-            var x509Cert = new X509Certificate2(certificate, password, X509KeyStorageFlags.Exportable);                            
+            Runspace runspace = null;
+
+            try
+            {                
+                var x509Cert = new X509Certificate2(certificate, password, X509KeyStorageFlags.Exportable);
+                runspace = OpenRunspace();
+                CopyCertificateFile(certificate, hostName, runspace);
+            }
+            finally
+            {
+                CloseRunspace(runspace);
+            }
         }   
      
-        private string CopyCertificateFile(byte[] certificate, string hostName)
+        private string CopyCertificateFile(byte[] certificate, string hostName, Runspace runspace)
         {
             var destinationPath = string.Format("\\{0}\\c$\\remoteCert.pfx", hostName);
 
             return destinationPath;
         }
 
-        private void DeleteCertificate(string path)
+        private void DeleteCertificate(string path, Runspace runspace)
         {
 
         }
@@ -1464,32 +1573,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             AppendDomainPath(sb, RootDomain);
 
             return sb.ToString();
-        }                       
-
-        internal string GetWspAdminsRootGroupPath(string organizationId)
-        {
-            StringBuilder sb = new StringBuilder();            
-            AppendProtocol(sb);
-            AppendDomainController(sb);
-            AppendOUPath(sb, organizationId);    
-            AppendOUPath(sb, RootOU);
-            AppendDomainPath(sb, RootDomain);
-
-            return sb.ToString();
-        }
-
-        internal string GetWspAdminsGroupPath(string organizationId)
-        {
-            StringBuilder sb = new StringBuilder();            
-            AppendProtocol(sb);
-            AppendDomainController(sb);
-            AppendCNPath(sb, WspAdministratorsGroupName);
-            AppendOUPath(sb, organizationId);
-            AppendOUPath(sb, RootOU);
-            AppendDomainPath(sb, RootDomain);
-
-            return sb.ToString();
-        }
+        }                                    
 
         internal string GetUsersGroupPath(string organizationId, string collection)
         {
@@ -1778,7 +1862,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             return ExecuteShellCommand(runSpace, invokeCommand, false, out errors);
         }
 
-        internal Collection<PSObject> ExecuteRemoteShellCommand(Runspace runSpace, string hostName, List<string> scripts, params string[] moduleImports)
+        internal Collection<PSObject> ExecuteRemoteShellCommand(Runspace runSpace, string hostName, List<string> scripts, out object[] errors, params string[] moduleImports)
         {
             Command invokeCommand = new Command("Invoke-Command");
             invokeCommand.Parameters.Add("ComputerName", hostName);
@@ -1792,7 +1876,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
             invokeCommand.Parameters.Add("ScriptBlock", sb);
 
-            return ExecuteShellCommand(runSpace, invokeCommand, false);
+            return ExecuteShellCommand(runSpace, invokeCommand, false, out errors);
         }
 
         internal Collection<PSObject> ExecuteShellCommand(Runspace runSpace, Command cmd)

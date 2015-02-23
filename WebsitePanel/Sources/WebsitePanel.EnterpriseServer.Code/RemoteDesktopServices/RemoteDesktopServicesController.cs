@@ -268,14 +268,14 @@ namespace WebsitePanel.EnterpriseServer
             return RestartRdsServerInternal(itemId, fqdnName);
         }
 
-        public static List<OrganizationUser> GetRdsCollectionLocalAdmins(int itemId)
+        public static List<OrganizationUser> GetRdsCollectionLocalAdmins(int collectionId)
         {
-            return GetRdsCollectionLocalAdminsInternal(itemId);
+            return GetRdsCollectionLocalAdminsInternal(collectionId);
         }
 
-        public static ResultObject SaveRdsCollectionLocalAdmins(OrganizationUser[] users, int itemId)
+        public static ResultObject SaveRdsCollectionLocalAdmins(OrganizationUser[] users, int collectionId)
         {
-            return SaveRdsCollectionLocalAdminsInternal(users, itemId);
+            return SaveRdsCollectionLocalAdminsInternal(users, collectionId);
         }
 
         private static RdsCollection GetRdsCollectionInternal(int collectionId)
@@ -310,10 +310,12 @@ namespace WebsitePanel.EnterpriseServer
             return collection;
         }
 
-        private static List<OrganizationUser> GetRdsCollectionLocalAdminsInternal(int itemId)
+        private static List<OrganizationUser> GetRdsCollectionLocalAdminsInternal(int collectionId)
         {
             var result = new List<OrganizationUser>();
-            Organization org = OrganizationController.GetOrganization(itemId);
+            var collection = ObjectUtils.FillObjectFromDataReader<RdsCollection>(DataProvider.GetRDSCollectionById(collectionId));
+            var servers = ObjectUtils.CreateListFromDataReader<RdsServer>(DataProvider.GetRDSServersByCollectionId(collection.Id)).ToList();
+            Organization org = OrganizationController.GetOrganization(collection.ItemId);
             
             if (org == null)
             {
@@ -322,19 +324,20 @@ namespace WebsitePanel.EnterpriseServer
             
             var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));            
 
-            var organizationUsers = OrganizationController.GetOrganizationUsersPaged(itemId, null, null, null, 0, Int32.MaxValue).PageUsers;
-            var organizationAdmins = rds.GetRdsCollectionLocalAdmins(org.OrganizationId);
+            var organizationUsers = OrganizationController.GetOrganizationUsersPaged(collection.ItemId, null, null, null, 0, Int32.MaxValue).PageUsers;
+            var organizationAdmins = rds.GetRdsCollectionLocalAdmins(servers.First().FqdName);
 
-            return organizationUsers.Where(o => organizationAdmins.Select(a => a.ToLower()).Contains(o.SamAccountName.ToLower())).ToList();
+            return organizationUsers.Where(o => organizationAdmins.Select(a => a.ToLower()).Contains(o.DomainUserName.ToLower())).ToList();
         }
 
-        private static ResultObject SaveRdsCollectionLocalAdminsInternal(OrganizationUser[] users, int itemId)
+        private static ResultObject SaveRdsCollectionLocalAdminsInternal(OrganizationUser[] users, int collectionId)
         {
             var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "SAVE_LOCAL_ADMINS");
 
             try
-            {                
-                Organization org = OrganizationController.GetOrganization(itemId);
+            {
+                var collection = ObjectUtils.FillObjectFromDataReader<RdsCollection>(DataProvider.GetRDSCollectionById(collectionId));
+                Organization org = OrganizationController.GetOrganization(collection.ItemId);
 
                 if (org == null)
                 {
@@ -344,7 +347,9 @@ namespace WebsitePanel.EnterpriseServer
                 }
 
                 var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
-                rds.SaveRdsCollectionLocalAdmins(users.Select(u => u.AccountName).ToArray(), org.OrganizationId);
+                var servers = ObjectUtils.CreateListFromDataReader<RdsServer>(DataProvider.GetRDSServersByCollectionId(collection.Id)).ToList();                
+
+                rds.SaveRdsCollectionLocalAdmins(users, servers.Select(s => s.FqdName).ToArray());
             }
             catch (Exception ex)
             {

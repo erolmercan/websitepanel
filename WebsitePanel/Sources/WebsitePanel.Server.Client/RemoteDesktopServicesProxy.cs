@@ -18,6 +18,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
     using System.Web.Services.Protocols;
     using System;
     using System.Diagnostics;
+    using WebsitePanel.Providers.HostedSolution;
     
     
     /// <remarks/>
@@ -1506,17 +1507,17 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/server/SaveRdsCollectionLocalAdmins", RequestNamespace="http://smbsaas/websitepanel/server/", ResponseNamespace="http://smbsaas/websitepanel/server/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public void SaveRdsCollectionLocalAdmins(string[] users, string organizationId) {
+        public void SaveRdsCollectionLocalAdmins(OrganizationUser[] users, string[] hosts) {
             this.Invoke("SaveRdsCollectionLocalAdmins", new object[] {
                         users,
-                        organizationId});
+                        hosts});
         }
         
         /// <remarks/>
-        public System.IAsyncResult BeginSaveRdsCollectionLocalAdmins(string[] users, string organizationId, System.AsyncCallback callback, object asyncState) {
+        public System.IAsyncResult BeginSaveRdsCollectionLocalAdmins(OrganizationUser[] users, string[] hosts, System.AsyncCallback callback, object asyncState) {
             return this.BeginInvoke("SaveRdsCollectionLocalAdmins", new object[] {
                         users,
-                        organizationId}, callback, asyncState);
+                        hosts}, callback, asyncState);
         }
         
         /// <remarks/>
@@ -1525,18 +1526,18 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         }
         
         /// <remarks/>
-        public void SaveRdsCollectionLocalAdminsAsync(string[] users, string organizationId) {
-            this.SaveRdsCollectionLocalAdminsAsync(users, organizationId, null);
+        public void SaveRdsCollectionLocalAdminsAsync(OrganizationUser[] users, string[] hosts) {
+            this.SaveRdsCollectionLocalAdminsAsync(users, hosts, null);
         }
         
         /// <remarks/>
-        public void SaveRdsCollectionLocalAdminsAsync(string[] users, string organizationId, object userState) {
+        public void SaveRdsCollectionLocalAdminsAsync(OrganizationUser[] users, string[] hosts, object userState) {
             if ((this.SaveRdsCollectionLocalAdminsOperationCompleted == null)) {
                 this.SaveRdsCollectionLocalAdminsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnSaveRdsCollectionLocalAdminsOperationCompleted);
             }
             this.InvokeAsync("SaveRdsCollectionLocalAdmins", new object[] {
                         users,
-                        organizationId}, this.SaveRdsCollectionLocalAdminsOperationCompleted, userState);
+                        hosts}, this.SaveRdsCollectionLocalAdminsOperationCompleted, userState);
         }
         
         private void OnSaveRdsCollectionLocalAdminsOperationCompleted(object arg) {
@@ -1549,16 +1550,16 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/server/GetRdsCollectionLocalAdmins", RequestNamespace="http://smbsaas/websitepanel/server/", ResponseNamespace="http://smbsaas/websitepanel/server/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public string[] GetRdsCollectionLocalAdmins(string organizationId) {
+        public string[] GetRdsCollectionLocalAdmins(string hostName) {
             object[] results = this.Invoke("GetRdsCollectionLocalAdmins", new object[] {
-                        organizationId});
+                        hostName});
             return ((string[])(results[0]));
         }
         
         /// <remarks/>
-        public System.IAsyncResult BeginGetRdsCollectionLocalAdmins(string organizationId, System.AsyncCallback callback, object asyncState) {
+        public System.IAsyncResult BeginGetRdsCollectionLocalAdmins(string hostName, System.AsyncCallback callback, object asyncState) {
             return this.BeginInvoke("GetRdsCollectionLocalAdmins", new object[] {
-                        organizationId}, callback, asyncState);
+                        hostName}, callback, asyncState);
         }
         
         /// <remarks/>
@@ -1568,17 +1569,17 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         }
         
         /// <remarks/>
-        public void GetRdsCollectionLocalAdminsAsync(string organizationId) {
-            this.GetRdsCollectionLocalAdminsAsync(organizationId, null);
+        public void GetRdsCollectionLocalAdminsAsync(string hostName) {
+            this.GetRdsCollectionLocalAdminsAsync(hostName, null);
         }
         
         /// <remarks/>
-        public void GetRdsCollectionLocalAdminsAsync(string organizationId, object userState) {
+        public void GetRdsCollectionLocalAdminsAsync(string hostName, object userState) {
             if ((this.GetRdsCollectionLocalAdminsOperationCompleted == null)) {
                 this.GetRdsCollectionLocalAdminsOperationCompleted = new System.Threading.SendOrPostCallback(this.OnGetRdsCollectionLocalAdminsOperationCompleted);
             }
             this.InvokeAsync("GetRdsCollectionLocalAdmins", new object[] {
-                        organizationId}, this.GetRdsCollectionLocalAdminsOperationCompleted, userState);
+                        hostName}, this.GetRdsCollectionLocalAdminsOperationCompleted, userState);
         }
         
         private void OnGetRdsCollectionLocalAdminsOperationCompleted(object arg) {

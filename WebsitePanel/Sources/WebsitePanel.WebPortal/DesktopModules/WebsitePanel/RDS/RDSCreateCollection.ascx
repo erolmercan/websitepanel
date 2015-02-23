@@ -30,7 +30,7 @@
 					    </tr>                        
 					</table> 
 
-                    <%--<wsp:CollapsiblePanel id="secSelectSertificate" runat="server"
+                    <wsp:CollapsiblePanel id="secSelectSertificate" runat="server"
                         TargetControlID="panelSelectSertificate" meta:resourcekey="secSelectSertificate" Text="">
                     </wsp:CollapsiblePanel>		
                     
@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                         </div>                            
-                    </asp:Panel> --%>                  
+                    </asp:Panel>                   
 
                     <fieldset id="RDSServersPanel" runat="server">
                         <legend><asp:Localize ID="locRDSServersSection" runat="server" meta:resourcekey="locRDSServersSection" Text="RDS Servers"></asp:Localize></legend>

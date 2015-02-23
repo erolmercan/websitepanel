@@ -42,6 +42,7 @@ using WebsitePanel.Providers;
 using WebsitePanel.Providers.OS;
 using WebsitePanel.Providers.RemoteDesktopServices;
 using WebsitePanel.Server.Utils;
+using WebsitePanel.Providers.HostedSolution;
 
 namespace WebsitePanel.Server
 {
@@ -565,12 +566,12 @@ namespace WebsitePanel.Server
         }
 
         [WebMethod, SoapHeader("settings")]
-        public void SaveRdsCollectionLocalAdmins(List<string> users, string organizationId)
+        public void SaveRdsCollectionLocalAdmins(List<OrganizationUser> users, List<string> hosts)
         {
             try
             {
                 Log.WriteStart("'{0}' SaveRdsCollectionLocalAdmins", ProviderSettings.ProviderName);
-                RDSProvider.SaveRdsCollectionLocalAdmins(users, organizationId);
+                RDSProvider.SaveRdsCollectionLocalAdmins(users, hosts);
                 Log.WriteEnd("'{0}' SaveRdsCollectionLocalAdmins", ProviderSettings.ProviderName);
             }
             catch (Exception ex)
@@ -581,12 +582,12 @@ namespace WebsitePanel.Server
         }
 
         [WebMethod, SoapHeader("settings")]
-        public List<string> GetRdsCollectionLocalAdmins(string organizationId)
+        public List<string> GetRdsCollectionLocalAdmins(string hostName)
         {
             try
             {
                 Log.WriteStart("'{0}' GetRdsCollectionLocalAdmins", ProviderSettings.ProviderName);
-                var result = RDSProvider.GetRdsCollectionLocalAdmins(organizationId);
+                var result = RDSProvider.GetRdsCollectionLocalAdmins(hostName);
                 Log.WriteEnd("'{0}' GetRdsCollectionLocalAdmins", ProviderSettings.ProviderName);
 
                 return result;

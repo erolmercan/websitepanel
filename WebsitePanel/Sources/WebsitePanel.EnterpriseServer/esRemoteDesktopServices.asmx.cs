@@ -315,15 +315,15 @@ namespace WebsitePanel.EnterpriseServer
         }
 
         [WebMethod]
-        public List<OrganizationUser> GetRdsCollectionLocalAdmins(int itemId)
+        public List<OrganizationUser> GetRdsCollectionLocalAdmins(int collectionId)
         {
-            return RemoteDesktopServicesController.GetRdsCollectionLocalAdmins(itemId);
+            return RemoteDesktopServicesController.GetRdsCollectionLocalAdmins(collectionId);
         }
 
         [WebMethod]
-        public ResultObject SaveRdsCollectionLocalAdmins(OrganizationUser[] users, int itemId)
+        public ResultObject SaveRdsCollectionLocalAdmins(OrganizationUser[] users, int collectionId)
         {
-            return RemoteDesktopServicesController.SaveRdsCollectionLocalAdmins(users, itemId);
+            return RemoteDesktopServicesController.SaveRdsCollectionLocalAdmins(users, collectionId);
         }
     }
 }
