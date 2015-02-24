@@ -83,7 +83,6 @@ WspFileBrowser.prototype = {
             "ajax": ajaxUrl,
             "processing": true,
             "serverSide": true,
-            "searching": false,
             "columnDefs": [
                 {
                     "render": function(data, type, row) {
@@ -118,6 +117,14 @@ WspFileBrowser.prototype = {
         });
 
         $(tableId).removeClass('dataTable');
+
+        var oTable = this.table;
+        $(tableId+'_filter input').unbind();
+        $(tableId+'_filter input').bind('keyup', function (e) {
+            if (e.keyCode == 13) {
+                oTable.fnFilter(this.value);
+            }
+        });
     },
 
     refreshDataTable: function () {
@@ -136,6 +143,40 @@ WspFileBrowser.prototype = {
                 sequentialUploads: true
             });
         });
+    },
+
+    initBigIcons: function (elementId, url) {
+        $(document).ready(function () {
+            $(window).load(function () {
+                getResources();
+            });
+            $(window).scroll(function () {
+                if (($(window).scrollTop() + 1) >= ($(document).height() - $(window).height())) {
+                    getResources();
+                };
+            });
+        });
+
+        var oldResourcesDivHeight = $(elementId).height();
+
+        function getResources() {
+            $.ajax({
+                type: 'POST',
+                url: url,//'/storage/show-additional-content',
+                data: { path: window.location.pathname, resourseRenderCount: $(".element-container").length },
+                dataType: "html",
+                success: function (result) {
+                    var domElement = $(result);
+                    $(elementId).append(domElement);
+                    if ($(document).height() == $(window).height() && oldResourcesDivHeight != $('#resourcesDiv').height()) {
+                        getResources();
+                        oldResourcesDivHeight = $(elementId).height();
+                    };
+
+                    recalculateResourseHeight();
+                }
+            });
+        };
     }
 };
 

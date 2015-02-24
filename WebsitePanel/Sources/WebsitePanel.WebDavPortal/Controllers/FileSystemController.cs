@@ -48,6 +48,7 @@ namespace WebsitePanel.WebDavPortal.Controllers
         private readonly IAccessTokenManager _tokenManager;
         private readonly IWebDavAuthorizationService _webDavAuthorizationService;
         private readonly IUserSettingsManager _userSettingsManager;
+        private readonly FileOpenerManager _openerManager;
         private readonly ILog Log;
 
         public FileSystemController(ICryptography cryptography, IWebDavManager webdavManager, IAuthenticationService authenticationService, IAccessTokenManager tokenManager, IWebDavAuthorizationService webDavAuthorizationService, FileOpenerManager openerManager, IUserSettingsManager userSettingsManager)
@@ -60,6 +61,7 @@ namespace WebsitePanel.WebDavPortal.Controllers
             _userSettingsManager = userSettingsManager;
 
             Log = LogManager.GetLogger(this.GetType());
+            _openerManager = new FileOpenerManager();
         }
 
         [HttpGet]
@@ -70,8 +72,7 @@ namespace WebsitePanel.WebDavPortal.Controllers
             return RedirectToRoute(FileSystemRouteNames.ShowContentPath, new  { org, pathPart });
         }
 
-        [HttpGet]
-        public ActionResult ShowContent(string org, string pathPart = "")
+        public ActionResult ShowContent(string org, string pathPart = "", string searchValue = "")
         {
             if (org != WspContext.User.OrganizationId)
             {
@@ -92,7 +93,8 @@ namespace WebsitePanel.WebDavPortal.Controllers
                 {
                     UrlSuffix = pathPart, 
                     Permissions =_webDavAuthorizationService.GetPermissions(WspContext.User, pathPart),
-                    UserSettings = _userSettingsManager.GetUserSettings(WspContext.User.AccountId)
+                    UserSettings = _userSettingsManager.GetUserSettings(WspContext.User.AccountId),
+                    SearchValue = searchValue
                 };
 
                 return View(model);
@@ -104,22 +106,24 @@ namespace WebsitePanel.WebDavPortal.Controllers
         }
 
         [ChildActionOnly]
-        public ActionResult ContentList(string org, FolderViewTypes viewType,  string pathPart = "")
+        public ActionResult ContentList(string org, ModelForWebDav model, string pathPart = "")
         {
             try
             {
-                IEnumerable<IHierarchyItem> children = _webdavManager.OpenFolder(pathPart);
-
-                var model = new ModelForWebDav
-                {
-                    UrlSuffix = pathPart,
-                    Permissions = _webDavAuthorizationService.GetPermissions(WspContext.User, pathPart),
-                    UserSettings = _userSettingsManager.GetUserSettings(WspContext.User.AccountId)
-                };
-
                 if (Request.Browser.IsMobileDevice == false && model.UserSettings.WebDavViewType == FolderViewTypes.Table)
                 {
                     return PartialView("_ShowContentTable", model);
+                }
+
+                IEnumerable<IHierarchyItem> children;
+
+                if (string.IsNullOrEmpty(model.SearchValue))
+                {
+                    children = _webdavManager.OpenFolder(pathPart);
+                }
+                else
+                {
+                    children = _webdavManager.SearchFiles(WspContext.User.ItemId, pathPart, model.SearchValue, WspContext.User.Login, true);
                 }
 
                 model.Items = children.Take(WebDavAppConfigManager.Instance.ElementsRendering.DefaultCount);
@@ -136,9 +140,20 @@ namespace WebsitePanel.WebDavPortal.Controllers
         [HttpGet]
         public ActionResult GetContentDetails(string org, string pathPart, [ModelBinder(typeof (JqueryDataTableModelBinder))] JqueryDataTableRequest dtRequest)
         {
-            var folderItems = _webdavManager.OpenFolder(pathPart);
+            IEnumerable<WebDavResource> folderItems;
 
-            var tableItems = Mapper.Map<IEnumerable<IHierarchyItem>, IEnumerable<ResourceTableItemModel>>(folderItems).ToList();
+            if (string.IsNullOrEmpty(dtRequest.Search.Value) == false)
+            {
+                folderItems = _webdavManager.SearchFiles(WspContext.User.ItemId, pathPart, dtRequest.Search.Value, WspContext.User.Login, true).Select(x => new WebDavResource(null, x));
+            }
+            else
+            {
+                folderItems = _webdavManager.OpenFolder(pathPart).Select(x=>new WebDavResource(null, x));
+            }
+
+            var tableItems = Mapper.Map<IEnumerable<WebDavResource>, IEnumerable<ResourceTableItemModel>>(folderItems).ToList();
+
+            FillContentModel(tableItems);
 
             var orders = dtRequest.Orders.ToList();
             orders.Insert(0, new JqueryDataTableOrder{Column = 3, Ascending = false});
@@ -146,7 +161,7 @@ namespace WebsitePanel.WebDavPortal.Controllers
             dtRequest.Orders = orders;
 
             var dataTableResponse = DataTableHelper.ProcessRequest(tableItems, dtRequest);
-            
+
             return Json(dataTableResponse, JsonRequestBehavior.AllowGet);
         }
 
@@ -304,5 +319,27 @@ namespace WebsitePanel.WebDavPortal.Controllers
         }
         #endregion
 
+        private void FillContentModel(IEnumerable<ResourceTableItemModel> items)
+        {
+            foreach (var item in items)
+            {
+                var opener = _openerManager[Path.GetExtension(item.DisplayName)];
+
+                switch (opener)
+                {
+                    case FileOpenerType.OfficeOnline:
+                    {
+                        var pathPart = item.Href.AbsolutePath.Replace("/" + WspContext.User.OrganizationId, "").TrimStart('/');
+                        item.Url = string.Concat(Url.RouteUrl(FileSystemRouteNames.EditOfficeOnline, new {org = WspContext.User.OrganizationId, pathPart = ""}), pathPart);
+                        break;
+                    }
+                    default:
+                    {
+                        item.Url = item.Href.LocalPath;
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

@@ -170,6 +170,12 @@ namespace WebsitePanel.EnterpriseServer
             EnterpriseStorageController.UpdateUserSettings(accountId,settings);
         }
 
+        [WebMethod]
+        public SystemFile[] SearchFiles(int itemId, string searchPath, string searchText, string userPrincipalName, bool recursive)
+        {
+           return EnterpriseStorageController.SearchFiles(itemId, searchPath, searchText, userPrincipalName, recursive);
+        }
+
         #region Directory Browsing
 
         [WebMethod]

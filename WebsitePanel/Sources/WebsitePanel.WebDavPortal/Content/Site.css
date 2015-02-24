@@ -248,6 +248,15 @@ tr.selected-file {
     width: 200px;
 }
 
+.search-block {
+}
+
+.search-block input, .search-block label {
+    display: inline-block;
+    width: initial;
+    font-weight: normal;
+}
+
 /* Theme Mods */
 
 input,div{border-radius:0px!important;}

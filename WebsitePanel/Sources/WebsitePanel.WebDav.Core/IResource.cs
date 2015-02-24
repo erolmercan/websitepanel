@@ -251,14 +251,14 @@ namespace WebsitePanel.WebDav.Core
             {
                 get
                 {
-                    string displayName = _href.AbsoluteUri.Replace(_baseUri.AbsoluteUri, "");
+                    string displayName = _href.AbsoluteUri.Trim('/').Replace(_baseUri.AbsoluteUri.Trim('/'), "");
                     displayName = Regex.Replace(displayName, "\\/$", "");
                     Match displayNameMatch = Regex.Match(displayName, "([\\/]+)$");
                     if (displayNameMatch.Success)
                     {
                         displayName = displayNameMatch.Groups[1].Value;
                     }
-                    return HttpUtility.UrlDecode(displayName);
+                    return HttpUtility.UrlDecode(displayName.Trim('/'));
                 }
             }
 
@@ -473,15 +473,10 @@ namespace WebsitePanel.WebDav.Core
             public void SetHref(Uri href)
             {
                 _href = href;
-                string baseUri = _href.Scheme + "://" + _href.Host;
-                for (int i = 0; i < _href.Segments.Length - 1; i++)
-                {
-                    if (_href.Segments[i] != "/")
-                    {
-                        baseUri += "/" + _href.Segments[i];
-                    }
-                }
-                _baseUri = new Uri(baseUri);
+
+                var baseUrl = href.AbsoluteUri.Remove(href.AbsoluteUri.Length - href.Segments.Last().Length);
+
+                _baseUri = new Uri(baseUrl);
             }
 
             /// <summary>

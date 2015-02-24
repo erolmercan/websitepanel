@@ -176,6 +176,23 @@ namespace WebsitePanel.Server
         }
 
         [WebMethod, SoapHeader("settings")]
+        public SystemFile[] Search(string searchPath, string searchText, string userPrincipalName, bool recursive)
+        {
+            try
+            {
+                Log.WriteStart("'{0}' Search", ProviderSettings.ProviderName);
+                var searchResults = EnterpriseStorageProvider.Search(searchPath, searchText, userPrincipalName, recursive);
+                Log.WriteEnd("'{0}' Search", ProviderSettings.ProviderName);
+                return searchResults;
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(String.Format("'{0}' Search", ProviderSettings.ProviderName), ex);
+                throw;
+            }
+        }
+
+        [WebMethod, SoapHeader("settings")]
         public SystemFile RenameFolder(string organizationId, string originalFolder, string newFolder, WebDavSetting setting)
         {
             try
