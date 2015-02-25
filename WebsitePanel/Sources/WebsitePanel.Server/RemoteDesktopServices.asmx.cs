@@ -630,5 +630,21 @@ namespace WebsitePanel.Server
                 throw;
             }
         }
+
+        [WebMethod, SoapHeader("settings")]
+        public void InstallCertificate(byte[] certificate, string password, List<string> hostNames)
+        {
+            try
+            {
+                Log.WriteStart("'{0}' InstallCertificate", ProviderSettings.ProviderName);
+                RDSProvider.InstallCertificate(certificate, password, hostNames);
+                Log.WriteEnd("'{0}' InstallCertificate", ProviderSettings.ProviderName);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(String.Format("'{0}' InstallCertificate", ProviderSettings.ProviderName), ex);
+                throw;
+            }
+        }
     }
 }

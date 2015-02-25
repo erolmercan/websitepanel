@@ -278,6 +278,51 @@ namespace WebsitePanel.EnterpriseServer
             return SaveRdsCollectionLocalAdminsInternal(users, collectionId);
         }
 
+        public static ResultObject InstallSessionHostsCertificate(int collectionId, byte[] certificate, string password)
+        {
+            return InstallSessionHostsCertificateInternal(collectionId, certificate, password);
+        }
+
+        private static ResultObject InstallSessionHostsCertificateInternal(int collectionId, byte[] certificate, string password)
+        {
+            var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "INSTALL_CERTIFICATE");
+
+            try
+            {
+                var collection = ObjectUtils.FillObjectFromDataReader<RdsCollection>(DataProvider.GetRDSCollectionById(collectionId));
+                Organization org = OrganizationController.GetOrganization(collection.ItemId);
+
+                if (org == null)
+                {
+                    result.IsSuccess = false;
+                    result.AddError("", new NullReferenceException("Organization not found"));
+                    return result;
+                }
+
+                var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
+                var servers = ObjectUtils.CreateListFromDataReader<RdsServer>(DataProvider.GetRDSServersByCollectionId(collection.Id)).ToList();
+
+                rds.InstallCertificate(certificate, password, servers.Select(s => s.FqdName).ToArray());
+            }
+            catch (Exception ex)
+            {
+                throw TaskManager.WriteError(ex);
+            }
+            finally
+            {
+                if (!result.IsSuccess)
+                {
+                    TaskManager.CompleteResultTask(result);
+                }
+                else
+                {
+                    TaskManager.CompleteResultTask();
+                }
+            }
+
+            return result;
+        }
+
         private static RdsCollection GetRdsCollectionInternal(int collectionId)
         {
             var collection = ObjectUtils.FillObjectFromDataReader<RdsCollection>(DataProvider.GetRDSCollectionById(collectionId));
@@ -372,9 +417,25 @@ namespace WebsitePanel.EnterpriseServer
 
         private static RdsCollectionSettings GetRdsCollectionSettingsInternal(int collectionId)
         {
-            var collection = ObjectUtils.FillObjectFromDataReader<RdsCollection>(DataProvider.GetRDSCollectionById(collectionId));
-            
-            return ObjectUtils.FillObjectFromDataReader<RdsCollectionSettings>(DataProvider.GetRdsCollectionSettingsByCollectionId(collectionId));                        
+            var collection = ObjectUtils.FillObjectFromDataReader<RdsCollection>(DataProvider.GetRDSCollectionById(collectionId));            
+            var settings = ObjectUtils.FillObjectFromDataReader<RdsCollectionSettings>(DataProvider.GetRdsCollectionSettingsByCollectionId(collectionId));
+
+            if (settings.SecurityLayer == null)
+            {
+                settings.SecurityLayer = SecurityLayerValues.Negotiate.ToString();
+            }
+
+            if (settings.EncryptionLevel == null)
+            {
+                settings.EncryptionLevel = EncryptionLevel.ClientCompatible.ToString();
+            }
+
+            if (settings.AuthenticateUsingNLA == null)
+            {
+                settings.AuthenticateUsingNLA = true;
+            }
+
+            return settings;
         }
 
         private static List<RdsCollection> GetOrganizationRdsCollectionsInternal(int itemId)
@@ -426,7 +487,10 @@ namespace WebsitePanel.EnterpriseServer
                     ClientPrinterRedirected = true,
                     ClientPrinterAsDefault = true,
                     RDEasyPrintDriverEnabled = true,
-                    MaxRedirectedMonitors = 16
+                    MaxRedirectedMonitors = 16,
+                    EncryptionLevel = EncryptionLevel.ClientCompatible.ToString(),
+                    SecurityLayer = SecurityLayerValues.Negotiate.ToString(),
+                    AuthenticateUsingNLA = true
                 };                
 
                 rds.CreateCollection(org.OrganizationId, collection);                
