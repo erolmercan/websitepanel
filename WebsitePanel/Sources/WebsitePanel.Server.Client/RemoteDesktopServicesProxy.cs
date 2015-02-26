@@ -98,6 +98,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         
         private System.Threading.SendOrPostCallback RemoveRdsServerFromTenantOUOperationCompleted;
         
+        private System.Threading.SendOrPostCallback InstallCertificateOperationCompleted;
+        
         /// <remarks/>
         public RemoteDesktopServices() {
             this.Url = "http://localhost:9003/RemoteDesktopServices.asmx";
@@ -204,6 +206,9 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         
         /// <remarks/>
         public event RemoveRdsServerFromTenantOUCompletedEventHandler RemoveRdsServerFromTenantOUCompleted;
+        
+        /// <remarks/>
+        public event InstallCertificateCompletedEventHandler InstallCertificateCompleted;
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
@@ -1676,6 +1681,52 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/server/InstallCertificate", RequestNamespace="http://smbsaas/websitepanel/server/", ResponseNamespace="http://smbsaas/websitepanel/server/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public void InstallCertificate([System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] certificate, string password, string[] hostNames) {
+            this.Invoke("InstallCertificate", new object[] {
+                        certificate,
+                        password,
+                        hostNames});
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginInstallCertificate(byte[] certificate, string password, string[] hostNames, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("InstallCertificate", new object[] {
+                        certificate,
+                        password,
+                        hostNames}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public void EndInstallCertificate(System.IAsyncResult asyncResult) {
+            this.EndInvoke(asyncResult);
+        }
+        
+        /// <remarks/>
+        public void InstallCertificateAsync(byte[] certificate, string password, string[] hostNames) {
+            this.InstallCertificateAsync(certificate, password, hostNames, null);
+        }
+        
+        /// <remarks/>
+        public void InstallCertificateAsync(byte[] certificate, string password, string[] hostNames, object userState) {
+            if ((this.InstallCertificateOperationCompleted == null)) {
+                this.InstallCertificateOperationCompleted = new System.Threading.SendOrPostCallback(this.OnInstallCertificateOperationCompleted);
+            }
+            this.InvokeAsync("InstallCertificate", new object[] {
+                        certificate,
+                        password,
+                        hostNames}, this.InstallCertificateOperationCompleted, userState);
+        }
+        
+        private void OnInstallCertificateOperationCompleted(object arg) {
+            if ((this.InstallCertificateCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.InstallCertificateCompleted(this, new System.ComponentModel.AsyncCompletedEventArgs(invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
@@ -2300,4 +2351,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
     public delegate void RemoveRdsServerFromTenantOUCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void InstallCertificateCompletedEventHandler(object sender, System.ComponentModel.AsyncCompletedEventArgs e);
 }

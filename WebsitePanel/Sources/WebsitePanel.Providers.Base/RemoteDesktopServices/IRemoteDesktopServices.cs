@@ -78,5 +78,6 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         List<string> GetRdsCollectionLocalAdmins(string hostName);
         void MoveRdsServerToTenantOU(string hostName, string organizationId);
         void RemoveRdsServerFromTenantOU(string hostName, string organizationId);
+        void InstallCertificate(byte[] certificate, string password, List<string> hostNames);
     }
 }

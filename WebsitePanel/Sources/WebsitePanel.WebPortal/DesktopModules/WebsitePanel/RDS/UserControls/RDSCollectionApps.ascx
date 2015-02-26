@@ -1,4 +1,5 @@
 <%@ Control Language="C#" AutoEventWireup="true" CodeBehind="RDSCollectionApps.ascx.cs" Inherits="WebsitePanel.Portal.RDS.UserControls.RDSCollectionApps" %>
+<%@ Import Namespace="WebsitePanel.Portal" %>
 <%@ Register Src="../../UserControls/PopupHeader.ascx" TagName="PopupHeader" TagPrefix="wsp" %>
 
 <asp:UpdatePanel ID="RDAppsUpdatePanel" runat="server" UpdateMode="Conditional" ChildrenAsTriggers="true">
@@ -28,7 +29,13 @@
                     <asp:HiddenField ID="hfFilePath" runat="server"  Value='<%# Eval("FilePath") %>'/>
                     <asp:HiddenField ID="hfRequiredCommandLine" runat="server"  Value='<%# Eval("RequiredCommandLine") %>'/>
 				</ItemTemplate>
-			</asp:TemplateField>            
+			</asp:TemplateField>  
+            <asp:TemplateField>
+                <ItemStyle Width="20px" />
+                <ItemTemplate>
+                    <asp:Image ID="UsersImage" ImageUrl='<%# PortalUtils.GetThemedImage("user_16.png")%>' runat="server" Visible='<%# Eval("Users") != null %>'/>
+                </ItemTemplate>
+            </asp:TemplateField>          
 		</Columns>
 	</asp:GridView>
     <br />
