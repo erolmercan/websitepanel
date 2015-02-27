@@ -43,7 +43,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         bool CreateCollection(string organizationId, RdsCollection collection);
         bool AddRdsServersToDeployment(RdsServer[] servers);
         RdsCollection GetCollection(string collectionName);
-        bool RemoveCollection(string organizationId, string collectionName);
+        bool RemoveCollection(string organizationId, string collectionName, List<RdsServer> servers);
         bool SetUsersInCollection(string organizationId, string collectionName, List<string> users);
         void AddSessionHostServerToCollection(string organizationId, string collectionName, RdsServer server);
         void AddSessionHostServersToCollection(string organizationId, string collectionName, List<RdsServer> servers);

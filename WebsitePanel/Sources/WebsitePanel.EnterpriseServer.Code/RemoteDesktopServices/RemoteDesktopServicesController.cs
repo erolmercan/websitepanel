@@ -663,8 +663,8 @@ namespace WebsitePanel.EnterpriseServer
                 }
 
                 var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
-
-                rds.RemoveCollection(org.OrganizationId, collection.Name);
+                var servers = ObjectUtils.CreateListFromDataReader<RdsServer>(DataProvider.GetRDSServersByCollectionId(collection.Id)).ToArray();
+                rds.RemoveCollection(org.OrganizationId, collection.Name, servers);
 
                 DataProvider.DeleteRDSCollection(collection.Id);
             }

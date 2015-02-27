@@ -424,18 +424,20 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapHeaderAttribute("ServiceProviderSettingsSoapHeaderValue")]
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/server/RemoveCollection", RequestNamespace="http://smbsaas/websitepanel/server/", ResponseNamespace="http://smbsaas/websitepanel/server/", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public bool RemoveCollection(string organizationId, string collectionName) {
+        public bool RemoveCollection(string organizationId, string collectionName, RdsServer[] servers) {
             object[] results = this.Invoke("RemoveCollection", new object[] {
                         organizationId,
-                        collectionName});
+                        collectionName,
+                        servers});
             return ((bool)(results[0]));
         }
         
         /// <remarks/>
-        public System.IAsyncResult BeginRemoveCollection(string organizationId, string collectionName, System.AsyncCallback callback, object asyncState) {
+        public System.IAsyncResult BeginRemoveCollection(string organizationId, string collectionName, RdsServer[] servers, System.AsyncCallback callback, object asyncState) {
             return this.BeginInvoke("RemoveCollection", new object[] {
                         organizationId,
-                        collectionName}, callback, asyncState);
+                        collectionName,
+                        servers}, callback, asyncState);
         }
         
         /// <remarks/>
@@ -445,18 +447,19 @@ namespace WebsitePanel.Providers.RemoteDesktopServices {
         }
         
         /// <remarks/>
-        public void RemoveCollectionAsync(string organizationId, string collectionName) {
-            this.RemoveCollectionAsync(organizationId, collectionName, null);
+        public void RemoveCollectionAsync(string organizationId, string collectionName, RdsServer[] servers) {
+            this.RemoveCollectionAsync(organizationId, collectionName, servers, null);
         }
         
         /// <remarks/>
-        public void RemoveCollectionAsync(string organizationId, string collectionName, object userState) {
+        public void RemoveCollectionAsync(string organizationId, string collectionName, RdsServer[] servers, object userState) {
             if ((this.RemoveCollectionOperationCompleted == null)) {
                 this.RemoveCollectionOperationCompleted = new System.Threading.SendOrPostCallback(this.OnRemoveCollectionOperationCompleted);
             }
             this.InvokeAsync("RemoveCollection", new object[] {
                         organizationId,
-                        collectionName}, this.RemoveCollectionOperationCompleted, userState);
+                        collectionName,
+                        servers}, this.RemoveCollectionOperationCompleted, userState);
         }
         
         private void OnRemoveCollectionOperationCompleted(object arg) {

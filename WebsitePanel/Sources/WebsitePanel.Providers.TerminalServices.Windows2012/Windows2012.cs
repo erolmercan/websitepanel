@@ -71,6 +71,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         private const string WspAdministratorsGroupDescription = "WSP Administrators";
         private const string RdsServersOU = "RDSServers";
         private const string RDSHelpDeskComputerGroup = "Websitepanel-RDSHelpDesk-Computer";
+        private const string RDSHelpDeskAdminsGroup = "WSP-HelpdeskAdmins";
 
         #endregion
 
@@ -308,10 +309,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                     //ActiveDirectoryUtils.AddObjectToGroup(GetComputerPath(ConnectionBroker), GetComputerGroupPath(organizationId, collection.Name));
                 }
 
-                if (!ActiveDirectoryUtils.AdObjectExists(GetHelpDeskComputerGroupPath()))
-                {
-                    ActiveDirectoryUtils.CreateGroup(GetRootOUPath(), RDSHelpDeskComputerGroup);
-                }
+                CheckOrCreateHelpDeskComputerGroup();                             
 
                 if (!ActiveDirectoryUtils.AdObjectExists(GetUsersGroupPath(organizationId, collection.Name)))
                 {
@@ -342,7 +340,13 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
                 //add session servers to group
                 foreach (var rdsServer in collection.Servers)
-                {
+                {                    
+                    if (!CheckLocalAdminsGroupExists(rdsServer.FqdName, runSpace))
+                    {
+                        CreateLocalAdministratorsGroup(rdsServer.FqdName, runSpace);
+                    }
+
+                    AddHelpDeskAdminsGroupToLocalAdmins(runSpace, rdsServer.FqdName);
                     AddComputerToCollectionAdComputerGroup(organizationId, collection.Name, rdsServer);
                 }
             }                   
@@ -471,7 +475,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             return collection;
         }
 
-        public bool RemoveCollection(string organizationId, string collectionName)
+        public bool RemoveCollection(string organizationId, string collectionName, List<RdsServer> servers)
         {
             var result = true;
 
@@ -506,10 +510,13 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                     RemoveNpsPolicy(runSpace, CentralNpsHost, capPolicyName);
                 }
 
-                //Remove security group
+                foreach(var server in servers)
+                {
+                    RemoveComputerFromCollectionAdComputerGroup(organizationId, collectionName, server);
+                }
 
                 ActiveDirectoryUtils.DeleteADObject(GetComputerGroupPath(organizationId, collectionName));
-                ActiveDirectoryUtils.DeleteADObject(GetUsersGroupPath(organizationId, collectionName));
+                ActiveDirectoryUtils.DeleteADObject(GetUsersGroupPath(organizationId, collectionName));                
             }
             catch (Exception e)
             {
@@ -565,11 +572,14 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
                 ExecuteShellCommand(runSpace, cmd, false);
 
-                if (!ActiveDirectoryUtils.AdObjectExists(GetHelpDeskComputerGroupPath()))
+                CheckOrCreateHelpDeskComputerGroup();                
+
+                if (!CheckLocalAdminsGroupExists(server.FqdName, runSpace))
                 {
-                    ActiveDirectoryUtils.CreateGroup(GetRootOUPath(), RDSHelpDeskComputerGroup);
+                    CreateLocalAdministratorsGroup(server.FqdName, runSpace);
                 }
 
+                AddHelpDeskAdminsGroupToLocalAdmins(runSpace, server.FqdName);
                 AddComputerToCollectionAdComputerGroup(organizationId, collectionName, server);
             }
             catch (Exception e)
@@ -969,7 +979,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
         public void SaveRdsCollectionLocalAdmins(List<OrganizationUser> users, List<string> hosts)
         {
-            Runspace runspace = null;
+            Runspace runspace = null;            
 
             try
             {
@@ -994,7 +1004,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                             throw new Exception(string.Join("\r\n", errors.Select(e => e.ToString()).ToArray()));
                         }                        
                     }
-
+                    
                     var existingAdmins = GetExistingLocalAdmins(hostName, runspace).Select(e => e.ToLower());
                     var formUsers = users.Select(u => string.Format("{0}\\{1}", domainName, u.SamAccountName).ToLower());
                     var newUsers = users.Where(u => !existingAdmins.Contains(string.Format("{0}\\{1}", domainName, u.SamAccountName).ToLower()));
@@ -1009,6 +1019,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                     {
                         RemoveLocalAdmin(hostName, user, runspace);
                     }
+
+                    AddHelpDeskAdminsGroupToLocalAdmins(runspace, hostName);
                 }                
             }
             finally
@@ -1139,6 +1151,53 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             return errors;
         }
         
+        #endregion
+
+        #region RDS Help Desk
+
+        private string GetHelpDeskGroupPath(string groupName)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            AppendProtocol(sb);
+            AppendDomainController(sb);
+            AppendCNPath(sb, groupName);
+            AppendOUPath(sb, RootOU);
+            AppendDomainPath(sb, RootDomain);
+
+            return sb.ToString();
+        }                
+
+        private void CheckOrCreateHelpDeskComputerGroup()
+        {
+            if (!ActiveDirectoryUtils.AdObjectExists(GetHelpDeskGroupPath(RDSHelpDeskComputerGroup)))
+            {
+                ActiveDirectoryUtils.CreateGroup(GetRootOUPath(), RDSHelpDeskComputerGroup);
+            }
+        }
+
+        private void AddHelpDeskAdminsGroupToLocalAdmins(Runspace runspace, string hostName)
+        {
+            var helpDeskAdminsGroupPath = GetHelpDeskGroupPath(RDSHelpDeskAdminsGroup);
+
+            if (!ActiveDirectoryUtils.AdObjectExists(helpDeskAdminsGroupPath))
+            {
+                ActiveDirectoryUtils.CreateGroup(GetRootOUPath(), RDSHelpDeskAdminsGroup);
+            }
+
+            var groupEntry = ActiveDirectoryUtils.GetADObject(helpDeskAdminsGroupPath);
+            var samAccountName = ActiveDirectoryUtils.GetADObjectProperty(groupEntry, "sAMAccountName");
+            
+            var scripts = new List<string>
+            {
+                string.Format("$GroupObj = [ADSI]\"WinNT://{0}/{1}\"", hostName, WspAdministratorsGroupName),
+                string.Format("$GroupObj.Add(\"WinNT://{0}/{1}\")", ServerSettings.ADRootDomain, samAccountName)
+            };
+            
+            object[] errors = null;
+            ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);                 
+        }
+
         #endregion
 
         #region SSL
@@ -1356,7 +1415,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
                 if (!ActiveDirectoryUtils.IsComputerInGroup(samName, RDSHelpDeskComputerGroup))
                 {
-                    ActiveDirectoryUtils.AddObjectToGroup(computerPath, GetHelpDeskComputerGroupPath());
+                    ActiveDirectoryUtils.AddObjectToGroup(computerPath, GetHelpDeskGroupPath(RDSHelpDeskComputerGroup));
                 }
             }
 
@@ -1383,11 +1442,11 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                     ActiveDirectoryUtils.RemoveObjectFromGroup(computerPath, GetComputerGroupPath(organizationId, collectionName));
                 }
 
-                if (ActiveDirectoryUtils.AdObjectExists(GetHelpDeskComputerGroupPath()))
+                if (ActiveDirectoryUtils.AdObjectExists(GetHelpDeskGroupPath(RDSHelpDeskComputerGroup)))
                 {
                     if (ActiveDirectoryUtils.IsComputerInGroup(samName, RDSHelpDeskComputerGroup))
                     {
-                        ActiveDirectoryUtils.RemoveObjectFromGroup(computerPath, GetHelpDeskComputerGroupPath());
+                        ActiveDirectoryUtils.RemoveObjectFromGroup(computerPath, GetHelpDeskGroupPath(RDSHelpDeskComputerGroup));
                     }
                 }
             }
@@ -1673,20 +1732,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             AppendDomainPath(sb, RootDomain);
 
             return sb.ToString();
-        }
-
-        internal string GetHelpDeskComputerGroupPath()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            AppendProtocol(sb);
-            AppendDomainController(sb);
-            AppendCNPath(sb, RDSHelpDeskComputerGroup);
-            AppendOUPath(sb, RootOU);
-            AppendDomainPath(sb, RootDomain);
-
-            return sb.ToString();
-        } 
+        }        
 
         internal string GetUsersGroupPath(string organizationId, string collection)
         {

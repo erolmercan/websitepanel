@@ -146,12 +146,12 @@ namespace WebsitePanel.Server
         }
 
         [WebMethod, SoapHeader("settings")]
-        public bool RemoveCollection(string organizationId, string collectionName)
+        public bool RemoveCollection(string organizationId, string collectionName, List<RdsServer> servers)
         {
             try
             {
                 Log.WriteStart("'{0}' RemoveCollection", ProviderSettings.ProviderName);
-                var result = RDSProvider.RemoveCollection(organizationId, collectionName);
+                var result = RDSProvider.RemoveCollection(organizationId, collectionName, servers);
                 Log.WriteEnd("'{0}' RemoveCollection", ProviderSettings.ProviderName);
                 return result;
             }

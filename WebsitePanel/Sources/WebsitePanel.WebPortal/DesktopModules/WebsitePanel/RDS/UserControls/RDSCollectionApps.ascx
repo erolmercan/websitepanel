@@ -33,7 +33,7 @@
             <asp:TemplateField>
                 <ItemStyle Width="20px" />
                 <ItemTemplate>
-                    <asp:Image ID="UsersImage" ImageUrl='<%# PortalUtils.GetThemedImage("user_16.png")%>' runat="server" Visible='<%# Eval("Users") != null %>'/>
+                    <asp:Image ID="UsersImage" ImageUrl='<%# PortalUtils.GetThemedImage("Exchange/accounting_mail_16.png")%>' runat="server" Visible='<%# Eval("Users") != null %>'/>
                 </ItemTemplate>
             </asp:TemplateField>          
 		</Columns>
