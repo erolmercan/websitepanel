@@ -146,12 +146,12 @@ namespace WebsitePanel.Server
         }
 
         [WebMethod, SoapHeader("settings")]
-        public bool RemoveCollection(string organizationId, string collectionName)
+        public bool RemoveCollection(string organizationId, string collectionName, List<RdsServer> servers)
         {
             try
             {
                 Log.WriteStart("'{0}' RemoveCollection", ProviderSettings.ProviderName);
-                var result = RDSProvider.RemoveCollection(organizationId, collectionName);
+                var result = RDSProvider.RemoveCollection(organizationId, collectionName, servers);
                 Log.WriteEnd("'{0}' RemoveCollection", ProviderSettings.ProviderName);
                 return result;
             }
@@ -627,6 +627,22 @@ namespace WebsitePanel.Server
             catch (Exception ex)
             {
                 Log.WriteError(String.Format("'{0}' RemoveRdsServerFromTenantOU", ProviderSettings.ProviderName), ex);
+                throw;
+            }
+        }
+
+        [WebMethod, SoapHeader("settings")]
+        public void InstallCertificate(byte[] certificate, string password, List<string> hostNames)
+        {
+            try
+            {
+                Log.WriteStart("'{0}' InstallCertificate", ProviderSettings.ProviderName);
+                RDSProvider.InstallCertificate(certificate, password, hostNames);
+                Log.WriteEnd("'{0}' InstallCertificate", ProviderSettings.ProviderName);
+            }
+            catch (Exception ex)
+            {
+                Log.WriteError(String.Format("'{0}' InstallCertificate", ProviderSettings.ProviderName), ex);
                 throw;
             }
         }

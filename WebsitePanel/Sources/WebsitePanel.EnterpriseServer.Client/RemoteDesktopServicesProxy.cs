@@ -118,6 +118,8 @@ namespace WebsitePanel.EnterpriseServer {
         
         private System.Threading.SendOrPostCallback SaveRdsCollectionLocalAdminsOperationCompleted;
         
+        private System.Threading.SendOrPostCallback InstallSessionHostsCertificateOperationCompleted;
+        
         /// <remarks/>
         public esRemoteDesktopServices() {
             this.Url = "http://localhost:9002/esRemoteDesktopServices.asmx";
@@ -254,6 +256,9 @@ namespace WebsitePanel.EnterpriseServer {
         
         /// <remarks/>
         public event SaveRdsCollectionLocalAdminsCompletedEventHandler SaveRdsCollectionLocalAdminsCompleted;
+        
+        /// <remarks/>
+        public event InstallSessionHostsCertificateCompletedEventHandler InstallSessionHostsCertificateCompleted;
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/GetRdsCollection", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
@@ -2239,6 +2244,53 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
+        [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/InstallSessionHostsCertificate", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
+        public ResultObject InstallSessionHostsCertificate(int collectionId, [System.Xml.Serialization.XmlElementAttribute(DataType="base64Binary")] byte[] certificate, string password) {
+            object[] results = this.Invoke("InstallSessionHostsCertificate", new object[] {
+                        collectionId,
+                        certificate,
+                        password});
+            return ((ResultObject)(results[0]));
+        }
+        
+        /// <remarks/>
+        public System.IAsyncResult BeginInstallSessionHostsCertificate(int collectionId, byte[] certificate, string password, System.AsyncCallback callback, object asyncState) {
+            return this.BeginInvoke("InstallSessionHostsCertificate", new object[] {
+                        collectionId,
+                        certificate,
+                        password}, callback, asyncState);
+        }
+        
+        /// <remarks/>
+        public ResultObject EndInstallSessionHostsCertificate(System.IAsyncResult asyncResult) {
+            object[] results = this.EndInvoke(asyncResult);
+            return ((ResultObject)(results[0]));
+        }
+        
+        /// <remarks/>
+        public void InstallSessionHostsCertificateAsync(int collectionId, byte[] certificate, string password) {
+            this.InstallSessionHostsCertificateAsync(collectionId, certificate, password, null);
+        }
+        
+        /// <remarks/>
+        public void InstallSessionHostsCertificateAsync(int collectionId, byte[] certificate, string password, object userState) {
+            if ((this.InstallSessionHostsCertificateOperationCompleted == null)) {
+                this.InstallSessionHostsCertificateOperationCompleted = new System.Threading.SendOrPostCallback(this.OnInstallSessionHostsCertificateOperationCompleted);
+            }
+            this.InvokeAsync("InstallSessionHostsCertificate", new object[] {
+                        collectionId,
+                        certificate,
+                        password}, this.InstallSessionHostsCertificateOperationCompleted, userState);
+        }
+        
+        private void OnInstallSessionHostsCertificateOperationCompleted(object arg) {
+            if ((this.InstallSessionHostsCertificateCompleted != null)) {
+                System.Web.Services.Protocols.InvokeCompletedEventArgs invokeArgs = ((System.Web.Services.Protocols.InvokeCompletedEventArgs)(arg));
+                this.InstallSessionHostsCertificateCompleted(this, new InstallSessionHostsCertificateCompletedEventArgs(invokeArgs.Results, invokeArgs.Error, invokeArgs.Cancelled, invokeArgs.UserState));
+            }
+        }
+        
+        /// <remarks/>
         public new void CancelAsync(object userState) {
             base.CancelAsync(userState);
         }
@@ -3375,6 +3427,32 @@ namespace WebsitePanel.EnterpriseServer {
         private object[] results;
         
         internal SaveRdsCollectionLocalAdminsCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
+                base(exception, cancelled, userState) {
+            this.results = results;
+        }
+        
+        /// <remarks/>
+        public ResultObject Result {
+            get {
+                this.RaiseExceptionIfNecessary();
+                return ((ResultObject)(this.results[0]));
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    public delegate void InstallSessionHostsCertificateCompletedEventHandler(object sender, InstallSessionHostsCertificateCompletedEventArgs e);
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("wsdl", "2.0.50727.3038")]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    public partial class InstallSessionHostsCertificateCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs {
+        
+        private object[] results;
+        
+        internal InstallSessionHostsCertificateCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) : 
                 base(exception, cancelled, userState) {
             this.results = results;
         }
