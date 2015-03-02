@@ -318,7 +318,7 @@ namespace WebsitePanel.WebDavPortal.Controllers
         {
             var permissions = _webDavAuthorizationService.GetPermissions(WspContext.User, pathPart);
 
-            if (permissions.HasFlag(WebDavPermissions.Write) == false || Request.Browser.IsMobileDevice)
+            if (permissions.HasFlag(WebDavPermissions.Write) == false || permissions.HasFlag(WebDavPermissions.OwaEdit) == false || Request.Browser.IsMobileDevice)
             {
                 return new RedirectToRouteResult(FileSystemRouteNames.ViewOfficeOnline, null);
             }
