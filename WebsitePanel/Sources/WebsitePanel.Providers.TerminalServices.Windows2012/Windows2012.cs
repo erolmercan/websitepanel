@@ -67,13 +67,13 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         private const string Admins = "Admins";        
         private const string RdsGroupFormat = "rds-{0}-{1}";
         private const string RdsModuleName = "RemoteDesktopServices";
-        private const string AddNpsString = "netsh nps add np name=\"\"{0}\"\" policysource=\"1\" processingorder=\"{1}\" conditionid=\"0x3d\" conditiondata=\"^5$\" conditionid=\"0x1fb5\" conditiondata=\"{2}\" conditionid=\"0x1e\" conditiondata=\"UserAuthType:(PW|CA)\" profileid=\"0x1005\" profiledata=\"TRUE\" profileid=\"0x100f\" profiledata=\"TRUE\" profileid=\"0x1009\" profiledata=\"0x7\" profileid=\"0x1fe6\" profiledata=\"0x40000000\"";
-        private const string WspAdministratorsGroupName = "WSP-Org-Administrators";
+        private const string AddNpsString = "netsh nps add np name=\"\"{0}\"\" policysource=\"1\" processingorder=\"{1}\" conditionid=\"0x3d\" conditiondata=\"^5$\" conditionid=\"0x1fb5\" conditiondata=\"{2}\" conditionid=\"0x1e\" conditiondata=\"UserAuthType:(PW|CA)\" profileid=\"0x1005\" profiledata=\"TRUE\" profileid=\"0x100f\" profiledata=\"TRUE\" profileid=\"0x1009\" profiledata=\"0x7\" profileid=\"0x1fe6\" profiledata=\"0x40000000\"";        
         private const string WspAdministratorsGroupDescription = "WSP Org Administrators";
         private const string RdsServersOU = "RDSServers";
         private const string RDSHelpDeskComputerGroup = "Websitepanel-RDSHelpDesk-Computer";
         private const string RDSHelpDeskGroup = "WSP-HelpDeskAdministrators";
-        private const string RDSHelpDeskGroupDescription = "WSP Help Desk Administrators";                                                
+        private const string RDSHelpDeskGroupDescription = "WSP Help Desk Administrators";
+        private const string LocalAdministratorsGroupName = "Administrators";
 
         #endregion
 
@@ -343,13 +343,8 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
                 //add session servers to group
                 foreach (var rdsServer in collection.Servers)
-                {                    
-                    if (!CheckLocalAdminsGroupExists(rdsServer.FqdName, runSpace))
-                    {
-                        CreateLocalAdministratorsGroup(rdsServer.FqdName, runSpace);
-                    }
-
-                    AddAdGroupToLocalAdmins(runSpace, rdsServer.FqdName, helpDeskGroupSamAccountName);
+                {                                        
+                    AddAdGroupToLocalAdmins(runSpace, rdsServer.FqdName, helpDeskGroupSamAccountName);                    
                     AddComputerToCollectionAdComputerGroup(organizationId, collection.Name, rdsServer);
                 }
             }                   
@@ -575,20 +570,11 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                 ExecuteShellCommand(runSpace, cmd, false);
 
                 CheckOrCreateHelpDeskComputerGroup();
-                string helpDeskGroupSamAccountName = CheckOrCreateAdGroup(GetHelpDeskGroupPath(RDSHelpDeskGroup), GetRootOUPath(), RDSHelpDeskGroup, RDSHelpDeskGroupDescription);
-
-                if (!CheckLocalAdminsGroupExists(server.FqdName, runSpace))
-                {
-                    CreateLocalAdministratorsGroup(server.FqdName, runSpace);
-                }
+                string helpDeskGroupSamAccountName = CheckOrCreateAdGroup(GetHelpDeskGroupPath(RDSHelpDeskGroup), GetRootOUPath(), RDSHelpDeskGroup, RDSHelpDeskGroupDescription);                
 
                 AddAdGroupToLocalAdmins(runSpace, server.FqdName, helpDeskGroupSamAccountName);
                 AddComputerToCollectionAdComputerGroup(organizationId, collectionName, server);
-            }
-            catch (Exception e)
-            {
-
-            }
+            }            
             finally
             {
                 CloseRunspace(runSpace);
@@ -1001,18 +987,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                 }
 
                 foreach (var hostName in hosts)
-                {
-                    if (!CheckLocalAdminsGroupExists(hostName, runspace))
-                    {
-                        var errors = CreateLocalAdministratorsGroup(hostName, runspace);
-                        
-                        if (errors.Any())
-                        {
-                            Log.WriteWarning(string.Join("\r\n", errors.Select(e => e.ToString()).ToArray()));
-                            throw new Exception(string.Join("\r\n", errors.Select(e => e.ToString()).ToArray()));
-                        }                        
-                    }                                       
-
+                {                                                     
                     AddAdGroupToLocalAdmins(runspace, hostName, helpDeskGroupSamAccountName);
                     AddAdGroupToLocalAdmins(runspace, hostName, localAdminsGroupSamAccountName);
 
@@ -1029,60 +1004,13 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         {
             string groupName = GetLocalAdminsGroupName(collectionName);
             return GetUsersToCollectionAdGroup(collectionName, groupName, organizationId);
-        }        
-
-        private bool CheckLocalAdminsGroupExists(string hostName, Runspace runspace)
-        {
-            var scripts = new List<string>
-            {
-                string.Format("net localgroup {0}", WspAdministratorsGroupName)
-            };
-
-            object[] errors = null;
-            var result = ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
-
-            if (!errors.Any())
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        private object[] CreateLocalAdministratorsGroup(string hostName, Runspace runspace)
-        {
-            var scripts = new List<string>
-            {
-                string.Format("$cn = [ADSI]\"WinNT://{0}\"", hostName),
-                string.Format("$group = $cn.Create(\"Group\", \"{0}\")", WspAdministratorsGroupName),
-                "$group.setinfo()",
-                string.Format("$group.description = \"{0}\"", WspAdministratorsGroupDescription),
-                "$group.setinfo()"
-            };
-
-            object[] errors = null;
-            ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
-
-            if (!errors.Any())
-            {
-                scripts = new List<string>
-                {
-                    string.Format("$GroupObj = [ADSI]\"WinNT://{0}/Administrators\"", hostName),
-                    string.Format("$GroupObj.Add(\"WinNT://{0}/{1}\")", hostName.ToLower().Replace(string.Format(".{0}", ServerSettings.ADRootDomain.ToLower()), ""), WspAdministratorsGroupName)
-                };
-            
-                errors = null;
-                ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
-            }
-
-            return errors;
-        }      
+        }                     
         
         private void RemoveGroupFromLocalAdmin(string fqdnName, string hostName, string groupName, Runspace runspace)
         {            
             var scripts = new List<string>
             {
-                string.Format("$GroupObj = [ADSI]\"WinNT://{0}/{1}\"", hostName, WspAdministratorsGroupName),
+                string.Format("$GroupObj = [ADSI]\"WinNT://{0}/{1}\"", hostName, LocalAdministratorsGroupName),
                 string.Format("$GroupObj.Remove(\"WinNT://{0}/{1}\")", ServerSettings.ADRootDomain, RDSHelpDeskGroup),
                 string.Format("$GroupObj.Remove(\"WinNT://{0}/{1}\")", ServerSettings.ADRootDomain, groupName)
             };
@@ -1149,7 +1077,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
         {                                    
             var scripts = new List<string>
             {
-                string.Format("$GroupObj = [ADSI]\"WinNT://{0}/{1}\"", hostName, WspAdministratorsGroupName),
+                string.Format("$GroupObj = [ADSI]\"WinNT://{0}/{1}\"", hostName, LocalAdministratorsGroupName),
                 string.Format("$GroupObj.Add(\"WinNT://{0}/{1}\")", ServerSettings.ADRootDomain, samAccountName)
             };
             

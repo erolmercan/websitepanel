@@ -84,7 +84,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
 			        <ItemTemplate>
-				        <asp:LinkButton ID="lnkInstallCertificate" runat="server" Text="Certificate" Visible='<%# Eval("ItemId") != null && Eval("Status") != null && Eval("Status").ToString().StartsWith("Online") %>'
+				        <asp:LinkButton ID="lnkInstallCertificate" runat="server" Text="Certificate" Visible='<%# Convert.ToBoolean(Eval("SslAvailable")) && Eval("ItemId") != null && Eval("Status") != null && Eval("Status").ToString().StartsWith("Online") %>'
 					        CommandName="InstallCertificate" CommandArgument='<%# Eval("Id") %>' ToolTip="Repair Certificate"
                             OnClientClick="if(confirm('Are you sure you want to install certificate?')) ShowProgressDialog('Installing certificate...'); else return false;"></asp:LinkButton>                        
 			        </ItemTemplate>

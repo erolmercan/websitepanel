@@ -288,6 +288,11 @@ namespace WebsitePanel.EnterpriseServer
             return GetRdsCertificateByServiceIdInternal(serviceId);
         }
 
+        public static RdsCertificate GetRdsCertificateByItemId(int itemId)
+        {
+            return GetRdsCertificateByItemIdInternal(itemId);
+        }
+
         public static ResultObject AddRdsCertificate(RdsCertificate certificate)
         {
             return AddRdsCertificateInternal(certificate);
@@ -341,6 +346,21 @@ namespace WebsitePanel.EnterpriseServer
 
         private static RdsCertificate GetRdsCertificateByServiceIdInternal(int serviceId)
         {
+            var result = ObjectUtils.FillObjectFromDataReader<RdsCertificate>(DataProvider.GetRdsCertificateByServiceId(serviceId));
+
+            return result;
+        }
+
+        private static RdsCertificate GetRdsCertificateByItemIdInternal(int itemId)
+        {
+            Organization org = OrganizationController.GetOrganization(itemId);
+
+            if (org == null)
+            {
+                return null;
+            }
+
+            int serviceId = GetRemoteDesktopServiceID(org.PackageId);
             var result = ObjectUtils.FillObjectFromDataReader<RdsCertificate>(DataProvider.GetRdsCertificateByServiceId(serviceId));
 
             return result;
@@ -431,7 +451,7 @@ namespace WebsitePanel.EnterpriseServer
             var organizationUsers = OrganizationController.GetOrganizationUsersPaged(collection.ItemId, null, null, null, 0, Int32.MaxValue).PageUsers;
             var organizationAdmins = rds.GetRdsCollectionLocalAdmins(org.OrganizationId, collection.Name);
 
-            return organizationUsers.Where(o => organizationAdmins.Select(a => a.ToLower()).Contains(o.DomainUserName.ToLower())).ToList();
+            return organizationUsers.Where(o => organizationAdmins.Select(a => a.ToLower()).Contains(o.SamAccountName.ToLower())).ToList();
         }
 
         private static ResultObject SaveRdsCollectionLocalAdminsInternal(OrganizationUser[] users, int collectionId)
