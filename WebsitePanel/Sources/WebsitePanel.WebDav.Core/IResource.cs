@@ -483,7 +483,7 @@ namespace WebsitePanel.WebDav.Core
             {
                 _href = href;
 
-                var baseUrl = href.AbsoluteUri.Remove(href.AbsoluteUri.Length - href.Segments.Last().Length);
+                var baseUrl = href.ToString().Remove(href.ToString().Length - href.ToString().Trim('/').Split('/').Last().Length);
 
                 _baseUri = new Uri(baseUrl);
             }
