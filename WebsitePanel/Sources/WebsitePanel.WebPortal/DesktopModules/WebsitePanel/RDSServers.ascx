@@ -91,7 +91,7 @@
                 </asp:TemplateField>
                 <asp:TemplateField>
 			        <ItemTemplate>
-				        <asp:LinkButton ID="lnkInstallCertificate" runat="server" Text="Certificate" Visible='<%# Convert.ToBoolean(Eval("SslAvailable")) && Eval("ItemId") != null && Eval("Status") != null && Eval("Status").ToString().StartsWith("Online") %>'
+				        <asp:LinkButton ID="lnkInstallCertificate" runat="server" Text="Certificate" Visible='<%# Convert.ToBoolean(Eval("SslAvailable")) && Eval("Status") != null && Eval("Status").ToString().StartsWith("Online") %>'
 					        CommandName="InstallCertificate" CommandArgument='<%# Eval("Id") %>' ToolTip="Repair Certificate"
                             OnClientClick="if(confirm('Are you sure you want to install certificate?')) ShowProgressDialog('Installing certificate...'); else return false;"></asp:LinkButton>                        
 			        </ItemTemplate>
@@ -100,7 +100,7 @@
 			        <ItemTemplate>
 				        <asp:LinkButton ID="lnkRemove" runat="server" Text="Remove" Visible='<%# Eval("ItemId") == null %>'
 					        CommandName="DeleteItem" CommandArgument='<%# Eval("Id") %>' 
-                            meta:resourcekey="cmdDelete" OnClientClick="return confirm('Are you sure you want to delete selected rds server?')"></asp:LinkButton>                        
+                            meta:resourcekey="cmdDelete" OnClientClick="if(confirm('Are you sure you want to delete selected rds server??')) ShowProgressDialog('Removeing RDS Server...'); else return false;"></asp:LinkButton>                        
 			        </ItemTemplate>
 		        </asp:TemplateField>
 	        </Columns>

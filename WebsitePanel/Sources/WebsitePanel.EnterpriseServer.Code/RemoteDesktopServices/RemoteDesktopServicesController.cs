@@ -248,22 +248,22 @@ namespace WebsitePanel.EnterpriseServer
             return GetRdsCollectionSessionHostsInternal(collectionId);
         }
 
-        public static RdsServerInfo GetRdsServerInfo(int itemId, string fqdnName)
+        public static RdsServerInfo GetRdsServerInfo(int? itemId, string fqdnName)
         {
             return GetRdsServerInfoInternal(itemId, fqdnName);
         }
 
-        public static string GetRdsServerStatus(int itemId, string fqdnName)
+        public static string GetRdsServerStatus(int? itemId, string fqdnName)
         {
             return GetRdsServerStatusInternal(itemId, fqdnName);
         }
 
-        public static ResultObject ShutDownRdsServer(int itemId, string fqdnName)
+        public static ResultObject ShutDownRdsServer(int? itemId, string fqdnName)
         {
             return ShutDownRdsServerInternal(itemId, fqdnName);
         }
 
-        public static ResultObject RestartRdsServer(int itemId, string fqdnName)
+        public static ResultObject RestartRdsServer(int? itemId, string fqdnName)
         {
             return RestartRdsServerInternal(itemId, fqdnName);
         }
@@ -288,7 +288,7 @@ namespace WebsitePanel.EnterpriseServer
             return GetRdsCertificateByServiceIdInternal(serviceId);
         }
 
-        public static RdsCertificate GetRdsCertificateByItemId(int itemId)
+        public static RdsCertificate GetRdsCertificateByItemId(int? itemId)
         {
             return GetRdsCertificateByItemIdInternal(itemId);
         }
@@ -298,22 +298,23 @@ namespace WebsitePanel.EnterpriseServer
             return AddRdsCertificateInternal(certificate);
         }
 
+        public static List<ServiceInfo> GetRdsServices()
+        {
+            return GetRdsServicesInternal();
+        }
+
+        private static List<ServiceInfo> GetRdsServicesInternal()
+        {
+            return ObjectUtils.CreateListFromDataSet<ServiceInfo>(DataProvider.GetServicesByGroupName(SecurityContext.User.UserId, ResourceGroups.RDS));
+        }
+
         private static ResultObject InstallSessionHostsCertificateInternal(RdsServer rdsServer)
         {
             var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "INSTALL_CERTIFICATE");
 
             try
-            {                
-                Organization org = OrganizationController.GetOrganization(rdsServer.ItemId.Value);                
-
-                if (org == null)
-                {
-                    result.IsSuccess = false;
-                    result.AddError("", new NullReferenceException("Organization not found"));
-                    return result;
-                }
-
-                int serviceId = GetRemoteDesktopServiceID(org.PackageId);
+            {                                
+                int serviceId = GetRdsServiceId(rdsServer.ItemId);
                 var rds = GetRemoteDesktopServices(serviceId);
                 var certificate = GetRdsCertificateByServiceIdInternal(serviceId);
                 
@@ -351,16 +352,9 @@ namespace WebsitePanel.EnterpriseServer
             return result;
         }
 
-        private static RdsCertificate GetRdsCertificateByItemIdInternal(int itemId)
-        {
-            Organization org = OrganizationController.GetOrganization(itemId);
-
-            if (org == null)
-            {
-                return null;
-            }
-
-            int serviceId = GetRemoteDesktopServiceID(org.PackageId);
+        private static RdsCertificate GetRdsCertificateByItemIdInternal(int? itemId)
+        {            
+            int serviceId = GetRdsServiceId(itemId);
             var result = ObjectUtils.FillObjectFromDataReader<RdsCertificate>(DataProvider.GetRdsCertificateByServiceId(serviceId));
 
             return result;
@@ -539,6 +533,14 @@ namespace WebsitePanel.EnterpriseServer
 
             try
             {
+                Organization org = OrganizationController.GetOrganization(itemId);
+                if (org == null)
+                {
+                    return -1;
+                }
+
+                var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
+
                 foreach(var server in collection.Servers)
                 {                    
                     if (!server.FqdName.EndsWith(domainName, StringComparison.CurrentCultureIgnoreCase))
@@ -546,20 +548,12 @@ namespace WebsitePanel.EnterpriseServer
                         throw TaskManager.WriteError(new Exception("Fully Qualified Domain Name not valid."));
                     }
 
-                    if (!CheckRDSServerAvaliable(server.FqdName))
+                    if (!rds.CheckRDSServerAvaliable(server.FqdName))
                     {
                         throw TaskManager.WriteError(new Exception(string.Format("Unable to connect to {0} server.", server.FqdName)));
                     }
                 }
-
-                // load organization
-                Organization org = OrganizationController.GetOrganization(itemId);
-                if (org == null)
-                {                    
-                    return -1;
-                }
-
-                var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
+                                
                 collection.Name = GetFormattedCollectionName(collection.DisplayName, org.OrganizationId);
 
                 collection.Settings = new RdsCollectionSettings
@@ -1031,12 +1025,17 @@ namespace WebsitePanel.EnterpriseServer
 
             try
             {
-                if (CheckRDSServerAvaliable(rdsServer.FqdName))
+                int serviceId = GetRdsMainServiceId();
+                var rds = GetRemoteDesktopServices(serviceId);
+
+                if (rds.CheckRDSServerAvaliable(rdsServer.FqdName))
                 {
                     var domainName = IPGlobalProperties.GetIPGlobalProperties().DomainName;
 
                     if (rdsServer.FqdName.EndsWith(domainName, StringComparison.CurrentCultureIgnoreCase))
-                    {
+                    {                        
+                        rds.AddSessionHostFeatureToServer(rdsServer.FqdName);
+                        rds.MoveSessionHostToRdsOU(rdsServer.Name);
                         rdsServer.Id = DataProvider.AddRDSServer(rdsServer.Name, rdsServer.FqdName, rdsServer.Description);
                     }
                     else
@@ -1194,12 +1193,6 @@ namespace WebsitePanel.EnterpriseServer
                 var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
 
                 RdsServer rdsServer = GetRdsServer(serverId);
-
-                //if (!rds.CheckSessionHostFeatureInstallation(rdsServer.FqdName))
-                {
-                    rds.AddSessionHostFeatureToServer(rdsServer.FqdName);
-                }
-
                 rds.MoveRdsServerToTenantOU(rdsServer.FqdName, org.OrganizationId);
                 DataProvider.AddRDSServerToOrganization(itemId, serverId);
             }
@@ -1508,36 +1501,32 @@ namespace WebsitePanel.EnterpriseServer
             return result;
         }
 
-        private static RdsServerInfo GetRdsServerInfoInternal(int itemId, string fqdnName)
+        private static RdsServerInfo GetRdsServerInfoInternal(int? itemId, string fqdnName)
         {
-            Organization org = OrganizationController.GetOrganization(itemId);
+            int serviceId = GetRdsServiceId(itemId);
+            var result = new RdsServerInfo();
 
-            if (org == null)
+            if (serviceId != -1)
             {
-                return new RdsServerInfo();
+                var rds = GetRemoteDesktopServices(serviceId);
+                result = rds.GetRdsServerInfo(fqdnName);
             }
-
-            var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
-            var result = rds.GetRdsServerInfo(fqdnName);
 
             return result;
         }
 
-        private static string GetRdsServerStatusInternal(int itemId, string fqdnName)
-        {
-            Organization org = OrganizationController.GetOrganization(itemId);
+        private static string GetRdsServerStatusInternal(int? itemId, string fqdnName)
+        {            
             var result = "Unavailable";
-
-            if (org == null)
-            {
-                return result;
-            }
-
-            var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
+            var serviceId = GetRdsServiceId(itemId);            
 
             try
             {
-                result = rds.GetRdsServerStatus(fqdnName);
+                if (serviceId != -1)
+                {
+                    var rds = GetRemoteDesktopServices(serviceId);
+                    result = rds.GetRdsServerStatus(fqdnName);
+                }                
             }
             catch
             {
@@ -1546,23 +1535,19 @@ namespace WebsitePanel.EnterpriseServer
             return result;
         }        
 
-        private static ResultObject ShutDownRdsServerInternal(int itemId, string fqdnName)
+        private static ResultObject ShutDownRdsServerInternal(int? itemId, string fqdnName)
         {
             var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "SHUTDOWN_RDS_SERVER");
 
             try
-            {                
-                Organization org = OrganizationController.GetOrganization(itemId);
+            {
+                int serviceId = GetRdsServiceId(itemId);
 
-                if (org == null)
+                if (serviceId != -1)
                 {
-                    result.IsSuccess = false;
-                    result.AddError("", new NullReferenceException("Organization not found"));
-                    return result;
+                    var rds = GetRemoteDesktopServices(serviceId);
+                    rds.ShutDownRdsServer(fqdnName);
                 }
-
-                var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
-                rds.ShutDownRdsServer(fqdnName);
             }
             catch (Exception ex)
             {
@@ -1583,23 +1568,19 @@ namespace WebsitePanel.EnterpriseServer
             return result;
         }
 
-        private static ResultObject RestartRdsServerInternal(int itemId, string fqdnName)
+        private static ResultObject RestartRdsServerInternal(int? itemId, string fqdnName)
         {
-            var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "RESTART_RDS_SERVER");
+            var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "RESTART_RDS_SERVER");            
 
             try
             {
-                Organization org = OrganizationController.GetOrganization(itemId);
+                int serviceId = GetRdsServiceId(itemId);
 
-                if (org == null)
+                if (serviceId != -1)
                 {
-                    result.IsSuccess = false;
-                    result.AddError("", new NullReferenceException("Organization not found"));
-                    return result;
+                    var rds = GetRemoteDesktopServices(serviceId);
+                    rds.RestartRdsServer(fqdnName);
                 }
-
-                var rds = GetRemoteDesktopServices(GetRemoteDesktopServiceID(org.PackageId));
-                rds.RestartRdsServer(fqdnName);
             }
             catch (Exception ex)
             {
@@ -1761,20 +1742,6 @@ namespace WebsitePanel.EnterpriseServer
             var address = Dns.GetHostAddresses(hostname);
 
             return address;
-        }
-
-        private static bool CheckRDSServerAvaliable(string hostname)
-        {
-            bool result = false;
-            var ping = new Ping();
-            var reply = ping.Send(hostname, 1000);            
-
-            if (reply.Status == IPStatus.Success)
-            {
-                result = true;
-            }
-
-            return result;
         }        
 
         private static ResultObject DeleteRemoteDesktopServiceInternal(int itemId)
@@ -1819,6 +1786,29 @@ namespace WebsitePanel.EnterpriseServer
         private static int GetRemoteDesktopServiceID(int packageId)
         {
             return PackageController.GetPackageServiceId(packageId, ResourceGroups.RDS);
+        }     
+  
+        private static int GetRdsServiceId(int? itemId)
+        {
+            int serviceId = -1;
+
+            if (itemId.HasValue)
+            {
+                Organization org = OrganizationController.GetOrganization(itemId.Value);
+
+                if (org == null)
+                {
+                    return serviceId;
+                }
+
+                serviceId = GetRemoteDesktopServiceID(org.PackageId);
+            }
+            else
+            {
+                serviceId = GetRdsMainServiceId();
+            }
+
+            return serviceId;
         }
 
         private static RemoteDesktopServices GetRemoteDesktopServices(int serviceId)
@@ -1827,6 +1817,25 @@ namespace WebsitePanel.EnterpriseServer
             ServiceProviderProxy.Init(rds, serviceId);            
 
             return rds;
+        }
+
+        private static int GetRdsMainServiceId()
+        {
+            var settings = SystemController.GetSystemSettings(WebsitePanel.EnterpriseServer.SystemSettings.RDS_SETTINGS);            
+
+            if (!string.IsNullOrEmpty(settings["RdsMainController"]))
+            {
+                return Convert.ToInt32(settings["RdsMainController"]);                
+            }
+
+            var rdsServices = GetRdsServicesInternal();
+
+            if (rdsServices.Any())
+            {
+                return rdsServices.First().ServiceId;
+            }
+
+            return -1;
         }
 
         private static string GetFormattedCollectionName(string displayName, string organizationId)

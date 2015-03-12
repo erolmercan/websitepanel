@@ -1102,8 +1102,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             try
             {
                 var guid = Guid.NewGuid();                
-                var x509Cert = new X509Certificate2(certificate, password, X509KeyStorageFlags.Exportable);                
-                //var content = x509Cert.Export(X509ContentType.Pfx);
+                var x509Cert = new X509Certificate2(certificate, password, X509KeyStorageFlags.Exportable);                                
                 var filePath = SaveCertificate(certificate, guid);
                 runspace = OpenRunspace();
 
@@ -1114,6 +1113,7 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
                     if (!errors.Any())
                     {
+                        RemoveCertificate(runspace, hostName, x509Cert.Thumbprint);                        
                         errors = ImportCertificate(runspace, hostName, password, string.Format("c:\\{0}.pfx", guid), x509Cert.Thumbprint);
                     }
 
@@ -1135,12 +1135,23 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
             {
                 CloseRunspace(runspace);
             }
-        }   
+        }  
+ 
+        private void RemoveCertificate(Runspace runspace, string hostName, string thumbprint)
+        {
+            var scripts = new List<string>
+            {
+                string.Format("Remove-Item -Path cert:\\LocalMachine\\My\\{0}", thumbprint)
+            };
+
+            object[] errors = null;
+            ExecuteRemoteShellCommand(runspace, hostName, scripts, out errors);
+        }
 
         private object[] ImportCertificate(Runspace runspace, string hostName, string password, string certificatePath, string thumbprint)
         {
             var scripts = new List<string>
-            {
+            {                
                 string.Format("$mypwd = ConvertTo-SecureString -String {0} -Force –AsPlainText", password),
                 string.Format("Import-PfxCertificate –FilePath \"{0}\" cert:\\localMachine\\my -Password $mypwd", certificatePath),
                 string.Format("$cert = Get-Item cert:\\LocalMachine\\My\\{0}", thumbprint),
@@ -1364,6 +1375,27 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
                 //ActiveDirectoryUtils.CreateGroup(computersRootPath, RdsServersRootOU);
                 ActiveDirectoryUtils.CreateOrganizationalUnit(RdsServersRootOU, computersRootPath);
             }
+        }
+
+        public void MoveSessionHostToRdsOU(string hostName)
+        {
+            if (!string.IsNullOrEmpty(ComputersRootOU))
+            {
+                CheckOrCreateComputersRoot(GetComputersRootPath());
+            }
+
+            var computerObject = GetComputerObject(hostName);
+
+            if (computerObject != null)
+            {
+                var samName = (string)ActiveDirectoryUtils.GetADObjectProperty(computerObject, "sAMAccountName");
+
+                if (!ActiveDirectoryUtils.IsComputerInGroup(samName, RdsServersRootOU))
+                {
+                    DirectoryEntry group = new DirectoryEntry(GetRdsServersGroupPath());
+                    computerObject.MoveTo(group);
+                }
+            } 
         }
 
         public void MoveRdsServerToTenantOU(string hostName, string organizationId)
