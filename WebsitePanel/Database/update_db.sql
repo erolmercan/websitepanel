@@ -8989,3 +8989,14 @@ SELECT
 	LEFT JOIN  [dbo].[EnterpriseFolders] AS EF ON EF.EnterpriseFolderID = EFOP.FolderID
 	WHERE EFOP.ItemID = @ItemID AND EFOP.AccountID = @AccountID
 GO
+
+
+-- CRM2015 Provider
+
+IF NOT EXISTS (SELECT * FROM [dbo].[Providers] WHERE [DisplayName] = 'Hosted MS CRM 2015')
+BEGIN
+INSERT [dbo].[Providers] ([ProviderId], [GroupId], [ProviderName], [DisplayName], [ProviderType], [EditorControl], [DisableAutoDiscovery]) 
+VALUES(1205, 24, N'CRM', N'Hosted MS CRM 2015', N'WebsitePanel.Providers.HostedSolution.CRMProvider2015, WebsitePanel.Providers.HostedSolution.Crm2015', N'CRM2011', NULL)
+END
+GO
+
