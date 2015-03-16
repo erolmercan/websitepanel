@@ -198,12 +198,12 @@ namespace WebsitePanel.Providers.Virtualization
                         vm.DvdDriveInstalled = dvdInfo != null;
 
                         // HDD
-                        vm.Disks = VirtualMachineHelper.GetVirtualHardDisks(PowerShell, vm.Name);
+                        vm.Disks = HardDriveHelper.Get(PowerShell, vm.Name);
 
                         if (vm.Disks != null && vm.Disks.GetLength(0) > 0)
                         {
                             vm.VirtualHardDrivePath = vm.Disks[0].Path;
-                            vm.HddSize = Convert.ToInt32(vm.Disks[0].FileSize);
+                            vm.HddSize = Convert.ToInt32(vm.Disks[0].FileSize / Size1G);
                         }
 
                         // network adapters
@@ -327,104 +327,46 @@ namespace WebsitePanel.Providers.Virtualization
             vm.OperatingSystemTemplatePath = FileUtils.EvaluateSystemVariables(vm.OperatingSystemTemplatePath);
             vm.VirtualHardDrivePath = FileUtils.EvaluateSystemVariables(vm.VirtualHardDrivePath);
 
-            string vmID = null;
-
-            // request management service
-            ManagementObject objVmsvc = GetVirtualSystemManagementService();
-
-            // display name
-            ManagementObject objGlobalSettings = wmi.GetWmiClass("msvm_VirtualSystemGlobalSettingData").CreateInstance();
-            objGlobalSettings["ElementName"] = vm.Name;
-
-            // VM folders
-            objGlobalSettings["ExternalDataRoot"] = vm.RootFolderPath;
-            objGlobalSettings["SnapshotDataRoot"] = vm.RootFolderPath;
-
-            wmi.Dump(objGlobalSettings);
-
-            // startup/shutdown actions
-            if (AutomaticStartActionSettings != 100)
+            try
             {
-                objGlobalSettings["AutomaticStartupAction"] = AutomaticStartActionSettings;
-                objGlobalSettings["AutomaticStartupActionDelay"] = String.Format("000000000000{0:d2}.000000:000", AutomaticStartupDelaySettings);
+                // Add new VM
+                Command cmdNew = new Command("New-VM");
+                cmdNew.Parameters.Add("Name", vm.Name);
+                cmdNew.Parameters.Add("VHDPath", vm.VirtualHardDrivePath);
+                PowerShell.Execute(cmdNew, false);
+
+                // Set VM
+                Command cmdSet = new Command("Set-VM");
+                cmdSet.Parameters.Add("Name", vm.Name);
+                cmdSet.Parameters.Add("SmartPagingFilePath", vm.RootFolderPath);
+                cmdSet.Parameters.Add("SnapshotFileLocation", vm.RootFolderPath);
+                // startup/shutdown actions
+                var autoStartAction = (AutomaticStartAction) AutomaticStartActionSettings;
+                var autoStopAction = (AutomaticStopAction) AutomaticStartActionSettings;
+                if (autoStartAction != AutomaticStartAction.Undefined)
+                {
+                    cmdSet.Parameters.Add("AutomaticStartAction", autoStartAction.ToString());
+                    cmdSet.Parameters.Add("AutomaticStartDelay", AutomaticStartupDelaySettings);
+                }
+                if (autoStopAction != AutomaticStopAction.Undefined)
+                    cmdSet.Parameters.Add("AutomaticStopAction", autoStopAction.ToString());
+                PowerShell.Execute(cmdSet, false);
+
+                // Get created machine Id
+                var createdMachine = GetVirtualMachines().FirstOrDefault(m => m.Name == vm.Name);
+                if (createdMachine == null)
+                    throw new Exception("Can't find created machine");
+                vm.VirtualMachineId = createdMachine.VirtualMachineId;
+
+                // Update common settings
+                UpdateVirtualMachine(vm);
+            }
+            catch (Exception ex)
+            {
+                HostedSolutionLog.LogError("CreateVirtualMachine", ex);
+                throw;
             }
 
-            if (AutomaticStopActionSettings != 100)
-                objGlobalSettings["AutomaticShutdownAction"] = AutomaticStopActionSettings;
-
-            if (AutomaticRecoveryActionSettings != 100)
-                objGlobalSettings["AutomaticRecoveryAction"] = AutomaticRecoveryActionSettings;
-
-            // create machine
-            ManagementBaseObject inParams = objVmsvc.GetMethodParameters("DefineVirtualSystem");
-            inParams["SystemSettingData"] = objGlobalSettings.GetText(TextFormat.CimDtd20);
-            inParams["ResourceSettingData"] = new string[] { };
-
-            // invoke method
-            ManagementBaseObject outParams = objVmsvc.InvokeMethod("DefineVirtualSystem", inParams, null);
-            ManagementObject objVM = wmi.GetWmiObjectByPath((string)outParams["DefinedSystem"]);
-
-            // job
-            JobResult job = CreateJobResultFromWmiMethodResults(outParams); ;
-
-            // read VM id
-            vmID = (string)objVM["Name"];
-
-            // update general settings
-            //UpdateVirtualMachineGeneralSettings(vmID, objVM,
-            //    vm.CpuCores,
-            //    vm.RamSize,
-            //    vm.BootFromCD,
-            //    vm.NumLockEnabled);
-
-            // hard disks
-            // load IDE 0 controller
-            ManagementObject objIDE0 = wmi.GetWmiObject(
-                "Msvm_ResourceAllocationSettingData", "ResourceSubType = 'Microsoft Emulated IDE Controller'"
-                    + " and InstanceID Like 'Microsoft:{0}%' and Address = 0", vmID);
-
-            // load default hard disk drive
-            ManagementObject objDefaultHdd = wmi.GetWmiObject(
-                "Msvm_ResourceAllocationSettingData", "ResourceSubType = 'Microsoft Synthetic Disk Drive'"
-                    + " and InstanceID like '%Default'");
-            ManagementObject objHdd = (ManagementObject)objDefaultHdd.Clone();
-            objHdd["Parent"] = objIDE0.Path;
-            objHdd["Address"] = 0;
-
-            // add HDD to VM resources
-            ManagementObject objAddedHDD = AddVirtualMachineResources(objVM, objHdd);
-
-            // attach VHD
-            string fullVhdPath = vm.VirtualHardDrivePath;
-            ManagementObject objDefaultVHD = wmi.GetWmiObject(
-                "Msvm_ResourceAllocationSettingData", "ResourceSubType = 'Microsoft Virtual Hard Disk'"
-                    + " and InstanceID like '%Default'");
-            ManagementObject objVhd = (ManagementObject)objDefaultVHD.Clone();
-            objVhd["Parent"] = objAddedHDD.Path.Path;
-            objVhd["Connection"] = new string[] { fullVhdPath };
-
-            // add VHD to the system
-            AddVirtualMachineResources(objVM, objVhd);
-
-            // DVD drive
-            if (vm.DvdDriveInstalled)
-            {
-                AddVirtualMachineDvdDrive(vmID, objVM);
-            }
-
-            // add external adapter
-            if (vm.ExternalNetworkEnabled && !String.IsNullOrEmpty(vm.ExternalSwitchId))
-                AddNetworkAdapter(objVM, vm.ExternalSwitchId, vm.Name, vm.ExternalNicMacAddress, EXTERNAL_NETWORK_ADAPTER_NAME, vm.LegacyNetworkAdapter);
-
-            // add private adapter
-            if (vm.PrivateNetworkEnabled && !String.IsNullOrEmpty(vm.PrivateSwitchId))
-                AddNetworkAdapter(objVM, vm.PrivateSwitchId, vm.Name, vm.PrivateNicMacAddress, PRIVATE_NETWORK_ADAPTER_NAME, vm.LegacyNetworkAdapter);
-
-            // add management adapter
-            if (vm.ManagementNetworkEnabled && !String.IsNullOrEmpty(vm.ManagementSwitchId))
-                AddNetworkAdapter(objVM, vm.ManagementSwitchId, vm.Name, vm.ManagementNicMacAddress, MANAGEMENT_NETWORK_ADAPTER_NAME, vm.LegacyNetworkAdapter);
-
-            vm.VirtualMachineId = vmID;
             return vm;
         }
 
@@ -1483,33 +1425,17 @@ namespace WebsitePanel.Providers.Virtualization
         #region Storage
         public VirtualHardDiskInfo GetVirtualHardDiskInfo(string vhdPath)
         {
-            ManagementObject objImgSvc = GetImageManagementService();
-
-            // get method params
-            ManagementBaseObject inParams = objImgSvc.GetMethodParameters("GetVirtualHardDiskInfo");
-            inParams["Path"] = FileUtils.EvaluateSystemVariables(vhdPath);
-
-            // execute method
-            ManagementBaseObject outParams = (ManagementBaseObject)objImgSvc.InvokeMethod("GetVirtualHardDiskInfo", inParams, null);
-            ReturnCode result = (ReturnCode)Convert.ToInt32(outParams["ReturnValue"]);
-            if (result == ReturnCode.OK)
+            try
             {
-                // create XML
-                string xml = (string)outParams["Info"];
-                XmlDocument doc = new XmlDocument();
-                doc.LoadXml(xml);
-
-                // read properties
-                VirtualHardDiskInfo vhd = new VirtualHardDiskInfo();
-                vhd.DiskType = (VirtualHardDiskType)Enum.Parse(typeof(VirtualHardDiskType), GetPropertyValue("Type", doc), true);
-                vhd.FileSize = Int64.Parse(GetPropertyValue("FileSize", doc));
-                vhd.InSavedState = Boolean.Parse(GetPropertyValue("InSavedState", doc));
-                vhd.InUse = Boolean.Parse(GetPropertyValue("InUse", doc));
-                vhd.MaxInternalSize = Int64.Parse(GetPropertyValue("MaxInternalSize", doc));
-                vhd.ParentPath = GetPropertyValue("ParentPath", doc);
-                return vhd;
+                VirtualHardDiskInfo hardDiskInfo = new VirtualHardDiskInfo();
+                HardDriveHelper.GetVirtualHardDiskDetail(PowerShell, vhdPath, ref hardDiskInfo);
+                return hardDiskInfo;
             }
-            return null;
+            catch (Exception ex)
+            {
+                HostedSolutionLog.LogError("GetVirtualHardDiskInfo", ex);
+                throw;
+            }
         }
 
         private string GetPropertyValue(string propertyName, XmlDocument doc)
@@ -1741,9 +1667,6 @@ exit", Convert.ToInt32(objDisk["Index"])));
 
         public JobResult ConvertVirtualHardDisk(string sourcePath, string destinationPath, VirtualHardDiskType diskType)
         {
-            sourcePath = FileUtils.EvaluateSystemVariables(sourcePath);
-            destinationPath = FileUtils.EvaluateSystemVariables(destinationPath);
-
             // check source file
             if (!FileExists(sourcePath))
                 throw new Exception("Source VHD cannot be found: " + sourcePath);
@@ -1752,17 +1675,26 @@ exit", Convert.ToInt32(objDisk["Index"])));
             string destFolder = Path.GetDirectoryName(destinationPath);
             if (!DirectoryExists(destFolder))
                 CreateFolder(destFolder);
+            
+            sourcePath = FileUtils.EvaluateSystemVariables(sourcePath);
+            destinationPath = FileUtils.EvaluateSystemVariables(destinationPath); 
+            
+            try
+            {
+                Command cmd = new Command("Convert-VHD");
 
-            ManagementObject objImgSvc = GetImageManagementService();
+                cmd.Parameters.Add("Path", sourcePath);
+                cmd.Parameters.Add("DestinationPath", destinationPath);
+                cmd.Parameters.Add("VHDType", diskType.ToString());
 
-            // get method params
-            ManagementBaseObject inParams = objImgSvc.GetMethodParameters("ConvertVirtualHardDisk");
-            inParams["SourcePath"] = sourcePath;
-            inParams["DestinationPath"] = destinationPath;
-            inParams["Type"] = (UInt16)diskType;
-
-            ManagementBaseObject outParams = (ManagementBaseObject)objImgSvc.InvokeMethod("ConvertVirtualHardDisk", inParams, null);
-            return CreateJobResultFromWmiMethodResults(outParams);
+                PowerShell.Execute(cmd, false);
+                return JobHelper.CreateSuccessResult(ReturnCode.JobStarted);
+            }
+            catch (Exception ex)
+            {
+                HostedSolutionLog.LogError("ConvertVirtualHardDisk", ex);
+                throw;
+            }
         }
 
         public void DeleteRemoteFile(string path)

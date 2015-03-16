@@ -87,7 +87,7 @@ namespace WebsitePanel.Providers.Virtualization
                 if (bootFromCD)
                     cmd.Parameters.Add("FirstBootDevice", DvdDriveHelper.GetPS(powerShell, vm.Name));
                 else
-                    cmd.Parameters.Add("FirstBootDevice", VirtualMachineHelper.GetVirtualHardDisksPS(powerShell, vm.Name).FirstOrDefault());
+                    cmd.Parameters.Add("FirstBootDevice", HardDriveHelper.GetPS(powerShell, vm.Name).FirstOrDefault());
 
                 powerShell.Execute(cmd, false);
             }
