@@ -5548,18 +5548,32 @@ CREATE TABLE [dbo].[RDSCertificates](
 
 GO
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE type = 'F' AND name = 'FK_RDSCollectionUsers_RDSCollectionId')
+BEGIN
+	ALTER TABLE [dbo].[RDSCollectionUsers]
+	DROP CONSTRAINT [FK_RDSCollectionUsers_RDSCollectionId]
+END
+ELSE
+	PRINT 'FK_RDSCollectionUsers_RDSCollectionId not EXISTS'
+GO
 
-ALTER TABLE [dbo].[RDSCollectionUsers]
-DROP CONSTRAINT [FK_RDSCollectionUsers_RDSCollectionId]
+IF  EXISTS (SELECT * FROM sys.objects WHERE type = 'F' AND name = 'FK_RDSCollectionUsers_UserId')
+BEGIN
+	ALTER TABLE [dbo].[RDSCollectionUsers]
+	DROP CONSTRAINT [FK_RDSCollectionUsers_UserId]
+END	
+ELSE
+	PRINT 'FK_RDSCollectionUsers_UserId not EXISTS'
 GO
 
 
-ALTER TABLE [dbo].[RDSCollectionUsers]
-DROP CONSTRAINT [FK_RDSCollectionUsers_UserId]
-GO
-
-ALTER TABLE [dbo].[RDSServers]
-DROP CONSTRAINT [FK_RDSServers_RDSCollectionId]
+IF  EXISTS (SELECT * FROM sys.objects WHERE type = 'F' AND name = 'FK_RDSServers_RDSCollectionId')
+BEGIN
+	ALTER TABLE [dbo].[RDSServers]
+	DROP CONSTRAINT [FK_RDSServers_RDSCollectionId]
+END	
+ELSE
+	PRINT 'FK_RDSServers_RDSCollectionId not EXISTS'	
 GO
 
 ALTER TABLE [dbo].[RDSCollectionUsers]  WITH CHECK ADD  CONSTRAINT [FK_RDSCollectionUsers_RDSCollectionId] FOREIGN KEY([RDSCollectionId])
