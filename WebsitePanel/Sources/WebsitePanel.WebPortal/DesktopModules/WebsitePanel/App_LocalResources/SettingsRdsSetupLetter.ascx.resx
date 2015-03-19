@@ -117,25 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Tab.RdsApplications" xml:space="preserve">
-    <value>Remote Applications</value>
+  <data name="ddlPriorityItem.High" xml:space="preserve">
+    <value>High</value>
   </data>
-  <data name="Tab.RdsServers" xml:space="preserve">
-    <value>RDS Servers</value>
+  <data name="ddlPriorityItem.Low" xml:space="preserve">
+    <value>Low</value>
   </data>
-  <data name="Tab.RdsUsers" xml:space="preserve">
-    <value>RDS Users</value>
+  <data name="ddlPriorityItem.Normal" xml:space="preserve">
+    <value>Normal</value>
   </data>
-  <data name="Tab.Settings" xml:space="preserve">
-    <value>Settings</value>
+  <data name="lblCC.Text" xml:space="preserve">
+    <value>CC:</value>
   </data>
-  <data name="Tab.UserSessions" xml:space="preserve">
-    <value>User Sessions</value>
+  <data name="lblFrom.Text" xml:space="preserve">
+    <value>From:</value>
   </data>
-  <data name="Tab.LocalAdmins" xml:space="preserve">
-    <value>Local Administrators</value>
+  <data name="lblHtmlBody.Text" xml:space="preserve">
+    <value>HTML Body:</value>
   </data>
-  <data name="Tab.RdsSetupLetter" xml:space="preserve">
-    <value>Setup Instructions</value>
+  <data name="lblNoChangesHtmlBody" xml:space="preserve">
+    <value>No Changes HTML Body:</value>
+  </data>
+  <data name="lblNoChangesTextBody.Text" xml:space="preserve">
+    <value>No Changes Text Body:</value>
+  </data>
+  <data name="lblPriority.Text" xml:space="preserve">
+    <value>Priority:</value>
+  </data>
+  <data name="lblSubject.Text" xml:space="preserve">
+    <value>Subject:</value>
+  </data>
+  <data name="lblTextBody.Text" xml:space="preserve">
+    <value>Text Body:</value>
   </data>
 </root>
