@@ -26,7 +26,7 @@ namespace WebsitePanel.Providers.Virtualization
             Command cmd = new Command("Get-VMNetworkAdapter");
             if (!string.IsNullOrEmpty(vmName)) cmd.Parameters.Add("VMName", vmName);
 
-            Collection<PSObject> result = powerShell.Execute(cmd, false);
+            Collection<PSObject> result = powerShell.Execute(cmd, true);
             if (result != null && result.Count > 0)
             {
                 foreach (PSObject psAdapter in result)
@@ -89,8 +89,9 @@ namespace WebsitePanel.Providers.Virtualization
             else
                 cmd.Parameters.Add("StaticMacAddress", macAddress);
 
-            powerShell.Execute(cmd, false);
+            powerShell.Execute(cmd, true);
         }
+
         public static void Delete(PowerShellManager powerShell, string vmName, string macAddress)
         {
             var networkAdapter = Get(powerShell, vmName, macAddress);
@@ -98,12 +99,17 @@ namespace WebsitePanel.Providers.Virtualization
             if (networkAdapter == null)
                 return;
 
+            Delete(powerShell, vmName, networkAdapter);
+        }
+
+        public static void Delete(PowerShellManager powerShell, string vmName, VirtualMachineNetworkAdapter networkAdapter)
+        {
             Command cmd = new Command("Remove-VMNetworkAdapter");
 
             cmd.Parameters.Add("VMName", vmName);
             cmd.Parameters.Add("Name", networkAdapter.Name);
 
-            powerShell.Execute(cmd, false);
+            powerShell.Execute(cmd, true);
         }
     }
 }

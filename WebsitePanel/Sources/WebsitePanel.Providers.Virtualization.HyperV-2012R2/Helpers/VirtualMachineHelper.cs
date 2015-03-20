@@ -21,7 +21,7 @@ namespace WebsitePanel.Providers.Virtualization
             cmd.Parameters.Add("VMName", name);
             cmd.Parameters.Add("Name", "HeartBeat");
 
-            Collection<PSObject> result = powerShell.Execute(cmd, false);
+            Collection<PSObject> result = powerShell.Execute(cmd, true);
             if (result != null && result.Count > 0)
             {
                 var statusString = result[0].GetProperty("PrimaryOperationalStatus");
@@ -41,7 +41,7 @@ namespace WebsitePanel.Providers.Virtualization
 
             cmd.Parameters.Add("VMName", name);
 
-            Collection<PSObject> result = powerShell.Execute(cmd, false);
+            Collection<PSObject> result = powerShell.Execute(cmd, true);
             if (result != null && result.Count > 0)
             {
                 procs = Convert.ToInt32(result[0].GetProperty("Count"));
@@ -58,7 +58,7 @@ namespace WebsitePanel.Providers.Virtualization
 
             cmd.Parameters.Add("VMName", name);
 
-            Collection<PSObject> result = powerShell.Execute(cmd, false);
+            Collection<PSObject> result = powerShell.Execute(cmd, true);
             if (result != null && result.Count > 0)
             {
                 info.DynamicMemoryEnabled = Convert.ToBoolean(result[0].GetProperty("DynamicMemoryEnabled"));
@@ -81,7 +81,7 @@ namespace WebsitePanel.Providers.Virtualization
             cmd.Parameters.Add("Reserve", Convert.ToInt64(cpuReserveSettings * 1000));
             cmd.Parameters.Add("RelativeWeight", cpuWeightSettings);
 
-            powerShell.Execute(cmd, false);
+            powerShell.Execute(cmd, true);
         }
 
         public static void UpdateMemory(PowerShellManager powerShell, VirtualMachine vm, long ramMB)
@@ -91,7 +91,7 @@ namespace WebsitePanel.Providers.Virtualization
             cmd.Parameters.Add("VMName", vm.Name);
             cmd.Parameters.Add("StartupBytes", ramMB * Constants.Size1M);
 
-            powerShell.Execute(cmd, false);
+            powerShell.Execute(cmd, true);
         }
     }
 }
