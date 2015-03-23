@@ -315,7 +315,7 @@ namespace WebsitePanel.Providers.Virtualization
                 cmdNew.Parameters.Add("Name", vm.Name);
                 cmdNew.Parameters.Add("Generation", vm.Generation > 1 ? vm.Generation : 1);
                 cmdNew.Parameters.Add("VHDPath", vm.VirtualHardDrivePath);
-                PowerShell.Execute(cmdNew, true);
+                PowerShell.Execute(cmdNew, true, true);
 
                 // Set VM
                 Command cmdSet = new Command("Set-VM");
@@ -512,14 +512,10 @@ namespace WebsitePanel.Providers.Virtualization
                     DeleteSwitch(networkAdapter.SwitchName);
             }
 
-            object[] errors;
-
             Command cmdSet = new Command("Remove-VM");
             cmdSet.Parameters.Add("Name", vm.Name);
             cmdSet.Parameters.Add("Force");
-            PowerShell.Execute(cmdSet, false, out errors);
-
-            PowerShellManager.ExceptionIfErrors(errors);
+            PowerShell.Execute(cmdSet, false, true);
 
             return JobHelper.CreateSuccessResult(ReturnCode.JobStarted);
         }
@@ -788,9 +784,7 @@ namespace WebsitePanel.Providers.Virtualization
                 if (!string.IsNullOrEmpty(computerName)) cmd.Parameters.Add("ComputerName", computerName);
                 if (!string.IsNullOrEmpty(type)) cmd.Parameters.Add("SwitchType", type);
 
-                object[] errors;
-                Collection<PSObject> result = PowerShell.Execute(cmd, false, out errors);
-                PowerShellManager.ExceptionIfErrors(errors);
+                Collection<PSObject> result = PowerShell.Execute(cmd, false, true);
 
                 foreach (PSObject current in result)
                 {
