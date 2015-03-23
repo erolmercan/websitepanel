@@ -112,48 +112,42 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="btnCancel.Text" xml:space="preserve">
-    <value>Cancel</value>
+  <data name="cbAdministrators.Text" xml:space="preserve">
+    <value>Administrators</value>
   </data>
-  <data name="lnkWebsitePanelPolicy.Text" xml:space="preserve">
-    <value>WebsitePanel Policy</value>
+  <data name="cbUsers.Text" xml:space="preserve">
+    <value>Users</value>
   </data>
-  <data name="lnkExchangePolicy.Text" xml:space="preserve">
-    <value>Hosted Organization Policy</value>
+  <data name="secDriveSpace.Text" xml:space="preserve">
+    <value>Drive Space Threshold</value>
   </data>
-  <data name="lnkFtpPolicy.Text" xml:space="preserve">
-    <value>FTP Policy</value>
+  <data name="secHideCDrive.Text" xml:space="preserve">
+    <value>Hide C: Drive</value>
   </data>
-  <data name="lnkMailPolicy.Text" xml:space="preserve">
-    <value>MAIL Policy</value>
+  <data name="secPowershellCommand.Text" xml:space="preserve">
+    <value>Remove "Powershell" Command</value>
   </data>
-  <data name="lnkMsSqlPolicy.Text" xml:space="preserve">
-    <value>MS SQL Policy</value>
+  <data name="secRunCommand.Text" xml:space="preserve">
+    <value>Remove "Run" Command</value>
   </data>
-  <data name="lnkMySqlPolicy.Text" xml:space="preserve">
-    <value>MySQL Policy</value>
+  <data name="secScreenSaver.Text" xml:space="preserve">
+    <value>Disable Screen Saver</value>
   </data>
-  <data name="lnkOsPolicy.Text" xml:space="preserve">
-    <value>Operating System Policy</value>
+  <data name="secShutdown.Text" xml:space="preserve">
+    <value>Remove Shutdown and Restart</value>
   </data>
-  <data name="lnkSharePointPolicy.Text" xml:space="preserve">
-    <value>SharePoint Policy</value>
+  <data name="secTaskManager.Text" xml:space="preserve">
+    <value>Disable Task Manager</value>
   </data>
-  <data name="lnkVpsPolicy.Text" xml:space="preserve">
-    <value>Virtual Private Servers Policy</value>
+  <data name="secTimeout.Text" xml:space="preserve">
+    <value>Lock Screen Timeout</value>
   </data>
-  <data name="lnkRdsPolicy.Text" xml:space="preserve">
-    <value>Remote Desktop Servers Policy</value>
-  </data>
-  <data name="lnkWebPolicy.Text" xml:space="preserve">
-    <value>WEB Policy</value>
-  </data>
-  <data name="lnkServiceLevels.Text" xml:space="preserve">
-    <value>Service Levels</value>
+  <data name="sekChangeDesktop.Text" xml:space="preserve">
+    <value>Changing Desktop Disabled</value>
   </data>
 </root>

@@ -517,6 +517,13 @@
     <Compile Include="SettingsDomainLookupLetter.ascx.designer.cs">
       <DependentUpon>SettingsDomainLookupLetter.ascx</DependentUpon>
     </Compile>
+    <Compile Include="SettingsRdsPolicy.ascx.cs">
+      <DependentUpon>SettingsRdsPolicy.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SettingsRdsPolicy.ascx.designer.cs">
+      <DependentUpon>SettingsRdsPolicy.ascx</DependentUpon>
+    </Compile>
     <Compile Include="SettingsRdsSetupLetter.ascx.cs">
       <DependentUpon>SettingsRdsSetupLetter.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -4558,6 +4565,7 @@
     <Content Include="ExchangeServer\App_LocalResources\EnterpriseStorageFolderSettingsFolderPermissions.ascx.resx" />
     <Content Include="ExchangeServer\UserControls\App_LocalResources\EnterpriseStorageOwaUsersList.ascx.resx" />
     <Content Include="ExchangeServer\App_LocalResources\EnterpriseStorageFolderSettingsOwaEditing.ascx.resx" />
+    <Content Include="App_LocalResources\SettingsRdsPolicy.ascx.resx" />
     <EmbeddedResource Include="RDS\App_LocalResources\RDSEditCollectionSettings.ascx.resx" />
     <Content Include="RDSServersEditServer.ascx" />
     <Content Include="RDS\AssignedRDSServers.ascx" />
@@ -4604,6 +4612,7 @@
     <Content Include="ScheduleTaskControls\DomainLookupView.ascx" />
     <Content Include="SettingsDomainExpirationLetter.ascx" />
     <Content Include="SettingsDomainLookupLetter.ascx" />
+    <Content Include="SettingsRdsPolicy.ascx" />
     <Content Include="SettingsRdsSetupLetter.ascx" />
     <Content Include="SettingsServiceLevels.ascx" />
     <Content Include="CRM\CRMStorageSettings.ascx" />
