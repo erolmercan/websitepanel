@@ -6,7 +6,7 @@
     <table>
         <tr>            
             <td colspan="2">
-                <asp:TextBox ID="txtTimeout" runat="server" CssClass="TextBox200" ></asp:TextBox>                
+                <asp:DropDownList ID="ddTimeout" runat="server" CssClass="NormalTextBox"/>                    
             </td>            
         </tr>
         <tr>
@@ -122,8 +122,18 @@
 <asp:Panel ID="driveSpacePanel" runat="server" Height="0" style="overflow:hidden;">
     <table>
         <tr>            
-            <td colspan="2">
-                <asp:TextBox ID="txtThreshold" runat="server" CssClass="TextBox200" ></asp:TextBox>                
+            <td colspan="2">                
+                <asp:DropDownList ID="ddTreshold" runat="server" CssClass="NormalTextBox">
+                    <asp:ListItem Value="" Text="None" />
+                    <asp:ListItem Value="5" Text="5%" />
+                    <asp:ListItem Value="10" Text="10%" />
+                    <asp:ListItem Value="15" Text="15%" />
+                    <asp:ListItem Value="20" Text="20%" />
+                    <asp:ListItem Value="25" Text="25%" />
+                    <asp:ListItem Value="30" Text="30%" />
+                    <asp:ListItem Value="35" Text="35%" />
+                    <asp:ListItem Value="40" Text="40%" />
+                </asp:DropDownList>              
             </td>           
         </tr>        
     </table>

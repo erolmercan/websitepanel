@@ -145,7 +145,7 @@
     <value>Disable Task Manager</value>
   </data>
   <data name="secTimeout.Text" xml:space="preserve">
-    <value>Lock Screen Timeout</value>
+    <value>Lock Screen Timeout (sec.)</value>
   </data>
   <data name="sekChangeDesktop.Text" xml:space="preserve">
     <value>Changing Desktop Disabled</value>

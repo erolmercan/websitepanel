@@ -13,7 +13,13 @@ namespace WebsitePanel.Portal
     {        
         public void BindSettings(UserSettings settings)
         {
-            txtTimeout.Text = settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_VALUE];
+            var timeouts = RdsServerSettings.ScreenSaverTimeOuts;
+            ddTimeout.DataSource = timeouts;
+            ddTimeout.DataTextField = "Value";
+            ddTimeout.DataValueField = "Key";
+            ddTimeout.DataBind();
+
+            ddTimeout.SelectedValue = settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_VALUE];
             cbTimeoutAdministrators.Checked = Convert.ToBoolean(settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_ADMINISTRATORS]);
             cbTimeoutUsers.Checked = Convert.ToBoolean(settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_USERS]);
 
@@ -38,12 +44,12 @@ namespace WebsitePanel.Portal
             cbScreenSaverAdministrators.Checked = Convert.ToBoolean(settings[RdsServerSettings.SCREEN_SAVER_DISABLED_ADMINISTRATORS]);
             cbScreenSaverUsers.Checked = Convert.ToBoolean(settings[RdsServerSettings.SCREEN_SAVER_DISABLED_USERS]);
 
-            txtThreshold.Text = settings[RdsServerSettings.DRIVE_SPACE_THRESHOLD_VALUE];
+            ddTreshold.SelectedValue = settings[RdsServerSettings.DRIVE_SPACE_THRESHOLD_VALUE];
         }
 
         public void SaveSettings(UserSettings settings)
         {
-            settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_VALUE] = txtTimeout.Text;
+            settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_VALUE] = ddTimeout.SelectedValue;
             settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_ADMINISTRATORS] = cbTimeoutAdministrators.Checked.ToString();
             settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_USERS] = cbTimeoutUsers.Checked.ToString();
             settings[RdsServerSettings.REMOVE_RUN_COMMAND_ADMINISTRATORS] = cbRunCommandAdministrators.Checked.ToString();
@@ -60,7 +66,7 @@ namespace WebsitePanel.Portal
             settings[RdsServerSettings.CHANGE_DESKTOP_DISABLED_USERS] = cbDesktopUsers.Checked.ToString();
             settings[RdsServerSettings.SCREEN_SAVER_DISABLED_ADMINISTRATORS] = cbScreenSaverAdministrators.Checked.ToString();
             settings[RdsServerSettings.SCREEN_SAVER_DISABLED_USERS] = cbScreenSaverUsers.Checked.ToString();
-            settings[RdsServerSettings.DRIVE_SPACE_THRESHOLD_VALUE] = txtThreshold.Text;
+            settings[RdsServerSettings.DRIVE_SPACE_THRESHOLD_VALUE] = ddTreshold.SelectedValue;
         }
     }
 }

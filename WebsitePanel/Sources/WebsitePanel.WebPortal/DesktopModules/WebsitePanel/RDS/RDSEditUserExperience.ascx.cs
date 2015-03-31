@@ -15,6 +15,12 @@ namespace WebsitePanel.Portal.RDS
         {
             if (!IsPostBack)
             {
+                var timeouts = RdsServerSettings.ScreenSaverTimeOuts;
+                ddTimeout.DataSource = timeouts;
+                ddTimeout.DataTextField = "Value";
+                ddTimeout.DataValueField = "Key";
+                ddTimeout.DataBind();
+
                 var collection = ES.Services.RDS.GetRdsCollection(PanelRequest.CollectionID);
                 litCollectionName.Text = collection.DisplayName;
                 BindSettings();
@@ -39,7 +45,7 @@ namespace WebsitePanel.Portal.RDS
         private void BindSettings(RdsServerSettings settings)
         {
             var setting = GetServerSetting(settings, RdsServerSettings.LOCK_SCREEN_TIMEOUT);
-            txtTimeout.Text = setting.PropertyValue;
+            ddTimeout.SelectedValue = setting.PropertyValue;
             cbTimeoutAdministrators.Checked = setting.ApplyAdministrators;
             cbTimeoutUsers.Checked = setting.ApplyUsers;
 
@@ -72,7 +78,7 @@ namespace WebsitePanel.Portal.RDS
             cbScreenSaverUsers.Checked = setting.ApplyUsers;
 
             setting = GetServerSetting(settings, RdsServerSettings.DRIVE_SPACE_THRESHOLD);
-            txtThreshold.Text = setting.PropertyValue;
+            ddTreshold.SelectedValue = setting.PropertyValue;
         }
 
         private RdsServerSetting GetServerSetting(RdsServerSettings settings, string propertyName)
@@ -87,7 +93,7 @@ namespace WebsitePanel.Portal.RDS
             settings.Settings.Add(new RdsServerSetting
             {
                 PropertyName = RdsServerSettings.LOCK_SCREEN_TIMEOUT,
-                PropertyValue = txtTimeout.Text,
+                PropertyValue = ddTimeout.SelectedValue,
                 ApplyAdministrators = cbTimeoutAdministrators.Checked,
                 ApplyUsers = cbTimeoutUsers.Checked
             });
@@ -151,7 +157,7 @@ namespace WebsitePanel.Portal.RDS
             settings.Settings.Add(new RdsServerSetting
             {
                 PropertyName = RdsServerSettings.DRIVE_SPACE_THRESHOLD,
-                PropertyValue = txtThreshold.Text,
+                PropertyValue = ddTreshold.SelectedValue,
                 ApplyAdministrators = true,
                 ApplyUsers = true
             });
@@ -161,7 +167,7 @@ namespace WebsitePanel.Portal.RDS
 
         private void BindDefaultSettings(UserSettings settings)
         {
-            txtTimeout.Text = settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_VALUE];
+            ddTimeout.SelectedValue = settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_VALUE];
             cbTimeoutAdministrators.Checked = Convert.ToBoolean(settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_ADMINISTRATORS]);
             cbTimeoutUsers.Checked = Convert.ToBoolean(settings[RdsServerSettings.LOCK_SCREEN_TIMEOUT_USERS]);
 
@@ -186,7 +192,7 @@ namespace WebsitePanel.Portal.RDS
             cbScreenSaverAdministrators.Checked = Convert.ToBoolean(settings[RdsServerSettings.SCREEN_SAVER_DISABLED_ADMINISTRATORS]);
             cbScreenSaverUsers.Checked = Convert.ToBoolean(settings[RdsServerSettings.SCREEN_SAVER_DISABLED_USERS]);
 
-            txtThreshold.Text = settings[RdsServerSettings.DRIVE_SPACE_THRESHOLD_VALUE];
+            ddTreshold.SelectedValue = settings[RdsServerSettings.DRIVE_SPACE_THRESHOLD_VALUE];
         }
 
         private bool SaveServerSettings()
