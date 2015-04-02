@@ -1494,7 +1494,65 @@ namespace WebsitePanel.EnterpriseServer
             return result;
         }
 
+        public static List<OrganizationUser> GetOrganizationUsersWithExpiredPassword(int itemId, int daysBeforeExpiration)
+        {
+            // load organization
+            Organization org = GetOrganization(itemId);
 
+            if (org == null)
+            {
+                return null;
+            }
+
+            Organizations orgProxy = GetOrganizationProxy(org.ServiceId);
+
+            var expiredUsersAd = orgProxy.GetOrganizationUsersWithExpiredPassword(org.OrganizationId, daysBeforeExpiration);
+
+            var expiredUsersDb = GetOrganizationUsersPaged(itemId, null, null, null, 0, int.MaxValue).PageUsers.Where(x => expiredUsersAd.Any(z => z.SamAccountName == x.SamAccountName)).ToList();
+
+            foreach (var user in expiredUsersDb)
+            {
+                var adUser = expiredUsersAd.First(x => x.SamAccountName == user.SamAccountName);
+
+                user.PasswordExpirationDateTime = adUser.PasswordExpirationDateTime;
+            }
+
+            return expiredUsersDb;
+        }
+
+        public static void SendResetUserPasswordEmail(UserInfo owner, OrganizationUser user, string mailTo, string logoUrl)
+        {
+            UserSettings settings = UserController.GetUserSettings(owner.UserId, UserSettings.USER_PASSWORD_EXPIRATION_LETTER);
+
+            if (string.IsNullOrEmpty(logoUrl))
+            {
+                logoUrl = settings["LogoUrl"];
+            }
+
+            string from = settings["From"];
+
+            string subject = settings["Subject"];
+            string body = owner.HtmlMail ? settings["HtmlBody"] : settings["TextBody"];
+            bool isHtml = owner.HtmlMail;
+
+            MailPriority priority = MailPriority.Normal;
+
+            if (!String.IsNullOrEmpty(settings["Priority"]))
+            {
+                priority = (MailPriority)Enum.Parse(typeof(MailPriority), settings["Priority"], true);
+            }
+
+            Hashtable items = new Hashtable();
+
+            items["user"] = user;
+            items["logoUrl"] = logoUrl;
+            items["passwordResetLink"] = "reset link";
+
+            body = PackageController.EvaluateTemplate(body, items);
+
+            // send mail message
+            //MailHelper.SendMessage(from, mailTo, string.Empty, subject, body, priority, isHtml);
+        }
 
         private static bool EmailAddressExists(string emailAddress)
         {

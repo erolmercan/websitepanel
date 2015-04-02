@@ -42,6 +42,10 @@
             <asp:HyperLink ID="lnkRdsSetupLetter" runat="server" meta:resourcekey="lnkRdsSetupLetter"
                 Text="RDS Setup Letter" NavigateUrl='<%# GetSettingsLink("RdsSetupLetter", "SettingsRdsSetupLetter") %>'></asp:HyperLink>
         </li>
+        <li>
+            <asp:HyperLink ID="lnkUserPasswordExpirationLetter" runat="server" meta:resourcekey="lnkUserPasswordExpirationLetter"
+                Text="User Password Expiration Letter" NavigateUrl='<%# GetSettingsLink("UserPasswordExpirationLetter", "SettingsUserPasswordExpirationLetter") %>'></asp:HyperLink>
+        </li>
     </ul>
 </div>
 <div class="FormFooter">

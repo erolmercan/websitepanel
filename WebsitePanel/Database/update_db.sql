@@ -9460,3 +9460,146 @@ BEGIN
 END
 
 GO
+
+
+
+
+
+
+-- USER PASSWORD EXPIRATION NOTIFICATION tasks
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ScheduleTasks] WHERE [TaskID] = N'SCHEDULE_TASK_USER_PASSWORD_EXPIRATION_NOTIFICATION')
+BEGIN
+INSERT [dbo].[ScheduleTasks] ([TaskID], [TaskType], [RoleID]) VALUES (N'SCHEDULE_TASK_USER_PASSWORD_EXPIRATION_NOTIFICATION', N'WebsitePanel.EnterpriseServer.UserPasswordExpirationNotificationTask, WebsitePanel.EnterpriseServer.Code', 1)
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ScheduleTaskViewConfiguration] WHERE [TaskID] = N'SCHEDULE_TASK_USER_PASSWORD_EXPIRATION_NOTIFICATION')
+BEGIN
+INSERT [dbo].[ScheduleTaskViewConfiguration] ([TaskID], [ConfigurationID], [Environment], [Description]) VALUES (N'SCHEDULE_TASK_USER_PASSWORD_EXPIRATION_NOTIFICATION', N'ASP_NET', N'ASP.NET', N'~/DesktopModules/WebsitePanel/ScheduleTaskControls/UserPasswordExpirationNotificationView.ascx')
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM [dbo].[ScheduleTaskParameters] WHERE [TaskID] = N'SCHEDULE_TASK_USER_PASSWORD_EXPIRATION_NOTIFICATION' AND [ParameterID]= N'DAYS_BEFORE_EXPIRATION' )
+BEGIN
+INSERT [dbo].[ScheduleTaskParameters] ([TaskID], [ParameterID], [DataTypeID], [DefaultValue], [ParameterOrder]) VALUES (N'SCHEDULE_TASK_USER_PASSWORD_EXPIRATION_NOTIFICATION', N'DAYS_BEFORE_EXPIRATION', N'String', NULL, 1)
+END
+GO
+
+
+-- USER PASSWORD EXPIRATION EMAIL TEMPLATE
+
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'WebDavPortalResetUrl' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'UserPasswordExpirationLetter', N'WebDavPortalResetUrl', N'http://webdav.virtuworks.net/')
+END
+GO
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'From' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'UserPasswordExpirationLetter', N'From', N'support@HostingCompany.com')
+END
+GO
+
+DECLARE @UserPasswordExpirationLetterHtmlBody nvarchar(2500)
+
+Set @UserPasswordExpirationLetterHtmlBody = N'<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Password expiration notification</title>
+    <style type="text/css">
+		.Summary { background-color: ##ffffff; padding: 5px; }
+		.Summary .Header { padding: 10px 0px 10px 10px; font-size: 16pt; background-color: ##E5F2FF; color: ##1F4978; border-bottom: solid 2px ##86B9F7; }
+        .Summary A { color: ##0153A4; }
+        .Summary { font-family: Tahoma; font-size: 9pt; }
+        .Summary H1 { font-size: 1.7em; color: ##1F4978; border-bottom: dotted 3px ##efefef; }
+        .Summary H2 { font-size: 1.3em; color: ##1F4978; } 
+        .Summary TABLE { border: solid 1px ##e5e5e5; }
+        .Summary TH,
+        .Summary TD.Label { padding: 5px; font-size: 8pt; font-weight: bold; background-color: ##f5f5f5; }
+        .Summary TD { padding: 8px; font-size: 9pt; }
+        .Summary UL LI { font-size: 1.1em; font-weight: bold; }
+        .Summary UL UL LI { font-size: 0.9em; font-weight: normal; }
+    </style>
+</head>
+<body>
+<div class="Summary">
+<div class="Header">
+<img src="#logoUrl#">
+</div>
+<h1>Password expiration notification</h1>
+
+<ad:if test="#user#">
+<p>
+Hello #user.FirstName#,
+</p>
+</ad:if>
+
+<p>
+Your password will expire at #user.PasswordExpirationDateTime#. You can reset your own password by visiting the following page:
+</p>
+
+<a href="#passwordResetLink#">#passwordResetLink#</a>
+
+
+<p>
+If you have any questions regarding your hosting account, feel free to contact our support department at any time.
+</p>
+
+<p>
+Best regards
+</p>
+</div>
+</body>';
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'HtmlBody' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'UserPasswordExpirationLetter', N'HtmlBody', @UserPasswordExpirationLetterHtmlBody)
+END
+ELSE
+UPDATE [dbo].[UserSettings] SET [PropertyValue] = @UserPasswordExpirationLetterHtmlBody WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'HtmlBody'
+GO
+
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'Priority' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'UserPasswordExpirationLetter', N'Priority', N'Normal')
+END
+GO
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'Subject' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'UserPasswordExpirationLetter', N'Subject', N'Password expiration notification')
+END
+GO
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'LogoUrl' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'UserPasswordExpirationLetter', N'LogoUrl', N'https://controlpanel.virtuworks.net/App_Themes/Default/Images/logo.png')
+END
+GO
+
+
+DECLARE @UserPasswordExpirationLetterTextBody nvarchar(2500)
+
+Set @UserPasswordExpirationLetterTextBody = N'=========================================
+   Password expiration notification
+=========================================
+
+<ad:if test="#user#">
+Hello #user.FirstName#,
+</ad:if>
+
+Your password will expire at #user.PasswordExpirationDateTime#. You can reset your own password by visiting the following page:
+
+#passwordResetLink#
+
+If you have any questions regarding your hosting account, feel free to contact our support department at any time.
+
+Best regards'
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'TextBody' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'UserPasswordExpirationLetter', N'TextBody', @UserPasswordExpirationLetterTextBody)
+END
+ELSE
+UPDATE [dbo].[UserSettings] SET [PropertyValue] = @UserPasswordExpirationLetterTextBody WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordExpirationLetter' AND [PropertyName]= N'TextBody'
+GO
+

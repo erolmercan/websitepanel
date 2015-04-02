@@ -27,6 +27,7 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
+using System.DirectoryServices.ActiveDirectory;
 using System.IO;
 using System.Xml;
 using System.Linq;
@@ -478,6 +479,77 @@ namespace WebsitePanel.Providers.HostedSolution
 
             HostedSolutionLog.LogEnd("CreateUserInternal");
             return Errors.OK;
+        }
+
+        public List<OrganizationUser> GetOrganizationUsersWithExpiredPassword(string organizationId, int daysBeforeExpiration)
+        {
+            return GetOrganizationUsersWithExpiredPasswordInternal(organizationId, daysBeforeExpiration);
+        }
+
+        internal List<OrganizationUser> GetOrganizationUsersWithExpiredPasswordInternal(string organizationId, int daysBeforeExpiration)
+        {
+            var result = new List<OrganizationUser>();
+
+            var maxPasswordAgeSpan = GetMaxPasswordAge();
+
+            var searchRoot = new DirectoryEntry(GetOrganizationPath(organizationId));
+
+            var search = new DirectorySearcher(searchRoot)                 
+            {
+                SearchScope = SearchScope.Subtree,
+                Filter = "(objectClass=user)"
+            };
+
+            search.PropertiesToLoad.Add("pwdLastSet");
+            search.PropertiesToLoad.Add("sAMAccountName");
+
+            SearchResultCollection searchResults = search.FindAll();
+
+            foreach (SearchResult searchResult in searchResults)
+            {
+                var pwdLastSetTicks = (long)searchResult.Properties["pwdLastSet"][0];
+
+                var pwdLastSetDate = DateTime.FromFileTimeUtc(pwdLastSetTicks);
+
+                var expirationDate = pwdLastSetDate.AddDays(maxPasswordAgeSpan.Days);
+
+                if (pwdLastSetDate > expirationDate.AddDays(-daysBeforeExpiration))
+                {
+                    var user = new OrganizationUser();
+
+                    user.PasswordExpirationDateTime = expirationDate;
+                    user.SamAccountName = (string)searchResult.Properties["sAMAccountName"][0];
+
+                    result.Add(user);
+                }
+            }
+
+            return result;
+        }
+
+        internal TimeSpan GetMaxPasswordAge()
+        {
+            using (Domain d = Domain.GetCurrentDomain())
+            {
+                using (DirectoryEntry domain = d.GetDirectoryEntry())
+                {
+                    DirectorySearcher ds = new DirectorySearcher(
+                        domain,
+                        "(objectClass=*)",
+                        null,
+                        SearchScope.Base
+                        );
+
+                    SearchResult sr = ds.FindOne();
+
+                    if (sr != null && sr.Properties.Contains("maxPwdAge"))
+                    {
+                        return TimeSpan.FromTicks((long)sr.Properties["maxPwdAge"][0]).Duration();
+                    }
+
+                    throw new Exception("'maxPwdAge' property not found.");
+                }
+            }
         }
 
         public PasswordPolicyResult GetPasswordPolicy()

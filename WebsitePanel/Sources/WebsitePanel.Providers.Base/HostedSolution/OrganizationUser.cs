@@ -334,5 +334,7 @@ namespace WebsitePanel.Providers.HostedSolution
             get { return userMustChangePassword; }
             set { userMustChangePassword = value; }
         }
+
+        public DateTime PasswordExpirationDateTime { get; set; }
     }
 }

@@ -3345,7 +3345,6 @@
   </data>
   <data name="ResourceGroup.Hosted CRM" xml:space="preserve">
     <value>CRM 4/2011</value>
-    <comment> </comment>
   </data>
   <data name="ResourceGroup.BlackBerry" xml:space="preserve">
     <value>BlackBerry</value>
@@ -3377,7 +3376,7 @@
   <data name="ResourceGroup.SharePoint Foundation Server" xml:space="preserve">
     <value>SharePoint Foundation Server</value>
   </data>
-    <data name="ResourceGroup.SharePoint Server" xml:space="preserve">
+  <data name="ResourceGroup.SharePoint Server" xml:space="preserve">
     <value>SharePoint Server</value>
   </data>
   <data name="ResourceGroup.OCS" xml:space="preserve">
@@ -5710,5 +5709,8 @@
   </data>
   <data name="Success.REMOTE_DESKTOP_SERVICES_USER_EXPERIENCE" xml:space="preserve">
     <value>RDS User experience has been updated</value>
+  </data>
+  <data name="SchedulerTask.SCHEDULE_TASK_USER_PASSWORD_EXPIRATION_NOTIFICATION" xml:space="preserve">
+    <value>User password expiration notification</value>
   </data>
 </root>

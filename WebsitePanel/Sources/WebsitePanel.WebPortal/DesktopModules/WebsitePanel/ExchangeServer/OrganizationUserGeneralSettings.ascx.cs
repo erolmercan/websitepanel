@@ -435,5 +435,13 @@ namespace WebsitePanel.Portal.HostedSolution
 
         }
 
+        protected void btnResetUserPassword_Click(object sender, EventArgs e)
+        {
+            Response.Redirect(PortalUtils.EditUrl("ItemID", PanelRequest.ItemID.ToString(),
+                "user_reset_password",
+                "SpaceID=" + PanelSecurity.PackageId,
+                "Context=" + ((PanelRequest.Context == "Mailbox") ? "Mailbox" : "User"),
+                "AccountID=" + PanelRequest.AccountID));
+        }
     }
 }

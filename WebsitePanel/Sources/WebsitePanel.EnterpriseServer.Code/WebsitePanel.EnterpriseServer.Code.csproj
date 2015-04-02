@@ -158,6 +158,7 @@
     <Compile Include="SchedulerTasks\SendMailNotificationTask.cs" />
     <Compile Include="SchedulerTasks\SuspendOverdueInvoicesTask.cs" />
     <Compile Include="SchedulerTasks\SuspendOverusedPackagesTask.cs" />
+    <Compile Include="SchedulerTasks\UserPasswordExpirationNotificationTask.cs" />
     <Compile Include="SchedulerTasks\ZipFilesTask.cs" />
     <Compile Include="Scheduling\Scheduler.cs" />
     <Compile Include="Scheduling\SchedulerController.cs" />
