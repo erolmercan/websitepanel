@@ -53,83 +53,33 @@ namespace WebsitePanel.Portal.RDS
                 cbTimeoutUsers.Checked = setting.ApplyUsers;
             }
 
-            setting = GetServerSetting(settings, RdsServerSettings.REMOVE_RUN_COMMAND);
-
-            if (setting != null)
-            {
-                cbRunCommandAdministrators.Checked = setting.ApplyAdministrators;
-                cbRunCommandUsers.Checked = setting.ApplyUsers;
-            }
-
-            setting = GetServerSetting(settings, RdsServerSettings.REMOVE_POWERSHELL_COMMAND);
-
-            if (setting != null)
-            {
-                cbPowershellAdministrators.Checked = setting.ApplyAdministrators;
-                cbPowershellUsers.Checked = setting.ApplyUsers;
-            }
-
-            setting = GetServerSetting(settings, RdsServerSettings.HIDE_C_DRIVE);
-
-            if (setting != null)
-            {
-                cbHideCDriveAdministrators.Checked = setting.ApplyAdministrators;
-                cbHideCDriveUsers.Checked = setting.ApplyUsers;
-            }
-            
-            setting = GetServerSetting(settings, RdsServerSettings.REMOVE_SHUTDOWN_RESTART);
-
-            if (setting != null)
-            {
-                cbShutdownAdministrators.Checked = setting.ApplyAdministrators;
-                cbShutdownUsers.Checked = setting.ApplyUsers;
-            }
-
-            setting = GetServerSetting(settings, RdsServerSettings.DISABLE_TASK_MANAGER);
-
-            if (setting != null)
-            {
-                cbTaskManagerAdministrators.Checked = setting.ApplyAdministrators;
-                cbTaskManagerUsers.Checked = setting.ApplyUsers;
-            }
-
-            setting = GetServerSetting(settings, RdsServerSettings.CHANGE_DESKTOP_DISABLED);
-
-            if (setting != null)
-            {
-                cbDesktopAdministrators.Checked = setting.ApplyAdministrators;
-                cbDesktopUsers.Checked = setting.ApplyUsers;
-            }
-
-            setting = GetServerSetting(settings, RdsServerSettings.SCREEN_SAVER_DISABLED);
-
-            if (setting != null)
-            {
-                cbScreenSaverAdministrators.Checked = setting.ApplyAdministrators;
-                cbViewSessionUsers.Checked = setting.ApplyUsers;
-            }
-
-            setting = GetServerSetting(settings, RdsServerSettings.RDS_VIEW_WITHOUT_PERMISSION);
-
-            if (setting != null)
-            {
-                cbViewSessionAdministrators.Checked = setting.ApplyAdministrators;
-                cbScreenSaverUsers.Checked = setting.ApplyUsers;
-            }
-
-            setting = GetServerSetting(settings, RdsServerSettings.RDS_CONTROL_WITHOUT_PERMISSION);
-
-            if (setting != null)
-            {
-                cbControlSessionAdministrators.Checked = setting.ApplyAdministrators;
-                cbControlSessionUsers.Checked = setting.ApplyUsers;
-            }
+            SetCheckboxes(settings, RdsServerSettings.REMOVE_RUN_COMMAND, cbRunCommandAdministrators, cbRunCommandUsers);
+            SetCheckboxes(settings, RdsServerSettings.REMOVE_POWERSHELL_COMMAND, cbPowershellAdministrators, cbPowershellUsers);
+            SetCheckboxes(settings, RdsServerSettings.HIDE_C_DRIVE, cbHideCDriveAdministrators, cbHideCDriveUsers);
+            SetCheckboxes(settings, RdsServerSettings.REMOVE_SHUTDOWN_RESTART, cbShutdownAdministrators, cbShutdownUsers);
+            SetCheckboxes(settings, RdsServerSettings.DISABLE_TASK_MANAGER, cbTaskManagerAdministrators, cbTaskManagerUsers);
+            SetCheckboxes(settings, RdsServerSettings.CHANGE_DESKTOP_DISABLED, cbDesktopAdministrators, cbDesktopUsers);
+            SetCheckboxes(settings, RdsServerSettings.SCREEN_SAVER_DISABLED, cbScreenSaverAdministrators, cbScreenSaverUsers);
+            SetCheckboxes(settings, RdsServerSettings.RDS_VIEW_WITHOUT_PERMISSION, cbViewSessionAdministrators, cbViewSessionUsers);
+            SetCheckboxes(settings, RdsServerSettings.RDS_CONTROL_WITHOUT_PERMISSION, cbControlSessionAdministrators, cbControlSessionUsers);
+            SetCheckboxes(settings, RdsServerSettings.DISABLE_CMD, cbDisableCmdAdministrators, cbDisableCmdUsers);
 
             setting = GetServerSetting(settings, RdsServerSettings.DRIVE_SPACE_THRESHOLD);
 
             if (setting != null)
             {
                 ddTreshold.SelectedValue = setting.PropertyValue;
+            }
+        }
+
+        private void SetCheckboxes(RdsServerSettings settings, string settingName, CheckBox cbAdministrators, CheckBox cbUsers)
+        {
+            var setting = GetServerSetting(settings, settingName);
+
+            if (setting != null)
+            {
+                cbAdministrators.Checked = setting.ApplyAdministrators;
+                cbUsers.Checked = setting.ApplyUsers;
             }
         }
 
@@ -230,6 +180,14 @@ namespace WebsitePanel.Portal.RDS
                 ApplyUsers = cbControlSessionUsers.Checked
             });
 
+            settings.Settings.Add(new RdsServerSetting
+            {
+                PropertyName = RdsServerSettings.DISABLE_CMD,
+                PropertyValue = "",
+                ApplyAdministrators = cbDisableCmdAdministrators.Checked,
+                ApplyUsers = cbDisableCmdUsers.Checked
+            });
+
             return settings;
         }
 
@@ -264,6 +222,9 @@ namespace WebsitePanel.Portal.RDS
             cbViewSessionUsers.Checked = Convert.ToBoolean(settings[RdsServerSettings.RDS_VIEW_WITHOUT_PERMISSION_Users]);
             cbControlSessionAdministrators.Checked = Convert.ToBoolean(settings[RdsServerSettings.RDS_CONTROL_WITHOUT_PERMISSION_ADMINISTRATORS]);
             cbControlSessionUsers.Checked = Convert.ToBoolean(settings[RdsServerSettings.RDS_CONTROL_WITHOUT_PERMISSION_Users]);
+
+            cbDisableCmdAdministrators.Checked = Convert.ToBoolean(settings[RdsServerSettings.DISABLE_CMD_ADMINISTRATORS]);
+            cbDisableCmdUsers.Checked = Convert.ToBoolean(settings[RdsServerSettings.DISABLE_CMD_USERS]);
 
             ddTreshold.SelectedValue = settings[RdsServerSettings.DRIVE_SPACE_THRESHOLD_VALUE];
         }
