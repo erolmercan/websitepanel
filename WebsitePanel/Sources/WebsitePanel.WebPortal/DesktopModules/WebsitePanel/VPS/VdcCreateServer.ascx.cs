@@ -1,4 +1,4 @@
-// Copyright (c) 2015, Outercurve Foundation.
+﻿// Copyright (c) 2015, Outercurve Foundation.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without modification,
@@ -26,7 +26,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE)  ARISING  IN  ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-﻿using System;
+ using System;
 using System.Collections.Generic;
 using System.Web;
 using System.Web.UI;
@@ -42,7 +42,7 @@ namespace WebsitePanel.Portal.VPS
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            LoadCustomProviderControl();
+            LoadCustomProviderControls();
 
             if (!IsPostBack)
             {
@@ -56,23 +56,23 @@ namespace WebsitePanel.Portal.VPS
             ToggleControls();
         }
 
-        private void LoadCustomProviderControl()
+        private void LoadCustomProviderControls()
         {
             try
             {
-                LoadProviderControl(PanelSecurity.PackageId, "VPS", providerControl, "Create.ascx");
+                LoadProviderControl(PanelSecurity.PackageId, "VPS", createSettingsProviderControl, "Create.ascx");
             }
             catch { /* skip */ }
         }
 
-        private IVirtualMachineCreateControl CustomProviderControl
+        private IVirtualMachineCreateControl CreareSettingsProviderControl
         {
             get
             {
-                if (providerControl.Controls.Count == 0)
+                if (createSettingsProviderControl.Controls.Count == 0)
                     return null;
 
-                return (IVirtualMachineCreateControl)providerControl.Controls[0];
+                return (IVirtualMachineCreateControl)createSettingsProviderControl.Controls[0];
             }
         }
 
@@ -136,9 +136,9 @@ namespace WebsitePanel.Portal.VPS
             ddlCpu.SelectedIndex = ddlCpu.Items.Count - 1; // select last (maximum) item
 
             // the custom provider control
-            if (CustomProviderControl != null)
+            if (CreareSettingsProviderControl != null)
             {
-                IVirtualMachineCreateControl ctrl = (IVirtualMachineCreateControl)providerControl.Controls[0];
+                IVirtualMachineCreateControl ctrl = (IVirtualMachineCreateControl)createSettingsProviderControl.Controls[0];
                 ctrl.BindItem(new VirtualMachine());  
             }
 
@@ -319,9 +319,9 @@ namespace WebsitePanel.Portal.VPS
                 VirtualMachine virtualMachine = new VirtualMachine();
 
                 // the custom provider control
-                if (CustomProviderControl != null)
+                if (CreareSettingsProviderControl != null)
                 {
-                    IVirtualMachineCreateControl ctrl = (IVirtualMachineCreateControl)providerControl.Controls[0];
+                    IVirtualMachineCreateControl ctrl = (IVirtualMachineCreateControl)createSettingsProviderControl.Controls[0];
                     ctrl.SaveItem(virtualMachine);
                 }
 
