@@ -56,9 +56,9 @@ namespace WebsitePanel.Portal
 			OrganizationStatistics stats = ES.Services.Organizations.GetOrganizationStatisticsByOrganization(PanelRequest.ItemID);
             OrganizationStatistics tenantStats = ES.Services.Organizations.GetOrganizationStatistics(PanelRequest.ItemID);
 
-			siteCollectionsQuota.QuotaUsedValue = stats.CreatedSharePointSiteCollections;
-			siteCollectionsQuota.QuotaValue = stats.AllocatedSharePointSiteCollections;
-            if (stats.AllocatedSharePointSiteCollections != -1) siteCollectionsQuota.QuotaAvailable = tenantStats.AllocatedSharePointSiteCollections - tenantStats.CreatedSharePointSiteCollections;
+			siteCollectionsQuota.QuotaUsedValue = stats.CreatedSharePointEnterpriseSiteCollections;
+			siteCollectionsQuota.QuotaValue = stats.AllocatedSharePointEnterpriseSiteCollections;
+            if (stats.AllocatedSharePointSiteCollections != -1) siteCollectionsQuota.QuotaAvailable = tenantStats.AllocatedSharePointEnterpriseSiteCollections - tenantStats.CreatedSharePointEnterpriseSiteCollections;
 		}
 
 		protected void btnCreateSiteCollection_Click(object sender, EventArgs e)
@@ -90,7 +90,7 @@ namespace WebsitePanel.Portal
 
 				try
 				{
-					int result = ES.Services.HostedSharePointServers.DeleteSiteCollection(siteCollectionId);
+					int result = ES.Services.HostedSharePointServersEnt.Enterprise_DeleteSiteCollection(siteCollectionId);
 					if (result < 0)
 					{
 						messageBox.ShowResultMessage(result);

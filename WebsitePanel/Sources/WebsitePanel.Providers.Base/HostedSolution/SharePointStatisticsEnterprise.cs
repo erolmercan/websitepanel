@@ -26,71 +26,42 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE)  ARISING  IN  ANY WAY OUT OF THE USE OF THIS
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-﻿namespace WebsitePanel.Providers.HostedSolution
+﻿using System;
+
+namespace WebsitePanel.Providers.HostedSolution
 {
-    public class OrganizationStatisticsRepotItem : BaseStatistics
+    public class SharePointEnterpriseStatistics : BaseStatistics
     {
-        public int TotalMailboxes
+        public string SiteCollectionUrl
         {
             get;
             set;
         }
 
-        public long TotalMailboxesSize
+        public string SiteCollectionOwner
         {
             get;
             set;
         }
 
-        public long TotalPublicFoldersSize
+        public DateTime SiteCollectionCreated
         {
             get;
             set;
         }
 
-        public int TotalSharePointSiteCollections
+        public long SiteCollectionQuota
         {
             get;
             set;
         }
 
-        public long TotalSharePointSiteCollectionsSize
+        public long SiteCollectionSize
         {
             get;
             set;
         }
 
-        public int TotalSharePointEnterpriseSiteCollections
-        {
-            get;
-            set;
-        }
-
-        public long TotalSharePointEnterpriseSiteCollectionsSize
-        {
-            get;
-            set;
-        }
-
-
-        public int TotalCRMUsers
-        {
-            get;
-            set;
-        }
-
-        public int TotalLyncUsers
-        {
-            get;
-            set;
-        }
-
-        public int TotalLyncEVUsers
-        {
-            get;
-            set;
-        }
-
-
+        
     }
 }

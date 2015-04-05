@@ -116,6 +116,21 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                     }                
             }
 
+            if (report.SharePointEnterpriseReport != null)
+            {
+                List<SharePointEnterpriseStatistics> sharePoints =
+                        report.SharePointEnterpriseReport.Items.FindAll(
+                            delegate(SharePointEnterpriseStatistics stats) { return stats.OrganizationID == org.OrganizationId; });
+
+                item.TotalSharePointEnterpriseSiteCollections = sharePoints.Count;
+                foreach (SharePointEnterpriseStatistics current in sharePoints)
+                {
+                    item.TotalSharePointEnterpriseSiteCollectionsSize += current.SiteCollectionSize;
+                }
+            }
+
+
+
             if (report.CRMReport != null)
             {
                 List<CRMOrganizationStatistics> crmOrganizationStatistics =
@@ -336,6 +351,21 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                 }
             }
 
+            if (report.SharePointEnterpriseReport != null)
+            {
+                try
+                {
+                    TaskManager.Write("Populate SharePoint Enterprise item ");
+
+                    PopulateSharePointEnterpriseItem(org, report, topReseller);
+                }
+                catch (Exception ex)
+                {
+                    TaskManager.WriteError(ex);
+                }
+            }
+
+
             if (report.LyncReport != null)
             {
                 try
@@ -432,7 +462,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
         }
 
 
-        private static void PopulateSharePointEntItem(Organization org, EnterpriseSolutionStatisticsReport report, string topReseller)
+        private static void PopulateSharePointEnterpriseItem(Organization org, EnterpriseSolutionStatisticsReport report, string topReseller)
         {
             List<SharePointSiteCollection> siteCollections;
 
@@ -465,7 +495,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
             {
                 try
                 {
-                    SharePointStatistics stats = new SharePointStatistics();
+                    SharePointEnterpriseStatistics stats = new SharePointEnterpriseStatistics();
                     PopulateBaseItem(stats, org, topReseller);
 
                     stats.SiteCollectionUrl = siteCollection.PhysicalAddress;
@@ -476,7 +506,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
 
                     stats.SiteCollectionSize = srvEnt.Enterprise_GetSiteCollectionSize(siteCollection.PhysicalAddress);
 
-                    report.SharePointReport.Items.Add(stats);
+                    report.SharePointEnterpriseReport.Items.Add(stats);
                 }
                 catch (Exception ex)
                 {
