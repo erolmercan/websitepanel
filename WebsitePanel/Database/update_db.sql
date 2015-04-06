@@ -9493,3 +9493,13 @@ GO
 
 UPDATE [dbo].[ServiceItemTypes] SET DisplayName = 'SharePointEnterpriseSiteCollection' WHERE DisplayName = 'SharePointSiteCollection'
 GO
+
+
+IF EXISTS (SELECT * FROM Providers WHERE ProviderName = 'HostedSharePoint2013' AND GroupID IN (Select GroupID FROM ResourceGroups WHERE GroupName = 'Sharepoint Enterprise Server'))
+BEGIN
+	DECLARE @group_id INT
+	SELECT @group_id = GroupId FROM ResourceGroups WHERE GroupName = 'Sharepoint Enterprise Server'
+	DELETE FROM Providers WHERE ProviderName = 'HostedSharePoint2013' AND GroupID = @group_id
+END
+
+GO

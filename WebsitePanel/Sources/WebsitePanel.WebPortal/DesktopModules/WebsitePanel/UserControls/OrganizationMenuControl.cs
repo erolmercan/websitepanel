@@ -96,10 +96,10 @@ namespace WebsitePanel.Portal.UserControls
 
             //SharePoint menu group;
             if (Cntx.Groups.ContainsKey(ResourceGroups.SharepointFoundationServer))
-                PrepareSharePointMenuRoot(items, GetLocalizedString("Text.SharePointFoundationServerGroup"));
+                PrepareSharePointMenuRoot(items);
 
             if (Cntx.Groups.ContainsKey(ResourceGroups.SharepointEnterpriseServer))
-                PrepareSharePointEnterpriseMenuRoot(items, GetLocalizedString("Text.SharePointEnterpriseServerGroup"));
+                PrepareSharePointEnterpriseMenuRoot(items);
 
             //CRM Menu
             if (Cntx.Groups.ContainsKey(ResourceGroups.HostedCRM2013))
@@ -362,7 +362,7 @@ namespace WebsitePanel.Portal.UserControls
             bbItems.Add(CreateMenuItem("BlackBerryUsers", "blackberry_users", @"Icons/blackberry_users_48.png"));
         }
 
-        private void PrepareSharePointMenuRoot(MenuItemCollection items, string menuItemText)
+        private void PrepareSharePointMenuRoot(MenuItemCollection items)
         {
             if (ShortMenu)
             {
@@ -370,7 +370,7 @@ namespace WebsitePanel.Portal.UserControls
             }
             else
             {
-                MenuItem item = new MenuItem(menuItemText, "", "", null);
+                MenuItem item = new MenuItem(GetLocalizedString("Text.SharePointFoundationServerGroup"), "", "", null);
 
                 item.Selectable = false;
 
@@ -385,13 +385,13 @@ namespace WebsitePanel.Portal.UserControls
 
         private void PrepareSharePointMenu(MenuItemCollection spItems)
         {                        
-            spItems.Add(CreateMenuItem("Text.SiteCollections", "sharepoint_sitecollections", @"Icons/sharepoint_sitecollections_48.png"));
-            spItems.Add(CreateMenuItem("Text.StorageUsage", "sharepoint_storage_usage", @"Icons/sharepoint_storage_usage_48.png"));
-            spItems.Add(CreateMenuItem("Text.StorageLimits", "sharepoint_storage_settings", @"Icons/sharepoint_storage_settings_48.png"));
+            spItems.Add(CreateMenuItem("SiteCollections", "sharepoint_sitecollections", @"Icons/sharepoint_sitecollections_48.png"));
+            spItems.Add(CreateMenuItem("StorageUsage", "sharepoint_storage_usage", @"Icons/sharepoint_storage_usage_48.png"));
+            spItems.Add(CreateMenuItem("StorageLimits", "sharepoint_storage_settings", @"Icons/sharepoint_storage_settings_48.png"));
         }
 
 
-        private void PrepareSharePointEnterpriseMenuRoot(MenuItemCollection items, string menuItemText)
+        private void PrepareSharePointEnterpriseMenuRoot(MenuItemCollection items)
         {
             if (ShortMenu)
             {
@@ -399,7 +399,7 @@ namespace WebsitePanel.Portal.UserControls
             }
             else
             {
-                MenuItem item = new MenuItem(menuItemText, "", "", null);
+                MenuItem item = new MenuItem(GetLocalizedString("Text.SharePointEnterpriseServerGroup"), "", "", null);
 
                 item.Selectable = false;
 
@@ -415,9 +415,9 @@ namespace WebsitePanel.Portal.UserControls
 
         private void PrepareSharePointEnterpriseMenu(MenuItemCollection spItems)
         {
-            spItems.Add(CreateMenuItem("Text.SiteCollections", "sharepoint_enterprise_sitecollections", @"Icons/sharepoint_sitecollections_48.png"));
-            spItems.Add(CreateMenuItem("Text.StorageUsage", "sharepoint_enterprise_storage_usage", @"Icons/sharepoint_storage_usage_48.png"));
-            spItems.Add(CreateMenuItem("Text.StorageLimits", "sharepoint_enterprise_storage_settings", @"Icons/sharepoint_storage_settings_48.png"));
+            spItems.Add(CreateMenuItem("SiteCollections", "sharepoint_enterprise_sitecollections", @"Icons/sharepoint_sitecollections_48.png"));
+            spItems.Add(CreateMenuItem("StorageUsage", "sharepoint_enterprise_storage_usage", @"Icons/sharepoint_storage_usage_48.png"));
+            spItems.Add(CreateMenuItem("StorageLimits", "sharepoint_enterprise_storage_settings", @"Icons/sharepoint_storage_settings_48.png"));
         }
 
 
@@ -556,8 +556,7 @@ namespace WebsitePanel.Portal.UserControls
             MenuItem item = new MenuItem();
 
             item.Text = GetLocalizedString("Text." + text);
-            item.NavigateUrl = PortalUtils.EditUrl("ItemID", ItemID.ToString(), key,
-                "SpaceID=" + PackageId);
+            item.NavigateUrl = PortalUtils.EditUrl("ItemID", ItemID.ToString(), key, "SpaceID=" + PackageId);
 
             if (ShowImg)
             {
