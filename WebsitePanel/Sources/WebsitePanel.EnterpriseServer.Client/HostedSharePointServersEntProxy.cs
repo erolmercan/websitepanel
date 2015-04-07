@@ -140,7 +140,7 @@ namespace WebsitePanel.EnterpriseServer {
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/Enterprise_GetSiteCollectionsPaged", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public SharePointSiteCollectionListPaged Enterprise_GetSiteCollectionsPaged(int packageId, int organizationId, string filterColumn, string filterValue, string sortColumn, int startRow, int maximumRows) {
+        public SharePointEnterpriseSiteCollectionListPaged Enterprise_GetSiteCollectionsPaged(int packageId, int organizationId, string filterColumn, string filterValue, string sortColumn, int startRow, int maximumRows) {
             object[] results = this.Invoke("Enterprise_GetSiteCollectionsPaged", new object[] {
                         packageId,
                         organizationId,
@@ -149,7 +149,7 @@ namespace WebsitePanel.EnterpriseServer {
                         sortColumn,
                         startRow,
                         maximumRows});
-            return ((SharePointSiteCollectionListPaged)(results[0]));
+            return ((SharePointEnterpriseSiteCollectionListPaged)(results[0]));
         }
         
         /// <remarks/>
@@ -165,9 +165,9 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollectionListPaged EndEnterprise_GetSiteCollectionsPaged(System.IAsyncResult asyncResult) {
+        public SharePointEnterpriseSiteCollectionListPaged EndEnterprise_GetSiteCollectionsPaged(System.IAsyncResult asyncResult) {
             object[] results = this.EndInvoke(asyncResult);
-            return ((SharePointSiteCollectionListPaged)(results[0]));
+            return ((SharePointEnterpriseSiteCollectionListPaged)(results[0]));
         }
         
         /// <remarks/>
@@ -240,11 +240,11 @@ namespace WebsitePanel.EnterpriseServer {
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/Enterprise_GetSiteCollections", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public SharePointSiteCollection[] Enterprise_GetSiteCollections(int packageId, bool recursive) {
+        public SharePointEnterpriseSiteCollection[] Enterprise_GetSiteCollections(int packageId, bool recursive) {
             object[] results = this.Invoke("Enterprise_GetSiteCollections", new object[] {
                         packageId,
                         recursive});
-            return ((SharePointSiteCollection[])(results[0]));
+            return ((SharePointEnterpriseSiteCollection[])(results[0]));
         }
         
         /// <remarks/>
@@ -255,9 +255,9 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollection[] EndEnterprise_GetSiteCollections(System.IAsyncResult asyncResult) {
+        public SharePointEnterpriseSiteCollection[] EndEnterprise_GetSiteCollections(System.IAsyncResult asyncResult) {
             object[] results = this.EndInvoke(asyncResult);
-            return ((SharePointSiteCollection[])(results[0]));
+            return ((SharePointEnterpriseSiteCollection[])(results[0]));
         }
         
         /// <remarks/>
@@ -334,10 +334,10 @@ namespace WebsitePanel.EnterpriseServer {
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/Enterprise_GetSiteCollection", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public SharePointSiteCollection Enterprise_GetSiteCollection(int itemId) {
+        public SharePointEnterpriseSiteCollection Enterprise_GetSiteCollection(int itemId) {
             object[] results = this.Invoke("Enterprise_GetSiteCollection", new object[] {
                         itemId});
-            return ((SharePointSiteCollection)(results[0]));
+            return ((SharePointEnterpriseSiteCollection)(results[0]));
         }
         
         /// <remarks/>
@@ -347,9 +347,9 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollection EndEnterprise_GetSiteCollection(System.IAsyncResult asyncResult) {
+        public SharePointEnterpriseSiteCollection EndEnterprise_GetSiteCollection(System.IAsyncResult asyncResult) {
             object[] results = this.EndInvoke(asyncResult);
-            return ((SharePointSiteCollection)(results[0]));
+            return ((SharePointEnterpriseSiteCollection)(results[0]));
         }
         
         /// <remarks/>
@@ -376,11 +376,11 @@ namespace WebsitePanel.EnterpriseServer {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/Enterprise_GetSiteCollectionByDomain" +
             "", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public SharePointSiteCollection Enterprise_GetSiteCollectionByDomain(int organizationId, string domain) {
+        public SharePointEnterpriseSiteCollection Enterprise_GetSiteCollectionByDomain(int organizationId, string domain) {
             object[] results = this.Invoke("Enterprise_GetSiteCollectionByDomain", new object[] {
                         organizationId,
                         domain});
-            return ((SharePointSiteCollection)(results[0]));
+            return ((SharePointEnterpriseSiteCollection)(results[0]));
         }
         
         /// <remarks/>
@@ -391,9 +391,9 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollection EndEnterprise_GetSiteCollectionByDomain(System.IAsyncResult asyncResult) {
+        public SharePointEnterpriseSiteCollection EndEnterprise_GetSiteCollectionByDomain(System.IAsyncResult asyncResult) {
             object[] results = this.EndInvoke(asyncResult);
-            return ((SharePointSiteCollection)(results[0]));
+            return ((SharePointEnterpriseSiteCollection)(results[0]));
         }
         
         /// <remarks/>
@@ -420,14 +420,14 @@ namespace WebsitePanel.EnterpriseServer {
         
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/Enterprise_AddSiteCollection", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public int Enterprise_AddSiteCollection(SharePointSiteCollection item) {
+        public int Enterprise_AddSiteCollection(SharePointEnterpriseSiteCollection item) {
             object[] results = this.Invoke("Enterprise_AddSiteCollection", new object[] {
                         item});
             return ((int)(results[0]));
         }
         
         /// <remarks/>
-        public System.IAsyncResult BeginEnterprise_AddSiteCollection(SharePointSiteCollection item, System.AsyncCallback callback, object asyncState) {
+        public System.IAsyncResult BeginEnterprise_AddSiteCollection(SharePointEnterpriseSiteCollection item, System.AsyncCallback callback, object asyncState) {
             return this.BeginInvoke("Enterprise_AddSiteCollection", new object[] {
                         item}, callback, asyncState);
         }
@@ -439,12 +439,12 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public void Enterprise_AddSiteCollectionAsync(SharePointSiteCollection item) {
+        public void Enterprise_AddSiteCollectionAsync(SharePointEnterpriseSiteCollection item) {
             this.Enterprise_AddSiteCollectionAsync(item, null);
         }
         
         /// <remarks/>
-        public void Enterprise_AddSiteCollectionAsync(SharePointSiteCollection item, object userState) {
+        public void Enterprise_AddSiteCollectionAsync(SharePointEnterpriseSiteCollection item, object userState) {
             if ((this.Enterprise_AddSiteCollectionOperationCompleted == null)) {
                 this.Enterprise_AddSiteCollectionOperationCompleted = new System.Threading.SendOrPostCallback(this.OnEnterprise_AddSiteCollectionOperationCompleted);
             }
@@ -745,11 +745,11 @@ namespace WebsitePanel.EnterpriseServer {
         /// <remarks/>
         [System.Web.Services.Protocols.SoapDocumentMethodAttribute("http://smbsaas/websitepanel/enterpriseserver/Enterprise_CalculateSharePointSitesD" +
             "iskSpace", RequestNamespace="http://smbsaas/websitepanel/enterpriseserver", ResponseNamespace="http://smbsaas/websitepanel/enterpriseserver", Use=System.Web.Services.Description.SoapBindingUse.Literal, ParameterStyle=System.Web.Services.Protocols.SoapParameterStyle.Wrapped)]
-        public SharePointSiteDiskSpace[] Enterprise_CalculateSharePointSitesDiskSpace(int itemId, out int errorCode) {
+        public SharePointEnterpriseSiteDiskSpace[] Enterprise_CalculateSharePointSitesDiskSpace(int itemId, out int errorCode) {
             object[] results = this.Invoke("Enterprise_CalculateSharePointSitesDiskSpace", new object[] {
                         itemId});
             errorCode = ((int)(results[1]));
-            return ((SharePointSiteDiskSpace[])(results[0]));
+            return ((SharePointEnterpriseSiteDiskSpace[])(results[0]));
         }
         
         /// <remarks/>
@@ -759,10 +759,10 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteDiskSpace[] EndEnterprise_CalculateSharePointSitesDiskSpace(System.IAsyncResult asyncResult, out int errorCode) {
+        public SharePointEnterpriseSiteDiskSpace[] EndEnterprise_CalculateSharePointSitesDiskSpace(System.IAsyncResult asyncResult, out int errorCode) {
             object[] results = this.EndInvoke(asyncResult);
             errorCode = ((int)(results[1]));
-            return ((SharePointSiteDiskSpace[])(results[0]));
+            return ((SharePointEnterpriseSiteDiskSpace[])(results[0]));
         }
         
         /// <remarks/>
@@ -858,10 +858,10 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollectionListPaged Result {
+        public SharePointEnterpriseSiteCollectionListPaged Result {
             get {
                 this.RaiseExceptionIfNecessary();
-                return ((SharePointSiteCollectionListPaged)(this.results[0]));
+                return ((SharePointEnterpriseSiteCollectionListPaged)(this.results[0]));
             }
         }
     }
@@ -910,10 +910,10 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollection[] Result {
+        public SharePointEnterpriseSiteCollection[] Result {
             get {
                 this.RaiseExceptionIfNecessary();
-                return ((SharePointSiteCollection[])(this.results[0]));
+                return ((SharePointEnterpriseSiteCollection[])(this.results[0]));
             }
         }
     }
@@ -962,10 +962,10 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollection Result {
+        public SharePointEnterpriseSiteCollection Result {
             get {
                 this.RaiseExceptionIfNecessary();
-                return ((SharePointSiteCollection)(this.results[0]));
+                return ((SharePointEnterpriseSiteCollection)(this.results[0]));
             }
         }
     }
@@ -988,10 +988,10 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteCollection Result {
+        public SharePointEnterpriseSiteCollection Result {
             get {
                 this.RaiseExceptionIfNecessary();
-                return ((SharePointSiteCollection)(this.results[0]));
+                return ((SharePointEnterpriseSiteCollection)(this.results[0]));
             }
         }
     }
@@ -1196,10 +1196,10 @@ namespace WebsitePanel.EnterpriseServer {
         }
         
         /// <remarks/>
-        public SharePointSiteDiskSpace[] Result {
+        public SharePointEnterpriseSiteDiskSpace[] Result {
             get {
                 this.RaiseExceptionIfNecessary();
-                return ((SharePointSiteDiskSpace[])(this.results[0]));
+                return ((SharePointEnterpriseSiteDiskSpace[])(this.results[0]));
             }
         }
         

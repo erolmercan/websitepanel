@@ -990,7 +990,7 @@ namespace WebsitePanel.EnterpriseServer
 
                     if (cntxTmp.Groups.ContainsKey(ResourceGroups.SharepointEnterpriseServer))
                     {
-                        SharePointSiteCollectionListPaged sharePointStats = HostedSharePointServerEntController.GetSiteCollectionsPaged(org.PackageId, org.Id, string.Empty, string.Empty, string.Empty, 0, 0);
+                        SharePointEnterpriseSiteCollectionListPaged sharePointStats = HostedSharePointServerEntController.GetSiteCollectionsPaged(org.PackageId, org.Id, string.Empty, string.Empty, string.Empty, 0, 0);
                         stats.CreatedSharePointEnterpriseSiteCollections = sharePointStats.TotalRowCount;
                     }
 

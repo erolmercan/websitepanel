@@ -58,7 +58,7 @@ namespace WebsitePanel.EnterpriseServer
         /// <param name="groupName">Resource group name.</param>
 		/// <returns>Site collections in raw format.</returns>
 		[WebMethod]
-		public SharePointSiteCollectionListPaged Enterprise_GetSiteCollectionsPaged(int packageId, int organizationId,
+		public SharePointEnterpriseSiteCollectionListPaged Enterprise_GetSiteCollectionsPaged(int packageId, int organizationId,
 			string filterColumn, string filterValue, string sortColumn, int startRow, int maximumRows)
 		{
             return HostedSharePointServerEntController.GetSiteCollectionsPaged(packageId, organizationId, filterColumn, filterValue,
@@ -83,7 +83,7 @@ namespace WebsitePanel.EnterpriseServer
         /// <param name="groupName">Resource group name.</param>
 		/// <returns>List of found site collections.</returns>
 		[WebMethod]
-        public List<SharePointSiteCollection> Enterprise_GetSiteCollections(int packageId, bool recursive)
+        public List<SharePointEnterpriseSiteCollection> Enterprise_GetSiteCollections(int packageId, bool recursive)
 		{
 			return HostedSharePointServerEntController.GetSiteCollections(packageId, recursive);
 		}
@@ -100,7 +100,7 @@ namespace WebsitePanel.EnterpriseServer
 		/// <param name="itemId">Site collection id within metabase.</param>
 		/// <returns>Site collection.</returns>
 		[WebMethod]
-        public SharePointSiteCollection Enterprise_GetSiteCollection(int itemId)
+        public SharePointEnterpriseSiteCollection Enterprise_GetSiteCollection(int itemId)
 		{
 			return HostedSharePointServerEntController.GetSiteCollection(itemId);
 		}
@@ -113,11 +113,11 @@ namespace WebsitePanel.EnterpriseServer
 		/// <param name="domain">Domain name.</param>
 		/// <returns>SharePoint site collection or null.</returns>
 		[WebMethod]
-        public SharePointSiteCollection Enterprise_GetSiteCollectionByDomain(int organizationId, string domain)
+        public SharePointEnterpriseSiteCollection Enterprise_GetSiteCollectionByDomain(int organizationId, string domain)
 		{
 			DomainInfo domainInfo = ServerController.GetDomain(domain);
-            SharePointSiteCollectionListPaged existentSiteCollections = this.Enterprise_GetSiteCollectionsPaged(domainInfo.PackageId, organizationId, "ItemName", String.Format("%{0}", domain), String.Empty, 0, Int32.MaxValue);
-			foreach (SharePointSiteCollection existentSiteCollection in existentSiteCollections.SiteCollections)
+            SharePointEnterpriseSiteCollectionListPaged existentSiteCollections = this.Enterprise_GetSiteCollectionsPaged(domainInfo.PackageId, organizationId, "ItemName", String.Format("%{0}", domain), String.Empty, 0, Int32.MaxValue);
+			foreach (SharePointEnterpriseSiteCollection existentSiteCollection in existentSiteCollections.SiteCollections)
 			{
 				Uri existentSiteCollectionUri = new Uri(existentSiteCollection.Name);
 				if (existentSiteCollection.Name == String.Format("{0}://{1}", existentSiteCollectionUri.Scheme, domain))
@@ -133,10 +133,9 @@ namespace WebsitePanel.EnterpriseServer
 		/// Adds SharePoint site collection.
 		/// </summary>
 		/// <param name="item">Site collection description.</param>
-        /// <param name="groupName">Resource group name.</param>
 		/// <returns>Created site collection id within metabase.</returns>
 		[WebMethod]
-        public int Enterprise_AddSiteCollection(SharePointSiteCollection item)
+        public int Enterprise_AddSiteCollection(SharePointEnterpriseSiteCollection item)
 		{
 			return HostedSharePointServerEntController.AddSiteCollection(item);
 		}

@@ -94,7 +94,7 @@ namespace WebsitePanel.Providers.HostedSolution
 
         /// <summary>Gets list of SharePoint collections within root web application.</summary>
         /// <returns>List of SharePoint collections within root web application.</returns>
-        public SharePointSiteCollection[] Enterprise_GetSiteCollections()
+        public SharePointEnterpriseSiteCollection[] Enterprise_GetSiteCollections()
         {
             return ExecuteSharePointAction(impl => impl.GetSiteCollections(Enterprise_RootWebApplicationUri));
         }
@@ -102,14 +102,14 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <summary>Gets SharePoint collection within root web application with given name.</summary>
         /// <param name="url">Url that uniquely identifies site collection to be loaded.</param>
         /// <returns>SharePoint collection within root web application with given name.</returns>
-        public SharePointSiteCollection Enterprise_GetSiteCollection(string url)
+        public SharePointEnterpriseSiteCollection Enterprise_GetSiteCollection(string url)
         {
             return ExecuteSharePointAction(impl => impl.GetSiteCollection(Enterprise_RootWebApplicationUri, url));
         }
 
         /// <summary>Creates site collection within predefined root web application.</summary>
         /// <param name="siteCollection">Information about site coolection to be created.</param>
-        public void Enterprise_CreateSiteCollection(SharePointSiteCollection siteCollection)
+        public void Enterprise_CreateSiteCollection(SharePointEnterpriseSiteCollection siteCollection)
         {
             ExecuteSharePointAction<object>(delegate(HostedSharePointServer2013EntImpl impl)
             {
@@ -120,7 +120,7 @@ namespace WebsitePanel.Providers.HostedSolution
 
         /// <summary>Deletes site collection under given url.</summary>
         /// <param name="siteCollection">The site collection to be deleted.</param>
-        public void Enterprise_DeleteSiteCollection(SharePointSiteCollection siteCollection)
+        public void Enterprise_DeleteSiteCollection(SharePointEnterpriseSiteCollection siteCollection)
         {
             ExecuteSharePointAction<object>(delegate(HostedSharePointServer2013EntImpl impl)
             {
@@ -142,7 +142,7 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <summary>Restores site collection under given url from backup.</summary>
         /// <param name="siteCollection">Site collection to be restored.</param>
         /// <param name="filename">Backup file name to restore from.</param>
-        public void Enterprise_RestoreSiteCollection(SharePointSiteCollection siteCollection, string filename)
+        public void Enterprise_RestoreSiteCollection(SharePointEnterpriseSiteCollection siteCollection, string filename)
         {
             ExecuteSharePointAction<object>(delegate(HostedSharePointServer2013EntImpl impl)
             {
@@ -229,13 +229,13 @@ namespace WebsitePanel.Providers.HostedSolution
         {
             foreach (ServiceProviderItem item in items)
             {
-                var sharePointSiteCollection = item as SharePointSiteCollection;
+                var SharePointEnterpriseSiteCollection = item as SharePointEnterpriseSiteCollection;
 
-                if (sharePointSiteCollection != null)
+                if (SharePointEnterpriseSiteCollection != null)
                 {
                     try
                     {
-                        Enterprise_DeleteSiteCollection(sharePointSiteCollection);
+                        Enterprise_DeleteSiteCollection(SharePointEnterpriseSiteCollection);
                     }
                     catch (Exception ex)
                     {
@@ -254,13 +254,13 @@ namespace WebsitePanel.Providers.HostedSolution
 
             foreach (ServiceProviderItem item in items)
             {
-                if (item is SharePointSiteCollection)
+                if (item is SharePointEnterpriseSiteCollection)
                 {
                     try
                     {
                         Log.WriteStart(String.Format("Calculating '{0}' site logs size", item.Name));
 
-                        SharePointSiteCollection site = Enterprise_GetSiteCollection(item.Name);
+                        SharePointEnterpriseSiteCollection site = Enterprise_GetSiteCollection(item.Name);
                         var diskspace = new ServiceProviderItemDiskSpace { ItemId = item.Id, DiskSpace = site.Diskspace };
                         itemsDiskspace.Add(diskspace);
 

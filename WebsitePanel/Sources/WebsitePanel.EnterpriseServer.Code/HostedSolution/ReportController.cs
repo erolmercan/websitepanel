@@ -464,7 +464,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
 
         private static void PopulateSharePointEnterpriseItem(Organization org, EnterpriseSolutionStatisticsReport report, string topReseller)
         {
-            List<SharePointSiteCollection> siteCollections;
+            List<SharePointEnterpriseSiteCollection> siteCollections;
 
             try
             {
@@ -491,7 +491,7 @@ namespace WebsitePanel.EnterpriseServer.Code.HostedSolution
                     string.Format("Could not get sharepoint enterprise server. PackageId: {0}", org.PackageId), ex);
             }
 
-            foreach (SharePointSiteCollection siteCollection in siteCollections)
+            foreach (SharePointEnterpriseSiteCollection siteCollection in siteCollections)
             {
                 try
                 {

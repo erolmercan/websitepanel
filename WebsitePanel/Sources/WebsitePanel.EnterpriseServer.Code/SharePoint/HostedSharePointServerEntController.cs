@@ -58,24 +58,24 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         /// <param name="startRow">Row index to start from.</param>
         /// <param name="maximumRows">Maximum number of rows to retrieve.</param>
         /// <returns>Site collections that match.</returns>
-        public static SharePointSiteCollectionListPaged GetSiteCollectionsPaged(int packageId, int organizationId, string filterColumn, string filterValue, string sortColumn, int startRow, int maximumRows)
+        public static SharePointEnterpriseSiteCollectionListPaged GetSiteCollectionsPaged(int packageId, int organizationId, string filterColumn, string filterValue, string sortColumn, int startRow, int maximumRows)
         {
             if (IsDemoMode)
             {
-                SharePointSiteCollectionListPaged demoResult = new SharePointSiteCollectionListPaged();
+                SharePointEnterpriseSiteCollectionListPaged demoResult = new SharePointEnterpriseSiteCollectionListPaged();
                 demoResult.SiteCollections = GetSiteCollections(1, false);
                 demoResult.TotalRowCount = demoResult.SiteCollections.Count;
                 return demoResult;
             }
 
-            SharePointSiteCollectionListPaged paged = new SharePointSiteCollectionListPaged();
-            DataSet result = PackageController.GetRawPackageItemsPaged(packageId, "Sharepoint Enterprise Server", typeof(SharePointSiteCollection),
+            SharePointEnterpriseSiteCollectionListPaged paged = new SharePointEnterpriseSiteCollectionListPaged();
+            DataSet result = PackageController.GetRawPackageItemsPaged(packageId, "Sharepoint Enterprise Server", typeof(SharePointEnterpriseSiteCollection),
                 true, filterColumn, filterValue, sortColumn, startRow, Int32.MaxValue);
-            List<SharePointSiteCollection> items = PackageController.CreateServiceItemsList(result, 1).ConvertAll<SharePointSiteCollection>(delegate(ServiceProviderItem item) { return (SharePointSiteCollection)item; });
+            List<SharePointEnterpriseSiteCollection> items = PackageController.CreateServiceItemsList(result, 1).ConvertAll<SharePointEnterpriseSiteCollection>(delegate(ServiceProviderItem item) { return (SharePointEnterpriseSiteCollection)item; });
 
             if (organizationId > 0)
             {
-                items = items.FindAll(delegate(SharePointSiteCollection siteCollection) { return siteCollection.OrganizationId == organizationId; });
+                items = items.FindAll(delegate(SharePointEnterpriseSiteCollection siteCollection) { return siteCollection.OrganizationId == organizationId; });
             }
             paged.TotalRowCount = items.Count;
 
@@ -89,16 +89,16 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             return paged;
         }
 
-        public static List<SharePointSiteCollection> GetSiteCollections(int organizationId)
+        public static List<SharePointEnterpriseSiteCollection> GetSiteCollections(int organizationId)
         {
             Organization org = OrganizationController.GetOrganization(organizationId);
 
-            List<ServiceProviderItem> items = PackageController.GetPackageItemsByType(org.PackageId, typeof(SharePointSiteCollection), false);
-            items.ConvertAll<SharePointSiteCollection>(delegate(ServiceProviderItem item) { return (SharePointSiteCollection)item; });
-            List<SharePointSiteCollection> ret = new List<SharePointSiteCollection>();
+            List<ServiceProviderItem> items = PackageController.GetPackageItemsByType(org.PackageId, typeof(SharePointEnterpriseSiteCollection), false);
+            items.ConvertAll<SharePointEnterpriseSiteCollection>(delegate(ServiceProviderItem item) { return (SharePointEnterpriseSiteCollection)item; });
+            List<SharePointEnterpriseSiteCollection> ret = new List<SharePointEnterpriseSiteCollection>();
             foreach (ServiceProviderItem item in items)
             {
-                SharePointSiteCollection siteCollection = item as SharePointSiteCollection;
+                SharePointEnterpriseSiteCollection siteCollection = item as SharePointEnterpriseSiteCollection;
                 if (siteCollection != null && siteCollection.OrganizationId == organizationId)
                 {
                     ret.Add(siteCollection);
@@ -150,12 +150,12 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         /// <param name="packageId">Package that owns site collections.</param>
         /// <param name="recursive">A value which shows whether nested spaces must be searched as well.</param>
         /// <returns>List of found site collections.</returns>
-        public static List<SharePointSiteCollection> GetSiteCollections(int packageId, bool recursive)
+        public static List<SharePointEnterpriseSiteCollection> GetSiteCollections(int packageId, bool recursive)
         {
             if (IsDemoMode)
             {
-                List<SharePointSiteCollection> demoResult = new List<SharePointSiteCollection>();
-                SharePointSiteCollection siteCollection1 = new SharePointSiteCollection();
+                List<SharePointEnterpriseSiteCollection> demoResult = new List<SharePointEnterpriseSiteCollection>();
+                SharePointEnterpriseSiteCollection siteCollection1 = new SharePointEnterpriseSiteCollection();
                 siteCollection1.Id = 1;
                 siteCollection1.OrganizationId = 1;
                 siteCollection1.LocaleId = 1033;
@@ -167,7 +167,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
                 siteCollection1.Title = "John Smith's Team Site";
                 siteCollection1.Url = "http://john.fabrikam.com";
                 demoResult.Add(siteCollection1);
-                SharePointSiteCollection siteCollection2 = new SharePointSiteCollection();
+                SharePointEnterpriseSiteCollection siteCollection2 = new SharePointEnterpriseSiteCollection();
                 siteCollection2.Id = 2;
                 siteCollection1.OrganizationId = 1;
                 siteCollection2.LocaleId = 1033;
@@ -183,8 +183,8 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             }
 
 
-            List<ServiceProviderItem> items = PackageController.GetPackageItemsByType(packageId,  typeof(SharePointSiteCollection), recursive);
-            return items.ConvertAll<SharePointSiteCollection>(delegate(ServiceProviderItem item) { return (SharePointSiteCollection)item; });
+            List<ServiceProviderItem> items = PackageController.GetPackageItemsByType(packageId,  typeof(SharePointEnterpriseSiteCollection), recursive);
+            return items.ConvertAll<SharePointEnterpriseSiteCollection>(delegate(ServiceProviderItem item) { return (SharePointEnterpriseSiteCollection)item; });
         }
 
         /// <summary>
@@ -192,14 +192,14 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         /// </summary>
         /// <param name="itemId">Site collection id within metabase.</param>
         /// <returns>Site collection or null in case no such item exist.</returns>
-        public static SharePointSiteCollection GetSiteCollection(int itemId)
+        public static SharePointEnterpriseSiteCollection GetSiteCollection(int itemId)
         {
             if (IsDemoMode)
             {
                 return GetSiteCollections(1, false)[itemId - 1];
             }
 
-            SharePointSiteCollection item = PackageController.GetPackageItem(itemId) as SharePointSiteCollection;
+            SharePointEnterpriseSiteCollection item = PackageController.GetPackageItem(itemId) as SharePointEnterpriseSiteCollection;
             return item;
         }
 
@@ -208,7 +208,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         /// </summary>
         /// <param name="item">Site collection description.</param>
         /// <returns>Created site collection id within metabase.</returns>
-        public static int AddSiteCollection(SharePointSiteCollection item)
+        public static int AddSiteCollection(SharePointEnterpriseSiteCollection item)
         {
 
             // Check account.
@@ -274,7 +274,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
                 item.Name = String.Format("{0}://{1}", rootWebApplicationUri.Scheme, hostNameBase + "-" + counter.ToString() + "." + sslRoot);
                 siteName = String.Format("{0}", hostNameBase + "-" + counter.ToString() + "." + sslRoot);
 
-                while (DataProvider.CheckServiceItemExists(serviceId, item.Name, "WebsitePanel.Providers.SharePoint.SharePointSiteCollection,   WebsitePanel.Providers.Base")) 
+                while (DataProvider.CheckServiceItemExists(serviceId, item.Name, "WebsitePanel.Providers.SharePoint.SharePointEnterpriseSiteCollection,   WebsitePanel.Providers.Base")) 
                 {
                     counter++;
                     item.Name = String.Format("{0}://{1}", rootWebApplicationUri.Scheme, hostNameBase + "-" + counter.ToString() + "." + sslRoot);
@@ -304,7 +304,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
 
 
             // Check package item with given name already exists.
-            if (PackageController.GetPackageItemByName(item.PackageId, item.Name, typeof(SharePointSiteCollection)) != null)
+            if (PackageController.GetPackageItemByName(item.PackageId, item.Name, typeof(SharePointEnterpriseSiteCollection)) != null)
             {
                 return BusinessErrorCodes.ERROR_SHAREPOINT_PACKAGE_ITEM_EXISTS;
             }
@@ -370,7 +370,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             }
 
             // Load original meta item
-            SharePointSiteCollection origItem = (SharePointSiteCollection)PackageController.GetPackageItem(itemId);
+            SharePointEnterpriseSiteCollection origItem = (SharePointEnterpriseSiteCollection)PackageController.GetPackageItem(itemId);
             if (origItem == null)
             {
                 return BusinessErrorCodes.ERROR_SHAREPOINT_PACKAGE_ITEM_NOT_FOUND;
@@ -427,8 +427,8 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         public static void DeleteSiteCollections(int organizationId)
         {
             Organization org = OrganizationController.GetOrganization(organizationId);
-            SharePointSiteCollectionListPaged existentSiteCollections = GetSiteCollectionsPaged(org.PackageId, org.Id, String.Empty, String.Empty, String.Empty, 0, Int32.MaxValue);
-            foreach (SharePointSiteCollection existentSiteCollection in existentSiteCollections.SiteCollections)
+            SharePointEnterpriseSiteCollectionListPaged existentSiteCollections = GetSiteCollectionsPaged(org.PackageId, org.Id, String.Empty, String.Empty, String.Empty, 0, Int32.MaxValue);
+            foreach (SharePointEnterpriseSiteCollection existentSiteCollection in existentSiteCollections.SiteCollections)
             {
                 DeleteSiteCollection(existentSiteCollection.Id);
             }
@@ -453,7 +453,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             }
 
             // Load original meta item
-            SharePointSiteCollection origItem = (SharePointSiteCollection)PackageController.GetPackageItem(itemId);
+            SharePointEnterpriseSiteCollection origItem = (SharePointEnterpriseSiteCollection)PackageController.GetPackageItem(itemId);
             if (origItem == null)
             {
                 return null;
@@ -536,7 +536,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             }
 
             // Load original meta item.
-            SharePointSiteCollection origItem = (SharePointSiteCollection)PackageController.GetPackageItem(itemId);
+            SharePointEnterpriseSiteCollection origItem = (SharePointEnterpriseSiteCollection)PackageController.GetPackageItem(itemId);
             if (origItem == null)
             {
                 return BusinessErrorCodes.ERROR_SHAREPOINT_PACKAGE_ITEM_NOT_FOUND;
@@ -617,7 +617,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         public static byte[] GetBackupBinaryChunk(int itemId, string path, int offset, int length)
         {
             // Load original meta item.
-            SharePointSiteCollection item = (SharePointSiteCollection)PackageController.GetPackageItem(itemId);
+            SharePointEnterpriseSiteCollection item = (SharePointEnterpriseSiteCollection)PackageController.GetPackageItem(itemId);
             if (item == null)
             {
                 return null;
@@ -638,7 +638,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         public static string AppendBackupBinaryChunk(int itemId, string fileName, string path, byte[] chunk)
         {
             // Load original meta item.
-            SharePointSiteCollection item = (SharePointSiteCollection)PackageController.GetPackageItem(itemId);
+            SharePointEnterpriseSiteCollection item = (SharePointEnterpriseSiteCollection)PackageController.GetPackageItem(itemId);
             if (item == null)
             {
                 return null;
@@ -681,9 +681,9 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             }
 
             HostedSharePointServerEnt hostedSharePointServer = GetHostedSharePointServer(serviceId);
-            if (itemType == typeof(SharePointSiteCollection))
+            if (itemType == typeof(SharePointEnterpriseSiteCollection))
             {
-                foreach (SharePointSiteCollection siteCollection in hostedSharePointServer.Enterprise_GetSiteCollections())
+                foreach (SharePointEnterpriseSiteCollection siteCollection in hostedSharePointServer.Enterprise_GetSiteCollections())
                 {
                     items.Add(siteCollection.Url);
                 }
@@ -710,9 +710,9 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             }
 
             HostedSharePointServerEnt hostedSharePointServer = GetHostedSharePointServer(serviceId);
-            if (itemType == typeof(SharePointSiteCollection))
+            if (itemType == typeof(SharePointEnterpriseSiteCollection))
             {
-                SharePointSiteCollection siteCollection = hostedSharePointServer.Enterprise_GetSiteCollection(itemName);
+                SharePointEnterpriseSiteCollection siteCollection = hostedSharePointServer.Enterprise_GetSiteCollection(itemName);
                 PackageController.AddPackageItem(siteCollection);
             }
         }
@@ -727,11 +727,11 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         /// <returns>Resulting code.</returns>
         public int BackupItem(string tempFolder, XmlWriter writer, ServiceProviderItem item, ResourceGroupInfo group)
         {
-            SharePointSiteCollection siteCollection = item as SharePointSiteCollection;
+            SharePointEnterpriseSiteCollection siteCollection = item as SharePointEnterpriseSiteCollection;
             if (siteCollection != null)
             {
                 HostedSharePointServerEnt hostedSharePointServer = GetHostedSharePointServer(siteCollection.ServiceId);
-                SharePointSiteCollection loadedSiteCollection = hostedSharePointServer.Enterprise_GetSiteCollection(siteCollection.Url);
+                SharePointEnterpriseSiteCollection loadedSiteCollection = hostedSharePointServer.Enterprise_GetSiteCollection(siteCollection.Url);
                 // Update item
                 siteCollection.Url = loadedSiteCollection.Url;
                 siteCollection.OwnerLogin = loadedSiteCollection.OwnerLogin;
@@ -741,7 +741,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
                 siteCollection.Title = loadedSiteCollection.Title;
                 siteCollection.Description = loadedSiteCollection.Description;
                 // Serialize it.
-                XmlSerializer serializer = new XmlSerializer(typeof(SharePointSiteCollection));
+                XmlSerializer serializer = new XmlSerializer(typeof(SharePointEnterpriseSiteCollection));
                 serializer.Serialize(writer, siteCollection);
 
             }
@@ -762,12 +762,12 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
         /// <returns>Resulting code.</returns>
         public int RestoreItem(string tempFolder, XmlNode itemNode, int itemId, Type itemType, string itemName, int packageId, int serviceId, ResourceGroupInfo group)
         {
-            if (itemType == typeof(SharePointSiteCollection))
+            if (itemType == typeof(SharePointEnterpriseSiteCollection))
             {
                 HostedSharePointServerEnt hostedSharePointServer = GetHostedSharePointServer(serviceId);
                 // Deserialize item.								                 
-                XmlSerializer serializer = new XmlSerializer(typeof(SharePointSiteCollection));
-                SharePointSiteCollection siteCollection = (SharePointSiteCollection)serializer.Deserialize(new XmlNodeReader(itemNode.SelectSingleNode("SharePointSiteCollection")));
+                XmlSerializer serializer = new XmlSerializer(typeof(SharePointEnterpriseSiteCollection));
+                SharePointEnterpriseSiteCollection siteCollection = (SharePointEnterpriseSiteCollection)serializer.Deserialize(new XmlNodeReader(itemNode.SelectSingleNode("SharePointEnterpriseSiteCollection")));
                 siteCollection.PackageId = packageId;
                 siteCollection.ServiceId = serviceId;
 
@@ -778,7 +778,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
                 }
 
                 // Add metabase record if needed.
-                SharePointSiteCollection metaSiteCollection = (SharePointSiteCollection)PackageController.GetPackageItemByName(packageId, itemName, typeof(SharePointSiteCollection));
+                SharePointEnterpriseSiteCollection metaSiteCollection = (SharePointEnterpriseSiteCollection)PackageController.GetPackageItemByName(packageId, itemName, typeof(SharePointEnterpriseSiteCollection));
                 if (metaSiteCollection == null)
                 {
                     PackageController.AddPackageItem(siteCollection);
@@ -794,11 +794,11 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             return PackageController.GetPackageServiceId(packageId, ResourceGroups.SharepointEnterpriseServer);
         }
 
-        private static List<SharePointSiteCollection> GetOrganizationSharePointSiteCollections(int orgId)
+        private static List<SharePointEnterpriseSiteCollection> GetOrganizationSharePointEnterpriseSiteCollections(int orgId)
         {
             Organization org = OrganizationController.GetOrganization(orgId);
 
-            SharePointSiteCollectionListPaged siteCollections = GetSiteCollectionsPaged(org.PackageId, org.Id, String.Empty, String.Empty, String.Empty, 0, Int32.MaxValue);
+            SharePointEnterpriseSiteCollectionListPaged siteCollections = GetSiteCollectionsPaged(org.PackageId, org.Id, String.Empty, String.Empty, String.Empty, 0, Int32.MaxValue);
             return siteCollections.SiteCollections;
         }
 
@@ -873,15 +873,15 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
 
                     HostedSharePointServerEnt hostedSharePointServer = GetHostedSharePointServer(serviceId);
 
-                    List<SharePointSiteCollection> currentOrgSiteCollection =
-                        GetOrganizationSharePointSiteCollections(org.Id);
+                    List<SharePointEnterpriseSiteCollection> currentOrgSiteCollection =
+                        GetOrganizationSharePointEnterpriseSiteCollections(org.Id);
 
 
-                    foreach (SharePointSiteCollection siteCollection in currentOrgSiteCollection)
+                    foreach (SharePointEnterpriseSiteCollection siteCollection in currentOrgSiteCollection)
                     {
                         try
                         {
-                            SharePointSiteCollection sc = GetSiteCollection(siteCollection.Id);
+                            SharePointEnterpriseSiteCollection sc = GetSiteCollection(siteCollection.Id);
                             sc.MaxSiteStorage = realMaxSizeValue;
                             sc.WarningStorage = realMaxSizeValue == -1 ? -1 : warningStorage;
                             PackageController.UpdatePackageItem(sc);
@@ -933,11 +933,11 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
 
                 HostedSharePointServerEnt hostedSharePointServer = GetHostedSharePointServer(serviceId);
 
-                List<SharePointSiteCollection> currentOrgSiteCollection =
-                    GetOrganizationSharePointSiteCollections(org.Id);
+                List<SharePointEnterpriseSiteCollection> currentOrgSiteCollection =
+                    GetOrganizationSharePointEnterpriseSiteCollections(org.Id);
 
                 List<string> urls = new List<string>();
-                foreach (SharePointSiteCollection siteCollection in currentOrgSiteCollection)
+                foreach (SharePointEnterpriseSiteCollection siteCollection in currentOrgSiteCollection)
                 {
                     urls.Add(siteCollection.PhysicalAddress);
                 }
@@ -981,7 +981,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
 
                 HostedSharePointServerEnt hostedSharePointServer = GetHostedSharePointServer(serviceId);
 
-                SharePointSiteCollection sc = GetSiteCollection(siteCollectionId);
+                SharePointEnterpriseSiteCollection sc = GetSiteCollection(siteCollectionId);
 
                 int maxSize = RecalculateMaxSize(org.MaxSharePointEnterpriseStorage, maxStorage);
                 int warningSize = warningStorage;

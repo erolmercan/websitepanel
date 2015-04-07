@@ -83,6 +83,7 @@ namespace WebsitePanel.Providers.HostedSolution
             set { warningSharePointStorage = value; }
         }
 
+        [Persistent]
         public int MaxSharePointEnterpriseStorage
         {
             get { return maxSharePointEnterpriseStorage; }

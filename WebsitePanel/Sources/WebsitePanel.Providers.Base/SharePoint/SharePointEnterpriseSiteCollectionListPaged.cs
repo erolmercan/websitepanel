@@ -27,41 +27,45 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using WebsitePanel.Providers.SharePoint;
 using System.Collections.Generic;
+using System.Text;
 
-namespace WebsitePanel.Portal
+namespace WebsitePanel.Providers.SharePoint
 {
-	public class HostedSharePointEnterpriseSiteCollectionsHelper
+	[Serializable]
+	public class SharePointEnterpriseSiteCollectionListPaged
 	{
-		SharePointEnterpriseSiteCollectionListPaged result;
+		private int totalRowCount;
+		private List<SharePointEnterpriseSiteCollection> siteCollections;
 
-		public int GetSharePointEnterpriseSiteCollectionPagedCount(int packageId, int organizationId, string filterColumn, string filterValue)
+		/// <summary>
+		/// Gets or sets total row count in persistent storage.
+		/// </summary>
+		public int TotalRowCount
 		{
-			return result.TotalRowCount;
-		}
-
-
-
-        public List<SharePointEnterpriseSiteCollection> GetSharePointEnterpriseSiteCollectionPaged(int packageId, int organizationId, string filterColumn, string filterValue, int maximumRows, int startRowIndex, string sortColumn)
-		{
-			if (!String.IsNullOrEmpty(filterValue))
+			get
 			{
-				filterValue = filterValue + "%";
+				return this.totalRowCount;
 			}
-
-			result = ES.Services.HostedSharePointServersEnt.Enterprise_GetSiteCollectionsPaged(packageId, organizationId, filterColumn, filterValue, sortColumn, startRowIndex, maximumRows);
-
-			return result.SiteCollections;            
+			set
+			{
+				this.totalRowCount = value;
+			}
 		}
 
+		/// <summary>
+		/// Gets or sets list of site collections on a single page.
+		/// </summary>
+		public List<SharePointEnterpriseSiteCollection> SiteCollections
+		{
+			get
+			{
+				return this.siteCollections;
+			}
+			set
+			{
+				this.siteCollections = value;
+			}
+		}
 	}
 }

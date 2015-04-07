@@ -76,9 +76,9 @@ namespace WebsitePanel.Server
         /// </summary>
         /// <returns>List of SharePoint collections within root web application.</returns>
         [WebMethod, SoapHeader("settings")]
-        public SharePointSiteCollection[] Enterprise_GetSiteCollections()
+        public SharePointEnterpriseSiteCollection[] Enterprise_GetSiteCollections()
         {
-            return ExecuteAction<SharePointSiteCollection[]>(delegate
+            return ExecuteAction<SharePointEnterpriseSiteCollection[]>(delegate
             {
                 return HostedSharePointServerEntProvider.Enterprise_GetSiteCollections();
             }, "GetSiteCollections");
@@ -90,9 +90,9 @@ namespace WebsitePanel.Server
         /// <param name="url">Url that uniquely identifies site collection to be loaded.</param>
         /// <returns>SharePoint collection within root web application with given name.</returns>
         [WebMethod, SoapHeader("settings")]
-        public SharePointSiteCollection Enterprise_GetSiteCollection(string url)
+        public SharePointEnterpriseSiteCollection Enterprise_GetSiteCollection(string url)
         {
-            return ExecuteAction<SharePointSiteCollection>(delegate
+            return ExecuteAction<SharePointEnterpriseSiteCollection>(delegate
             {
                 return HostedSharePointServerEntProvider.Enterprise_GetSiteCollection(url);
             }, "GetSiteCollection");
@@ -103,7 +103,7 @@ namespace WebsitePanel.Server
         /// </summary>
         /// <param name="siteCollection">Information about site coolection to be created.</param>
         [WebMethod, SoapHeader("settings")]
-        public void Enterprise_CreateSiteCollection(SharePointSiteCollection siteCollection)
+        public void Enterprise_CreateSiteCollection(SharePointEnterpriseSiteCollection siteCollection)
         {
             siteCollection.OwnerLogin = AttachNetbiosDomainName(siteCollection.OwnerLogin);
             ExecuteAction<object>(delegate
@@ -143,7 +143,7 @@ namespace WebsitePanel.Server
         /// </summary>
         /// <param name="url">Url that uniquely identifies site collection to be deleted.</param>
         [WebMethod, SoapHeader("settings")]
-        public void Enterprise_DeleteSiteCollection(SharePointSiteCollection siteCollection)
+        public void Enterprise_DeleteSiteCollection(SharePointEnterpriseSiteCollection siteCollection)
         {
             ExecuteAction<object>(delegate
             {
@@ -174,7 +174,7 @@ namespace WebsitePanel.Server
         /// <param name="siteCollection">Site collection to be restored.</param>
         /// <param name="filename">Backup file name to restore from.</param>
         [WebMethod, SoapHeader("settings")]
-        public void Enterprise_RestoreSiteCollection(SharePointSiteCollection siteCollection, string filename)
+        public void Enterprise_RestoreSiteCollection(SharePointEnterpriseSiteCollection siteCollection, string filename)
         {
             siteCollection.OwnerLogin = AttachNetbiosDomainName(siteCollection.OwnerLogin);
             ExecuteAction<object>(delegate

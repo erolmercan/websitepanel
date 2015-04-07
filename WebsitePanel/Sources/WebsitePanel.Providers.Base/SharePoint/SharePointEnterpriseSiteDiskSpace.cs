@@ -27,41 +27,26 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using System;
-using System.Data;
-using System.Configuration;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.UI.HtmlControls;
-using WebsitePanel.Providers.SharePoint;
-using System.Collections.Generic;
 
-namespace WebsitePanel.Portal
+namespace WebsitePanel.Providers.SharePoint
 {
-	public class HostedSharePointEnterpriseSiteCollectionsHelper
-	{
-		SharePointEnterpriseSiteCollectionListPaged result;
+    [Serializable]
+    public class SharePointEnterpriseSiteDiskSpace
+    {
+        private string url;
+        private long diskSpace;
+       
+        
+        public string Url
+        {
+            get { return url; }
+            set { url = value; }
+        }
 
-		public int GetSharePointEnterpriseSiteCollectionPagedCount(int packageId, int organizationId, string filterColumn, string filterValue)
-		{
-			return result.TotalRowCount;
-		}
-
-
-
-        public List<SharePointEnterpriseSiteCollection> GetSharePointEnterpriseSiteCollectionPaged(int packageId, int organizationId, string filterColumn, string filterValue, int maximumRows, int startRowIndex, string sortColumn)
-		{
-			if (!String.IsNullOrEmpty(filterValue))
-			{
-				filterValue = filterValue + "%";
-			}
-
-			result = ES.Services.HostedSharePointServersEnt.Enterprise_GetSiteCollectionsPaged(packageId, organizationId, filterColumn, filterValue, sortColumn, startRowIndex, maximumRows);
-
-			return result.SiteCollections;            
-		}
-
-	}
+        public long DiskSpace
+        {
+            get { return diskSpace; }
+            set { diskSpace = value; }
+        }
+    }
 }

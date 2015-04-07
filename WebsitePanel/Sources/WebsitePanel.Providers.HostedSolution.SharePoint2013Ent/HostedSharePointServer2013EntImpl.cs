@@ -63,7 +63,7 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <summary>Gets list of SharePoint collections within root web application.</summary>
         /// <param name="rootWebApplicationUri"> The root web application Uri. </param>
         /// <returns>List of SharePoint collections within root web application.</returns>
-        public SharePointSiteCollection[] GetSiteCollections(Uri rootWebApplicationUri)
+        public SharePointEnterpriseSiteCollection[] GetSiteCollections(Uri rootWebApplicationUri)
         {
             return GetSPSiteCollections(rootWebApplicationUri).Select(pair => NewSiteCollection(pair.Value)).ToArray();
         }
@@ -185,7 +185,7 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <param name="rootWebApplicationUri">Root web application uri.</param>
         /// <param name="url">Url that uniquely identifies site collection to be loaded.</param>
         /// <returns>SharePoint collection within root web application with given name.</returns>
-        public SharePointSiteCollection GetSiteCollection(Uri rootWebApplicationUri, string url)
+        public SharePointEnterpriseSiteCollection GetSiteCollection(Uri rootWebApplicationUri, string url)
         {
             return NewSiteCollection(GetSPSiteCollection(rootWebApplicationUri, url));
         }
@@ -269,7 +269,7 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <param name="rootWebApplicationUri">Root web application uri.</param>
         /// <param name="siteCollection">Information about site coolection to be created.</param>
         /// <exception cref="InvalidOperationException">Is thrown in case requested operation fails for any reason.</exception>
-        public void CreateSiteCollection(Uri rootWebApplicationUri, SharePointSiteCollection siteCollection)
+        public void CreateSiteCollection(Uri rootWebApplicationUri, SharePointEnterpriseSiteCollection siteCollection)
         {
             HostedSolutionLog.LogStart("CreateSiteCollection");
             WindowsImpersonationContext wic = null;
@@ -298,7 +298,7 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <param name="rootWebApplicationUri">Root web application uri.</param>
         /// <param name="siteCollection">Information about site coolection to be created.</param>
         /// <exception cref="InvalidOperationException">Is thrown in case requested operation fails for any reason.</exception>
-        private void CreateCollection(Runspace runspace, Uri rootWebApplicationUri, SharePointSiteCollection siteCollection)
+        private void CreateCollection(Runspace runspace, Uri rootWebApplicationUri, SharePointEnterpriseSiteCollection siteCollection)
         {
             string siteCollectionUrl = String.Format("{0}:{1}", siteCollection.Url, rootWebApplicationUri.Port);
             HostedSolutionLog.DebugInfo("siteCollectionUrl: {0}", siteCollectionUrl);
@@ -347,7 +347,7 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <param name="rootWebApplicationUri">Root web application uri.</param>
         /// <param name="siteCollection">The site collection to be deleted.</param>
         /// <exception cref="InvalidOperationException">Is thrown in case requested operation fails for any reason.</exception>
-        public void DeleteSiteCollection(Uri rootWebApplicationUri, SharePointSiteCollection siteCollection)
+        public void DeleteSiteCollection(Uri rootWebApplicationUri, SharePointEnterpriseSiteCollection siteCollection)
         {
             HostedSolutionLog.LogStart("DeleteSiteCollection");
             Runspace runspace = null;
@@ -434,7 +434,7 @@ namespace WebsitePanel.Providers.HostedSolution
         /// <param name="siteCollection">Site collection to be restored.</param>
         /// <param name="filename">Backup file name to restore from.</param>
         /// <exception cref="InvalidOperationException">Is thrown in case requested operation fails for any reason.</exception>
-        public void RestoreSiteCollection(Uri rootWebApplicationUri, SharePointSiteCollection siteCollection, string filename)
+        public void RestoreSiteCollection(Uri rootWebApplicationUri, SharePointEnterpriseSiteCollection siteCollection, string filename)
         {
             string url = siteCollection.Url;
 
@@ -494,12 +494,12 @@ namespace WebsitePanel.Providers.HostedSolution
 
         /// <summary>Creates new site collection with information from administration object.</summary>
         /// <param name="site">Administration object.</param>
-        private static SharePointSiteCollection NewSiteCollection(SPSite site)
+        private static SharePointEnterpriseSiteCollection NewSiteCollection(SPSite site)
         {
             var siteUri = new Uri(site.Url);
             string url = (siteUri.Port > 0) ? site.Url.Replace(String.Format(":{0}", siteUri.Port), String.Empty) : site.Url;
 
-            return new SharePointSiteCollection {Url = url, OwnerLogin = site.Owner.LoginName, OwnerName = site.Owner.Name, OwnerEmail = site.Owner.Email, LocaleId = site.RootWeb.Locale.LCID, Title = site.RootWeb.Title, Description = site.RootWeb.Description, Bandwidth = site.Usage.Bandwidth, Diskspace = site.Usage.Storage, MaxSiteStorage = site.Quota.StorageMaximumLevel, WarningStorage = site.Quota.StorageWarningLevel};
+            return new SharePointEnterpriseSiteCollection {Url = url, OwnerLogin = site.Owner.LoginName, OwnerName = site.Owner.Name, OwnerEmail = site.Owner.Email, LocaleId = site.RootWeb.Locale.LCID, Title = site.RootWeb.Title, Description = site.RootWeb.Description, Bandwidth = site.Usage.Bandwidth, Diskspace = site.Usage.Storage, MaxSiteStorage = site.Quota.StorageMaximumLevel, WarningStorage = site.Quota.StorageWarningLevel};
         }
 
         /// <summary>Gets SharePoint sites collection.</summary>
@@ -716,7 +716,7 @@ namespace WebsitePanel.Providers.HostedSolution
 
         /// <summary>Adds record to hosts file.</summary>
         /// <param name="siteCollection">The site collection object.</param>
-        public void AddHostsRecord(SharePointSiteCollection siteCollection)
+        public void AddHostsRecord(SharePointEnterpriseSiteCollection siteCollection)
         {
             try
             {
@@ -783,7 +783,7 @@ namespace WebsitePanel.Providers.HostedSolution
 
         /// <summary>Removes record from hosts file.</summary>
         /// <param name="siteCollection">The site collection object.</param>
-        private void RemoveHostsRecord(SharePointSiteCollection siteCollection)
+        private void RemoveHostsRecord(SharePointEnterpriseSiteCollection siteCollection)
         {
             try
             {

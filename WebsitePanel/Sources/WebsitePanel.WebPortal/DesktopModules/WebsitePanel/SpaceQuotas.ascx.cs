@@ -67,6 +67,7 @@ namespace WebsitePanel.Portal
             { "quotaLyncUsers", "pnlLyncUsers" },
             { "quotaBlackBerryUsers", "pnlBlackBerryUsers" },
             { "quotaSharepointSites", "pnlSharepointSites" },
+            { "quotaSharepointEnterpriseSites", "pnlSharepointEnterpriseSites" },
 			{ "quotaWebSites", "pnlWebSites" },
             { "quotaDatabases", "pnlDatabases" },
 			{ "quotaNumberOfVm", "pnlHyperVForPC" },

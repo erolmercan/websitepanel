@@ -54,26 +54,26 @@ namespace WebsitePanel.Providers.SharePoint
         /// When implemented gets list of SharePoint collections within root web application.
         /// </summary>
         /// <returns>List of SharePoint collections within root web application.</returns>
-        SharePointSiteCollection[] Enterprise_GetSiteCollections();
+        SharePointEnterpriseSiteCollection[] Enterprise_GetSiteCollections();
 
         /// <summary>
         /// When implemented gets SharePoint collection within root web application with given name.
         /// </summary>
         /// <param name="url">Url that uniquely identifies site collection to be loaded.</param>
         /// <returns>SharePoint collection within root web application with given name.</returns>
-        SharePointSiteCollection Enterprise_GetSiteCollection(string url);
+        SharePointEnterpriseSiteCollection Enterprise_GetSiteCollection(string url);
 
         /// <summary>
         /// When implemented creates site collection within predefined root web application.
         /// </summary>
         /// <param name="siteCollection">Information about site coolection to be created.</param>
-        void Enterprise_CreateSiteCollection(SharePointSiteCollection siteCollection);
+        void Enterprise_CreateSiteCollection(SharePointEnterpriseSiteCollection siteCollection);
 
         /// <summary>
         /// When implemented deletes site collection under given url.
         /// </summary>
         /// <param name="url">Url that uniquely identifies site collection to be deleted.</param>
-        void Enterprise_DeleteSiteCollection(SharePointSiteCollection siteCollection);
+        void Enterprise_DeleteSiteCollection(SharePointEnterpriseSiteCollection siteCollection);
 
         /// <summary>
         /// When implemeneted backups site collection under give url.
@@ -89,7 +89,7 @@ namespace WebsitePanel.Providers.SharePoint
         /// </summary>
         /// <param name="siteCollection">Site collection to be restored.</param>
         /// <param name="filename">Backup file name to restore from.</param>
-        void Enterprise_RestoreSiteCollection(SharePointSiteCollection siteCollection, string filename);
+        void Enterprise_RestoreSiteCollection(SharePointEnterpriseSiteCollection siteCollection, string filename);
 
         /// <summary>
         /// When implemented gets binary data chunk of specified size from specified offset.
