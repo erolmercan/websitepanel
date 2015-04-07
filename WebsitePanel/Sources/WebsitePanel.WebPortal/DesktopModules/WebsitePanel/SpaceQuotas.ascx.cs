@@ -73,7 +73,8 @@ namespace WebsitePanel.Portal
             { "quotaFtpAccounts", "pnlFtpAccounts" },
             { "quotaExchangeStorage", "pnlExchangeStorage" },
             { "quotaNumberOfFolders", "pnlFolders" },
-            { "quotaEnterpriseStorage", "pnlEnterpriseStorage" }
+            { "quotaEnterpriseStorage", "pnlEnterpriseStorage" },
+            { "quotaEnterpriseSharepointSites", "pnlEnterpriseSharepointSites"}
 		};
 
         protected void Page_Load(object sender, EventArgs e)
