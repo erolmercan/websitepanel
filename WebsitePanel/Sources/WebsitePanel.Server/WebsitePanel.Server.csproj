@@ -157,10 +157,10 @@
     <Content Include="bin\Microsoft.Web.Management.dll" />
     <Content Include="bin\Microsoft.Web.PlatformInstaller.dll" />
     <Content Include="bin\Microsoft.Web.Services3.dll" />
-    <Content Include="bin\Sharepoint2013Ent\WebsitePanel.Providers.HostedSolution.SharePoint2013Ent.dll" />
-    <Content Include="bin\Sharepoint2013Ent\WebsitePanel.Providers.HostedSolution.SharePoint2013Ent.pdb" />
     <Content Include="bin\Sharepoint2013\WebsitePanel.Providers.HostedSolution.SharePoint2013.dll" />
     <Content Include="bin\Sharepoint2013\WebsitePanel.Providers.HostedSolution.SharePoint2013.pdb" />
+    <Content Include="bin\Sharepoint2013\WebsitePanel.Providers.HostedSolution.SharePoint2013Ent.dll" />
+    <Content Include="bin\Sharepoint2013\WebsitePanel.Providers.HostedSolution.SharePoint2013Ent.pdb" />
     <Content Include="bin\WebsitePanel.Providers.Base.dll" />
     <Content Include="bin\WebsitePanel.Providers.Base.pdb" />
     <Content Include="bin\WebsitePanel.Providers.Database.MySQL.dll" />

@@ -69,7 +69,7 @@ namespace WebsitePanel.EnterpriseServer.Code.SharePoint
             }
 
             SharePointEnterpriseSiteCollectionListPaged paged = new SharePointEnterpriseSiteCollectionListPaged();
-            DataSet result = PackageController.GetRawPackageItemsPaged(packageId, "Sharepoint Enterprise Server", typeof(SharePointEnterpriseSiteCollection),
+            DataSet result = PackageController.GetRawPackageItemsPaged(packageId, ResourceGroups.SharepointEnterpriseServer, typeof(SharePointEnterpriseSiteCollection),
                 true, filterColumn, filterValue, sortColumn, startRow, Int32.MaxValue);
             List<SharePointEnterpriseSiteCollection> items = PackageController.CreateServiceItemsList(result, 1).ConvertAll<SharePointEnterpriseSiteCollection>(delegate(ServiceProviderItem item) { return (SharePointEnterpriseSiteCollection)item; });
 

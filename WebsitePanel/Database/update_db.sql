@@ -9503,3 +9503,6 @@ BEGIN
 END
 
 GO
+
+UPDATE [dbo].[ServiceItemTypes] SET TypeName ='WebsitePanel.Providers.SharePoint.SharePointEnterpriseSiteCollection, WebsitePanel.Providers.Base' WHERE DisplayName = 'SharePointEnterpriseSiteCollection'
+GO
