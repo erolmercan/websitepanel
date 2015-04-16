@@ -481,6 +481,19 @@ namespace WebsitePanel.EnterpriseServer
             return VirtualizationServerController2012.GetCertificates(serviceId, remoteServer);
         }
 
+        [WebMethod]
+        public ResultObject SetReplicaServer(int serviceId, string remoteServer, string thumbprint, string storagePath)
+        {
+            return VirtualizationServerController2012.SetReplicaServer(serviceId, remoteServer, thumbprint, storagePath);
+        }
+
+        [WebMethod]
+        public bool IsReplicaServer(int serviceId, string remoteServer)
+        {
+            return VirtualizationServerController2012.IsReplicaServer(serviceId, remoteServer);
+        }
+
+
         #endregion
     }
 }

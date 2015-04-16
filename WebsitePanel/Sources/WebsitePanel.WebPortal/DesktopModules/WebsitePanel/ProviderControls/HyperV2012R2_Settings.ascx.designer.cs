@@ -202,6 +202,60 @@ namespace WebsitePanel.Portal.ProviderControls {
         protected global::System.Web.UI.WebControls.RequiredFieldValidator ExportedVpsPathValidator;
         
         /// <summary>
+        /// locDvdIsoPath control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Localize locDvdIsoPath;
+        
+        /// <summary>
+        /// txtDvdLibraryPath control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtDvdLibraryPath;
+        
+        /// <summary>
+        /// DvdLibraryPathValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator DvdLibraryPathValidator;
+        
+        /// <summary>
+        /// locReplicaPath control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Localize locReplicaPath;
+        
+        /// <summary>
+        /// txtReplicaPath control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtReplicaPath;
+        
+        /// <summary>
+        /// ReplicaPathValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator ReplicaPathValidator;
+        
+        /// <summary>
         /// locProcessorSettings control.
         /// </summary>
         /// <remarks>
@@ -292,40 +346,112 @@ namespace WebsitePanel.Portal.ProviderControls {
         protected global::System.Web.UI.WebControls.RequiredFieldValidator CpuWeightValidator;
         
         /// <summary>
-        /// locMediaLibrary control.
+        /// locReplication control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Localize locMediaLibrary;
+        protected global::System.Web.UI.WebControls.Localize locReplication;
         
         /// <summary>
-        /// locDvdIsoPath control.
+        /// ReplicationModeList control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Localize locDvdIsoPath;
+        protected global::System.Web.UI.WebControls.RadioButtonList ReplicationModeList;
         
         /// <summary>
-        /// txtDvdLibraryPath control.
+        /// IsReplicaServerRow control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtDvdLibraryPath;
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow IsReplicaServerRow;
         
         /// <summary>
-        /// DvdLibraryPathValidator control.
+        /// locCertThumbnail control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator DvdLibraryPathValidator;
+        protected global::System.Web.UI.WebControls.Localize locCertThumbnail;
+        
+        /// <summary>
+        /// ddlCertThumbnail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlCertThumbnail;
+        
+        /// <summary>
+        /// txtCertThumbnail control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtCertThumbnail;
+        
+        /// <summary>
+        /// btnSetReplicaServer control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnSetReplicaServer;
+        
+        /// <summary>
+        /// CertificateThumbnailValidator control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator CertificateThumbnailValidator;
+        
+        /// <summary>
+        /// ReplicaPathErrorTr control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow ReplicaPathErrorTr;
+        
+        /// <summary>
+        /// locErrorPathReplica control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label locErrorPathReplica;
+        
+        /// <summary>
+        /// ReplicaErrorTr control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlTableRow ReplicaErrorTr;
+        
+        /// <summary>
+        /// locErrorSetReplica control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label locErrorSetReplica;
         
         /// <summary>
         /// locVhd control.

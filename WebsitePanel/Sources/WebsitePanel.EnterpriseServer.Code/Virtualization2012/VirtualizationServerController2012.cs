@@ -3726,6 +3726,30 @@ namespace WebsitePanel.EnterpriseServer
             return vs.GetCertificates(remoteServer);
         }
 
+        public static ResultObject SetReplicaServer(int serviceId, string remoteServer, string thumbprint, string storagePath)
+        {
+            ResultObject result = new ResultObject();
+            try
+            {
+                if (string.IsNullOrEmpty(storagePath))
+                    throw new Exception("Please enter replication path"); 
+                
+                VirtualizationServer2012 vs = GetVirtualizationProxy(serviceId);
+                vs.SetReplicaServer(remoteServer, thumbprint, storagePath);
+            }
+            catch (Exception ex)
+            {
+                result.AddError(VirtualizationErrorCodes.SET_REPLICA_SERVER_ERROR, ex);
+            }
+            return result;
+        }
+
+        public static bool IsReplicaServer(int serviceId, string remoteServer)
+        {
+            VirtualizationServer2012 vs = GetVirtualizationProxy(serviceId);
+            return vs.IsReplicaServer(remoteServer);
+        }
+
         #endregion
     }
 }
