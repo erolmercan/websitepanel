@@ -472,5 +472,15 @@ namespace WebsitePanel.EnterpriseServer
             return VirtualizationServerController2012.SendVirtualMachineSummaryLetter(itemId, to, bcc, false);
         }
         #endregion
+
+        #region Replication
+
+        [WebMethod]
+        public CertificateInfo[] GetCertificates(int serviceId, string remoteServer)
+        {
+            return VirtualizationServerController2012.GetCertificates(serviceId, remoteServer);
+        }
+
+        #endregion
     }
 }

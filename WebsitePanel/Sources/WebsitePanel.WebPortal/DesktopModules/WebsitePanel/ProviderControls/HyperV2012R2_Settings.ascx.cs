@@ -162,7 +162,7 @@ namespace WebsitePanel.Portal.ProviderControls
         {
             try
             {
-                VirtualSwitch[] switches = ES.Services.VPS.GetExternalSwitches(PanelRequest.ServiceId, txtServerName.Text.Trim());
+                VirtualSwitch[] switches = ES.Services.VPS2012.GetExternalSwitches(PanelRequest.ServiceId, txtServerName.Text.Trim());
 
                 ddlExternalNetworks.DataSource = switches;
                 ddlExternalNetworks.DataBind();
