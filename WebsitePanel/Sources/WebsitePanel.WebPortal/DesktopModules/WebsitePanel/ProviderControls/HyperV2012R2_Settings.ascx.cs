@@ -237,7 +237,7 @@ namespace WebsitePanel.Portal.ProviderControls
                     continue;
 
                 var currentServiceSettings = ConvertArrayToDictionary(ES.Services.Servers.GetServiceSettings(serviceId));
-                if (currentServiceSettings["ReplicaMode"] == ReplicaMode.IsReplicaServer.ToString())
+                if (currentServiceSettings["ReplicaMode"] != ReplicaMode.IsReplicaServer.ToString())
                     continue;
 
                 var exists = false;
@@ -294,11 +294,10 @@ namespace WebsitePanel.Portal.ProviderControls
             ManagePreferredNameServerRow.Visible = ManageNicConfigRow.Visible && (ddlManageNicConfig.SelectedIndex == 0);
 
             // Replica
-            IsReplicaServerRow.Visible = IsReplicaServer;
             EnableReplicaRow.Visible = EnabledReplica;
-            ddlCertThumbnail.Visible = !IsRemoteServer;
-            txtCertThumbnail.Visible = CertificateThumbnailValidator.Visible = IsRemoteServer;
             IsReplicaServerRow.Visible = IsReplicaServer;
+            ddlCertThumbnail.Visible = CertificateDdlThumbnailValidator.Visible = !IsRemoteServer;
+            txtCertThumbnail.Visible = CertificateThumbnailValidator.Visible = IsRemoteServer;
             ReplicaPathErrorTr.Visible = ReplicaErrorTr.Visible = false;
             if (IsReplicaServer) BindCertificates();
             if (EnabledReplica) BindReplicaServices();

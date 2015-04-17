@@ -115,6 +115,8 @@
 
         // Replication
         public const string SET_REPLICA_SERVER_ERROR = "SET_REPLICA_SERVER_ERROR";
+        public const string SET_NO_REPLICA_SERVER_ERROR = "SET_NO_REPLICA_SERVER_ERROR";
+        public const string SET_SET_REPLICATION_ERROR = "SET_SET_REPLICATION_ERROR";
 
         
         public const string HOST_NAMER_IS_ALREADY_USED = "HOST_NAMER_IS_ALREADY_USED";

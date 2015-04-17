@@ -3751,6 +3751,50 @@ namespace WebsitePanel.EnterpriseServer
             return vs.IsReplicaServer(remoteServer);
         }
 
+        public static VmReplication GetReplication(int itemId)
+        {
+            VirtualMachine vm = GetVirtualMachineByItemId(itemId);
+            VirtualizationServer2012 vs = GetVirtualizationProxy(vm.ServiceId);
+            return vs.GetReplication(vm.VirtualMachineId);
+        }
+
+        public static ResultObject SetVmReplication(int itemId, string replicaServer, VmReplication replication)
+        {
+            ResultObject result = new ResultObject();
+            try
+            {
+                VirtualMachine vm = GetVirtualMachineByItemId(itemId);
+                VirtualizationServer2012 vs = GetVirtualizationProxy(vm.ServiceId);
+
+                // Get replica server name
+                StringDictionary vsSesstings = ServerController.GetServiceSettings(vm.ServiceId);
+                string replicaServiceId = vsSesstings["ReplicaServerId"];
+
+                if (string.IsNullOrEmpty(replicaServiceId))
+                {
+                    result.ErrorCodes.Add(VirtualizationErrorCodes.SET_NO_REPLICA_SERVER_ERROR);
+                    return result;
+                }
+
+                //StringDictionary vsSesstings = ServerController.GetServiceSettings(vm.replicaServiceId);
+                //string replicaServiceId = vsSesstings["ReplicaServerId"];
+
+                //if (string.IsNullOrEmpty(replicaServiceId))
+                //{
+                //    result.ErrorCodes.Add(VirtualizationErrorCodes.SET_NO_REPLICA_SERVER_ERROR);
+                //    return result;
+                //}
+
+                vs.SetVmReplication(vm.VirtualMachineId, replicaServer, replication);
+                result.IsSuccess = true;
+            }
+            catch (Exception ex)
+            {
+                result.AddError(VirtualizationErrorCodes.SET_SET_REPLICATION_ERROR, ex);
+            }
+            return result; 
+        }
+
         #endregion
     }
 }
