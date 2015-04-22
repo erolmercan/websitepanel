@@ -1667,12 +1667,46 @@ namespace WebsitePanel.Providers.HostedSolution
 
         internal void DeleteMappedDriveByPathInternal(string organizationId, string path)
         {
-            MappedDrive drive = GetDriveMaps(organizationId).Where(x => x.Path == path).FirstOrDefault();
+                HostedSolutionLog.LogStart("DeleteMappedDriveInternal");
+                HostedSolutionLog.DebugInfo("path : {0}:", path);
+                HostedSolutionLog.DebugInfo("organizationId : {0}", organizationId);
 
-            if (drive != null)
-            {
-                DeleteMappedDriveInternal(organizationId, drive.DriveLetter);
-            }
+                if (string.IsNullOrEmpty(organizationId))
+                    throw new ArgumentNullException("organizationId");
+
+                if (string.IsNullOrEmpty(path))
+                    throw new ArgumentNullException("path");
+
+                string gpoId;
+
+                if (!CheckMappedDriveGpoExists(organizationId, out gpoId))
+                {
+                    CreateAndLinkMappedDrivesGPO(organizationId, out gpoId);
+                }
+
+                if (!string.IsNullOrEmpty(gpoId))
+                {
+                    string filePath = string.Format("{0}\\{1}",
+                                                string.Format(GROUP_POLICY_MAPPED_DRIVES_FILE_PATH_TEMPLATE, RootDomain, gpoId),
+                                                "Drives.xml");
+
+                    // open xml document
+                    XmlDocument xml = new XmlDocument();
+                    xml.Load(filePath);
+
+                    XmlNode drive = xml.SelectSingleNode(string.Format("./Drives/Drive[contains(Properties/@path,'{0}')]", path));
+
+                    if (drive != null)
+                    {
+                        drive.ParentNode.RemoveChild(drive);
+                    }
+
+                    xml.Save(filePath);
+
+                    IncrementGPOVersion(organizationId, gpoId);
+                }
+
+                HostedSolutionLog.LogEnd("DeleteMappedDriveInternal");
         }
 
         public void DeleteMappedDrive(string organizationId, string drive)
