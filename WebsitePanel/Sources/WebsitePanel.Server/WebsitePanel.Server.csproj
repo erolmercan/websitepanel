@@ -205,6 +205,8 @@
     <Content Include="bin\WebsitePanel.Providers.Mail.hMailServer43.pdb" />
     <Content Include="bin\WebsitePanel.Providers.Mail.hMailServer5.dll" />
     <Content Include="bin\WebsitePanel.Providers.Mail.hMailServer5.pdb" />
+    <Content Include="bin\WebsitePanel.Providers.Mail.IceWarp.dll" />
+    <Content Include="bin\WebsitePanel.Providers.Mail.IceWarp.pdb" />
     <Content Include="bin\WebsitePanel.Providers.Mail.MailEnable.dll" />
     <Content Include="bin\WebsitePanel.Providers.Mail.MailEnable.pdb" />
     <Content Include="bin\WebsitePanel.Providers.Mail.MDaemon.dll" />
@@ -259,8 +261,6 @@
     <Content Include="bin\WebsitePanel.Providers.Web.IIs80.pdb" />
     <Content Include="bin\WebsitePanel.Providers.Web.WebDav.dll" />
     <Content Include="bin\WebsitePanel.Providers.Web.WebDav.pdb" />
-    <Content Include="bin\WebsitePanel.Server.Client.dll" />
-    <Content Include="bin\WebsitePanel.Server.Client.pdb" />
     <Content Include="bin\WebsitePanel.Server.dll" />
     <Content Include="bin\WebsitePanel.Server.pdb" />
     <Content Include="bin\WebsitePanel.Server.Utils.dll" />
