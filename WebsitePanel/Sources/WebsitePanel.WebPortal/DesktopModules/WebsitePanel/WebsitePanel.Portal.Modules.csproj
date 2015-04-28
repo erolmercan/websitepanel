@@ -153,6 +153,7 @@
     <Compile Include="Code\Framework\ISchedulerTaskView.cs" />
     <Compile Include="Code\Framework\WebPortalPageTitleProvider.cs" />
     <Compile Include="Code\Framework\WebPortalThemeProvider.cs" />
+    <Compile Include="Code\Helpers\AjaxHandler.cs" />
     <Compile Include="Code\Helpers\AppInstallerHelpers.cs" />
     <Compile Include="Code\Framework\WebsitePanelControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -341,6 +342,13 @@
     <Compile Include="ScheduleTaskControls\UserPasswordExpirationNotificationView.ascx.cs">
       <DependentUpon>UserPasswordExpirationNotificationView.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SearchObject.ascx.cs">
+      <DependentUpon>SearchObject.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="SearchObject.ascx.designer.cs">
+      <DependentUpon>SearchObject.ascx</DependentUpon>
     </Compile>
     <Compile Include="VPS2012\RemoteDesktop\Connect.aspx.cs">
       <DependentUpon>Connect.aspx</DependentUpon>
@@ -560,6 +568,13 @@
     </Compile>
     <Compile Include="VPS2012\VpsDetailsPermissions.ascx.designer.cs">
       <DependentUpon>VpsDetailsPermissions.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="VPS2012\VpsDetailsReplications.ascx.cs">
+      <DependentUpon>VpsDetailsReplications.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="VPS2012\VpsDetailsReplications.ascx.designer.cs">
+      <DependentUpon>VpsDetailsReplications.ascx</DependentUpon>
     </Compile>
     <Compile Include="VPS2012\VpsDetailsSnapshots.ascx.cs">
       <DependentUpon>VpsDetailsSnapshots.ascx</DependentUpon>
@@ -4873,7 +4888,9 @@
     <Content Include="HostedSharePoint\HostedSharePointEnterpriseStorageSettings.ascx" />
     <Content Include="HostedSharePoint\HostedSharePointEnterpriseStorageUsage.ascx" />
     <Content Include="ProviderControls\HyperV2012R2_Settings.ascx" />
+    <Content Include="SearchObject.ascx" />
     <Content Include="ScheduleTaskControls\UserPasswordExpirationNotificationView.ascx" />
+    <Content Include="SearchObject.ascx" />
     <Content Include="SettingsUserPasswordExpirationLetter.ascx" />
     <Content Include="SettingsUserPasswordResetLetter.ascx" />
     <Content Include="VPS2012\RemoteDesktop\Connect.aspx" />
@@ -4905,6 +4922,7 @@
     <Content Include="VPS2012\VpsDetailsInsertDvd.ascx" />
     <Content Include="VPS2012\VpsDetailsNetwork.ascx" />
     <Content Include="VPS2012\VpsDetailsPermissions.ascx" />
+    <Content Include="VPS2012\VpsDetailsReplications.ascx" />
     <Content Include="VPS2012\VpsDetailsSnapshots.ascx" />
     <Content Include="VPS2012\VpsDetailsTools.ascx" />
     <Content Include="VPS2012\VpsMoveServer.ascx" />
@@ -5182,9 +5200,12 @@
     <Content Include="PhoneNumbersAddPhoneNumber.ascx" />
     <Content Include="PhoneNumbersEditPhoneNumber.ascx" />
     <Content Include="UserControls\App_LocalResources\UserActions.ascx.resx" />
-    <Content Include="UserControls\App_LocalResources\DomainActions.ascx.resx" />
+    <Content Include="UserControls\App_LocalResources\DomainActions.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="UserControls\App_LocalResources\MailAccountActions.ascx.resx" />
     <Content Include="ScheduleTaskControls\App_LocalResources\UserPasswordExpirationNotificationView.ascx.resx" />
+    <Content Include="SkinControls\App_LocalResources\SearchObject.ascx.resx" />
     <EmbeddedResource Include="UserControls\App_LocalResources\WebsiteActions.ascx.resx" />
     <Content Include="VPS\UserControls\App_LocalResources\Generation.ascx.resx">
       <SubType>Designer</SubType>
@@ -5283,6 +5304,9 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="VPS2012\UserControls\App_LocalResources\ServerTabs.ascx.resx">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="VPS2012\App_LocalResources\VpsDetailsReplications.ascx.resx">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
