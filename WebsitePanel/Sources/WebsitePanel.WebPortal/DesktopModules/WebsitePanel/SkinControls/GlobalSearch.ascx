@@ -6,6 +6,12 @@
 
 <script type="text/javascript">
     //<![CDATA[
+    $("#<%= tbSearch.ClientID %>").keypress(function () {
+        $("#<%= tbSearchText.ClientID %>").val('');
+        $("#<%= tbObjectId.ClientID %>").val('');
+        $("#<%= tbPackageId.ClientID %>").val('');
+    });
+
     $(document).ready(function () {
         $("#<%= tbSearch.ClientID %>").autocomplete({
             zIndex: 100,
@@ -33,6 +39,8 @@
                 $("#<%= tbSearchColumnType.ClientID %>").val(item.code.ColumnType);
                 $("#<%= tbSearchFullType.ClientID %>").val(item.code.FullType);
                 $("#<%= tbSearchText.ClientID %>").val(item.code.TextSearch);
+                $("#<%= tbObjectId.ClientID %>").val(item.code.ItemID);
+                $("#<%= tbPackageId.ClientID %>").val(item.code.PackageID);
             }
         });
     });//]]>
@@ -66,6 +74,18 @@
                         </asp:TextBox>
                         <asp:TextBox
                             ID="tbSearchText"
+                            runat="server"
+                            type="hidden"
+                        >
+                        </asp:TextBox>
+                        <asp:TextBox
+                            ID="tbObjectId"
+                            runat="server"
+                            type="hidden"
+                        >
+                        </asp:TextBox>
+                        <asp:TextBox
+                            ID="tbPackageId"
                             runat="server"
                             type="hidden"
                         >

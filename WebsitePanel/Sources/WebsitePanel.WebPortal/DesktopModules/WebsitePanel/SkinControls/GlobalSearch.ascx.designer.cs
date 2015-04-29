@@ -58,6 +58,24 @@ namespace WebsitePanel.Portal.SkinControls {
         protected global::System.Web.UI.WebControls.TextBox tbSearchText;
         
         /// <summary>
+        /// tbObjectId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbObjectId;
+        
+        /// <summary>
+        /// tbPackageId control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox tbPackageId;
+        
+        /// <summary>
         /// ImageButton1 control.
         /// </summary>
         /// <remarks>

@@ -32,6 +32,8 @@ namespace WebsitePanel.WebPortal
                     Dictionary<string, string> obj = new Dictionary<string, string>();
                     obj["ColumnType"] = "PackageName";
                     obj["TextSearch"] = row["PackageName"].ToString();
+                    obj["ItemID"] = row["ItemID"].ToString();
+                    obj["PackageID"] = row["PackageID"].ToString();
                     obj["FullType"] = "Space";
                     dataList.Add(obj);
                 }
@@ -54,6 +56,8 @@ namespace WebsitePanel.WebPortal
                     Dictionary<string, string> obj = new Dictionary<string, string>();
                     obj["ColumnType"] = row["ColumnType"].ToString();
                     obj["TextSearch"] = row["TextSearch"].ToString();
+                    obj["ItemID"] = row["ItemID"].ToString();
+                    obj["PackageID"] = row["PackageID"].ToString();
                     obj["FullType"] = row["FullType"].ToString();
                     dataList.Add(obj);
                 }
