@@ -23,7 +23,7 @@ namespace WebsitePanel.WebPortal
                 int itemType = Int32.Parse(strItemType);
                 DataSet dsObjectItems = ES.Services.Packages.SearchServiceItemsPaged(PanelSecurity.EffectiveUserId, itemType,
                     String.Format("%{0}%", filterValue),
-                   "",0, 100);
+                   "",0, 15);
                 DataTable dt = dsObjectItems.Tables[1];
                 List<Dictionary<string, string>> dataList = new List<Dictionary<string, string>>();
                 for (int i = 0; i < dt.Rows.Count; ++i)
@@ -47,7 +47,7 @@ namespace WebsitePanel.WebPortal
             {
                 DataSet dsObjectItems = ES.Services.Packages.GetSearchObject(PanelSecurity.EffectiveUserId, null,
                     String.Format("%{0}%", filterValue),
-                   0, 0, "", 0, 100, columnType,fullType);
+                   0, 0, "", 0, 15, columnType,fullType);
                 DataTable dt = dsObjectItems.Tables[2];
                 List<Dictionary<string, string>> dataList = new List<Dictionary<string, string>>();
                 for (int i = 0; i < dt.Rows.Count; ++i)
