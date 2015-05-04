@@ -845,7 +845,7 @@ namespace WebsitePanel.Portal
         //TODO START
         public static string GetObjectSearchPageId()
         {
-            return PortalConfiguration.SiteSettings["SearchObjectPage"];
+            return "SearchObject";
         }
         //TODO END
 
