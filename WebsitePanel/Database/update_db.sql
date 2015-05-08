@@ -10176,6 +10176,132 @@ ELSE
 UPDATE [dbo].[UserSettings] SET [PropertyValue] = @UserPasswordPincodeSMSBody WHERE [UserID] = 1 AND [SettingsName]= N'UserPasswordResetPincodeLetter' AND [PropertyName]= N'PasswordResetPincodeSmsBody'
 GO
 
+
+-- USER PASSWORD REQUEST EMAIL TEMPLATE
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'From' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'OrganizationUserPasswordRequestLetter', N'From', N'support@HostingCompany.com')
+END
+GO
+
+DECLARE @OrganizationUserPasswordRequestLetterHtmlBody nvarchar(2500)
+
+Set @OrganizationUserPasswordRequestLetterHtmlBody = N'<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Password request notification</title>
+    <style type="text/css">
+		.Summary { background-color: ##ffffff; padding: 5px; }
+		.Summary .Header { padding: 10px 0px 10px 10px; font-size: 16pt; background-color: ##E5F2FF; color: ##1F4978; border-bottom: solid 2px ##86B9F7; }
+        .Summary A { color: ##0153A4; }
+        .Summary { font-family: Tahoma; font-size: 9pt; }
+        .Summary H1 { font-size: 1.7em; color: ##1F4978; border-bottom: dotted 3px ##efefef; }
+        .Summary H2 { font-size: 1.3em; color: ##1F4978; } 
+        .Summary TABLE { border: solid 1px ##e5e5e5; }
+        .Summary TH,
+        .Summary TD.Label { padding: 5px; font-size: 8pt; font-weight: bold; background-color: ##f5f5f5; }
+        .Summary TD { padding: 8px; font-size: 9pt; }
+        .Summary UL LI { font-size: 1.1em; font-weight: bold; }
+        .Summary UL UL LI { font-size: 0.9em; font-weight: normal; }
+    </style>
+</head>
+<body>
+<div class="Summary">
+<div class="Header">
+<img src="#logoUrl#">
+</div>
+<h1>Password request notification</h1>
+
+<ad:if test="#user#">
+<p>
+Hello #user.FirstName#,
+</p>
+</ad:if>
+
+<p>
+Your account have been created. In order to create a password for your account, please follow next link:
+</p>
+
+<a href="#passwordResetLink#" target="_blank">#passwordResetLink#</a>
+
+<p>
+If you have any questions regarding your hosting account, feel free to contact our support department at any time.
+</p>
+
+<p>
+Best regards
+</p>
+</div>
+</body>';
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'HtmlBody' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'OrganizationUserPasswordRequestLetter', N'HtmlBody', @OrganizationUserPasswordRequestLetterHtmlBody)
+END
+ELSE
+UPDATE [dbo].[UserSettings] SET [PropertyValue] = @OrganizationUserPasswordRequestLetterHtmlBody WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'HtmlBody'
+GO
+
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'Priority' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'OrganizationUserPasswordRequestLetter', N'Priority', N'Normal')
+END
+GO
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'Subject' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'OrganizationUserPasswordRequestLetter', N'Subject', N'Password request notification')
+END
+GO
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'LogoUrl' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'OrganizationUserPasswordRequestLetter', N'LogoUrl', N'https://controlpanel.virtuworks.net/App_Themes/Default/Images/logo.png')
+END
+GO
+
+
+DECLARE @OrganizationUserPasswordRequestLetterTextBody nvarchar(2500)
+
+Set @OrganizationUserPasswordRequestLetterTextBody = N'=========================================
+   Password request notification
+=========================================
+
+<ad:if test="#user#">
+Hello #user.FirstName#,
+</ad:if>
+
+Your account have been created. In order to create a password for your account, please follow next link:
+
+#passwordResetLink#
+
+If you have any questions regarding your hosting account, feel free to contact our support department at any time.
+
+Best regards'
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'TextBody' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'OrganizationUserPasswordRequestLetter', N'TextBody', @OrganizationUserPasswordRequestLetterTextBody)
+END
+ELSE
+UPDATE [dbo].[UserSettings] SET [PropertyValue] = @OrganizationUserPasswordRequestLetterTextBody WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'TextBody'
+GO
+
+DECLARE @OrganizationUserPasswordRequestLetterSMSBody nvarchar(2500)
+
+Set @OrganizationUserPasswordRequestLetterSMSBody = N'
+User have been created. Password request url:
+#passwordResetLink#'
+
+IF NOT EXISTS (SELECT * FROM [dbo].[UserSettings] WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'SMSBody' )
+BEGIN
+INSERT [dbo].[UserSettings] ([UserID], [SettingsName], [PropertyName], [PropertyValue]) VALUES (1, N'OrganizationUserPasswordRequestLetter', N'SMSBody', @OrganizationUserPasswordRequestLetterSMSBody)
+END
+ELSE
+UPDATE [dbo].[UserSettings] SET [PropertyValue] = @OrganizationUserPasswordRequestLetterSMSBody WHERE [UserID] = 1 AND [SettingsName]= N'OrganizationUserPasswordRequestLetter' AND [PropertyName]= N'SMSBody'
+GO
+
+
+
 -- Exchange setup EMAIL TEMPLATE
 
 

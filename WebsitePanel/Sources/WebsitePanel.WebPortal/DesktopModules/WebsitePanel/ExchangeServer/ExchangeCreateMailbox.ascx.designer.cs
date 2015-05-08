@@ -256,6 +256,15 @@ namespace WebsitePanel.Portal.ExchangeServer {
         protected global::System.Web.UI.WebControls.CheckBox chkUserMustChangePassword;
         
         /// <summary>
+        /// sendToControl control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::WebsitePanel.Portal.UserControls.SendToControl sendToControl;
+        
+        /// <summary>
         /// locMailboxType control.
         /// </summary>
         /// <remarks>
