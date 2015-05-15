@@ -332,6 +332,13 @@
     <Compile Include="HostedSharePoint\HostedSharePointEnterpriseStorageUsage.ascx.designer.cs">
       <DependentUpon>HostedSharePointEnterpriseStorageUsage.ascx</DependentUpon>
     </Compile>
+    <Compile Include="RDS\RDSImportCollection.ascx.cs">
+      <DependentUpon>RDSImportCollection.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RDS\RDSImportCollection.ascx.designer.cs">
+      <DependentUpon>RDSImportCollection.ascx</DependentUpon>
+    </Compile>
     <Compile Include="VpsMenu.ascx.cs">
       <DependentUpon>VpsMenu.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -4901,6 +4908,7 @@
     <Content Include="HostedSharePoint\HostedSharePointEnterpriseRestoreSiteCollection.ascx" />
     <Content Include="HostedSharePoint\HostedSharePointEnterpriseStorageSettings.ascx" />
     <Content Include="HostedSharePoint\HostedSharePointEnterpriseStorageUsage.ascx" />
+    <Content Include="RDS\RDSImportCollection.ascx" />
     <Content Include="VpsMenu.ascx" />
     <Content Include="ProviderControls\HyperV2012R2_Settings.ascx" />
     <Content Include="SearchObject.ascx" />
@@ -5066,6 +5074,7 @@
     <Content Include="RDS\App_LocalResources\RDSLocalAdmins.ascx.resx" />
     <Content Include="RDS\App_LocalResources\RDSSetupLetter.ascx.resx" />
     <Content Include="RDS\App_LocalResources\RDSEditUserExperience.ascx.resx" />
+    <Content Include="RDS\App_LocalResources\RDSImportCollection.ascx.resx" />
     <EmbeddedResource Include="ScheduleTaskControls\App_LocalResources\DomainLookupView.ascx.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>DomainLookupView.ascx.Designer.cs</LastGenOutput>
