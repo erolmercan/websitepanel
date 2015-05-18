@@ -5289,6 +5289,9 @@
   <data name="UserItemType.ExchangeAccount" xml:space="preserve">
     <value>Exchange Account</value>
   </data>
+  <data name="UserItemType.Users" xml:space="preserve">
+    <value>Account Home</value>
+  </data>
   <data name="Error.WEB_PUB_DISABLE" xml:space="preserve">
     <value>Could not disable access to Web Publishing feature for the account specified</value>
   </data>
