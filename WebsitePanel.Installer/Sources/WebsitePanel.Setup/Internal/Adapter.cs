@@ -3928,6 +3928,13 @@ namespace WebsitePanel.Setup.Internal
         {
             try
             {
+                XmlDocumentMerge.KeyAttributes = new List<string> { "name", "id", "key", "pageID", "localName", "xmlns", "privatePath", "moduleDefinitionID", "ref", "verb;path", "controlRenderingCompatibilityVersion;clientIDMode" };
+                XmlDocumentMerge.FrozenAttributes = new List<XmlDocumentMerge.FrozenAttrTag>
+                {
+                    new XmlDocumentMerge.FrozenAttrTag() { Path="configuration/microsoft.web.services3/security/securityTokenManager/add", Attributes = new List<string>() {"localName"} },
+                    new XmlDocumentMerge.FrozenAttrTag(true) { Path="compilation", Attributes = new List<string>() {"targetFramework"} },
+                    new XmlDocumentMerge.FrozenAttrTag() { Path="configuration/startup/supportedRuntime", Attributes = new List<string>() {"version", "sku" } }
+                };
                 Log.WriteStart("RestoreXmlConfigs");
                 var Backup = BackupRestore.Find(Ctx.InstallerFolder, Global.DefaultProductName, Ctx.ComponentName);                
                 switch(Ctx.ComponentCode)
@@ -3940,21 +3947,13 @@ namespace WebsitePanel.Setup.Internal
                     case Global.EntServer.ComponentCode:
                     {
                         Backup.XmlFiles.Add("Web.config");
+                        Backup.XmlFiles.Add(@"bin\WebsitePanel.SchedulerService.exe.config");
                     }
                     break;
                     case Global.WebPortal.ComponentCode:
                     {
                         Backup.XmlFiles.Add("Web.config");
-                        Backup.XmlFiles.Add(@"App_Data\Countries.config");
-                        Backup.XmlFiles.Add(@"App_Data\CountryStates.config");
-                        Backup.XmlFiles.Add(@"App_Data\Ecommerce_Modules.config");
-                        Backup.XmlFiles.Add(@"App_Data\Ecommerce_Pages.config");
-                        Backup.XmlFiles.Add(@"App_Data\ESModule_ControlsHierarchy.config");
-                        Backup.XmlFiles.Add(@"App_Data\ModulesData.config");
                         Backup.XmlFiles.Add(@"App_Data\SiteSettings.config");
-                        Backup.XmlFiles.Add(@"App_Data\SupportedLocales.config");
-                        Backup.XmlFiles.Add(@"App_Data\SupportedThemes.config");
-                        Backup.XmlFiles.Add(@"App_Data\WebsitePanel_Modules.config");
                         Backup.XmlFiles.Add(@"App_Data\WebsitePanel_Pages.config");
                     }
                     break;
