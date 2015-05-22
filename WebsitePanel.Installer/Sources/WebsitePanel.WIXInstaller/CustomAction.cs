@@ -126,17 +126,10 @@ namespace WebsitePanel.WIXInstaller
             };
             Func<IEnumerable<string>, string> FindMainConfig = (IEnumerable<string> Dirs) =>
             {
-                // Looking into platform specific Program Files.
-                {
-                    var InstallerMainCfg = "WebsitePanel.Installer.exe.config";
-                    var InstallerName = "WebsitePanel Installer";
-                    var PFolderType = Environment.Is64BitOperatingSystem ? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles;
-                    var PFiles = Environment.GetFolderPath(PFolderType);
-                    var Result = Path.Combine(PFiles, InstallerName, InstallerMainCfg);
-                    if (HaveInstalledComponents(Result))
-                        return Result;
-                }
-                // Looking into specific directories.
+                // Looking into directories with next priority: 
+                // Previous installation directory and her backup, "WebsitePanel" directories on fixed drives and their backups.
+                // The last chance is an update from an installation based on previous installer version that installed to "Program Files".
+                // Regular directories.
                 foreach (var Dir in Dirs)
                 {
                     var Result = Path.Combine(Dir, BackupRestore.MainConfig);
@@ -154,6 +147,16 @@ namespace WebsitePanel.WIXInstaller
                                 return Backup.BackupMainConfigFile;
                         }
                     }
+                }
+                // Looking into platform specific Program Files.
+                {
+                    var InstallerMainCfg = "WebsitePanel.Installer.exe.config";
+                    var InstallerName = "WebsitePanel Installer";
+                    var PFolderType = Environment.Is64BitOperatingSystem ? Environment.SpecialFolder.ProgramFilesX86 : Environment.SpecialFolder.ProgramFiles;
+                    var PFiles = Environment.GetFolderPath(PFolderType);
+                    var Result = Path.Combine(PFiles, InstallerName, InstallerMainCfg);
+                    if (HaveInstalledComponents(Result))
+                        return Result;
                 }
                 return null;
             };
