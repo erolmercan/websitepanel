@@ -101,16 +101,26 @@ namespace WebsitePanel.Portal.RDS.UserControls
 
 		protected void btnDelete_Click(object sender, EventArgs e)
 		{
-            if (CheckDeletedUsers())
+            if (PanelRequest.Ctl == "rds_collection_edit_users")
+            {
+                var lockedUsers = CheckDeletedUsers();
+
+                if (!lockedUsers.Any())
+                {
+                    List<OrganizationUser> selectedAccounts = GetGridViewUsers(SelectedState.Unselected);
+                    BindAccounts(selectedAccounts.ToArray(), false);
+                }
+
+                if (OnRefreshClicked != null)
+                {
+                    OnRefreshClicked(lockedUsers, new EventArgs());
+                }
+            }
+            else
             {
                 List<OrganizationUser> selectedAccounts = GetGridViewUsers(SelectedState.Unselected);
                 BindAccounts(selectedAccounts.ToArray(), false);
             }
-
-            if (OnRefreshClicked != null)
-            {
-                OnRefreshClicked(sender, new EventArgs());
-            }  
 		}
 
 		protected void btnAddSelected_Click(object sender, EventArgs e)
@@ -142,8 +152,8 @@ namespace WebsitePanel.Portal.RDS.UserControls
             return GetThemedImage("Exchange/" + imgName);
         }
 
-        public bool CheckDeletedUsers()
-        {
+        public List<string> CheckDeletedUsers()
+        {            
             var rdsUsers = GetGridViewUsers(SelectedState.Selected);
             var localAdmins = ES.Services.RDS.GetRdsCollectionLocalAdmins(PanelRequest.CollectionID);
             var organizationUsers = ES.Services.Organizations.GetOrganizationUsersPaged(PanelRequest.ItemID, null, null, null, 0, Int32.MaxValue).PageUsers;
@@ -155,17 +165,9 @@ namespace WebsitePanel.Portal.RDS.UserControls
             deletedUsers.AddRange(rdsUsers.Where(r => localAdmins.Select(l => l.AccountName.ToLower()).Contains(r.AccountName.ToLower())));
             remoteAppUsers = remoteAppUsers.Where(r => !localAdmins.Select(l => l.AccountName.ToLower()).Contains(r.AccountName.ToLower()));
             deletedUsers.AddRange(rdsUsers.Where(r => remoteAppUsers.Select(l => l.AccountName.ToLower()).Contains(r.AccountName.ToLower())));
-            deletedUsers = deletedUsers.Distinct().ToList();
+            deletedUsers = deletedUsers.Distinct().ToList();            
 
-            if (deletedUsers.Any())
-            {                
-                ltUsers.Text = string.Join("<br/>", deletedUsers.Select(d => d.DisplayName));                
-                DeleteWarningModal.Show();
-
-                return false;
-            }
-
-            return true;
+            return deletedUsers.Select(d => d.DisplayName).ToList();
         }
 
         public void BindUsers()

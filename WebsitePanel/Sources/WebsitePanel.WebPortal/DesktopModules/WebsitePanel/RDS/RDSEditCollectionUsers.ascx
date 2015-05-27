@@ -23,7 +23,11 @@
                             <asp:Literal ID="litCollectionName" runat="server" Text="" />
                         </div>
                         <div class="FormContentRDS">
-                            <wsp:SimpleMessageBox id="messageBox" runat="server" />
+                            <asp:UpdatePanel runat="server" ID="messageUpdatePanel">
+                                <ContentTemplate>
+                                    <wsp:SimpleMessageBox id="messageBox" runat="server" />
+                                </ContentTemplate>                                
+                            </asp:UpdatePanel>
                             <wsp:CollectionTabs id="tabs" runat="server" SelectedTab="rds_collection_edit_users" />                    					
                             <wsp:CollapsiblePanel id="secRdsUsers" runat="server"
                                 TargetControlID="panelRdsUsers" meta:resourcekey="secRdsUsers" Text="">

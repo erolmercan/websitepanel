@@ -48,7 +48,9 @@ namespace WebsitePanel.Portal.RDS
             users.OnRefreshClicked += OnRefreshClicked;
 
             if (!IsPostBack)
-            {                
+            {
+                var collection = ES.Services.RDS.GetRdsCollection(PanelRequest.CollectionID);
+                litCollectionName.Text = collection.DisplayName;
                 BindQuota();
                 users.BindUsers();
             }
@@ -77,6 +79,12 @@ namespace WebsitePanel.Portal.RDS
         private void OnRefreshClicked(object sender, EventArgs e)
         {           
             ((ModalPopupExtender)asyncTasks.FindControl("ModalPopupProperties")).Hide();
+            var users = (List<string>)sender;
+
+            if (users.Any())
+            {
+                messageBox.ShowErrorMessage("RDS_USERS_NOT_DELETED", new Exception(string.Join(", ", users)));
+            }
         }
 
         private bool SaveRdsUsers()
