@@ -193,7 +193,7 @@
                         <asp:Localize ID="locSysprep" runat="server" meta:resourcekey="locSysprep" Text="Sysprep files:"></asp:Localize>
                     </td>
                     <td colspan="2">
-                        <asp:TextBox Width="470px" CssClass="NormalTextBox" runat="server" ID="txtSysprep" Text='<%# string.Join(";", (string[])Eval("SysprepFiles")) %>'></asp:TextBox>
+                        <asp:TextBox Width="470px" CssClass="NormalTextBox" runat="server" ID="txtSysprep" Text='<%# Eval("SysprepFiles") != null ? string.Join(";", (string[])Eval("SysprepFiles")) : "" %>'></asp:TextBox>
                     </td>
                 </tr>
             </table>
