@@ -155,6 +155,13 @@ namespace WebsitePanel.Portal.RDS.UserControls
         public List<string> CheckDeletedUsers()
         {            
             var rdsUsers = GetGridViewUsers(SelectedState.Selected);
+            var collectionUsers = ES.Services.RDS.GetRdsCollectionUsers(PanelRequest.CollectionID);
+
+            if (rdsUsers.All(r => !collectionUsers.Select(c => c.AccountName.ToLower()).Contains(r.AccountName.ToLower())))
+            {
+                return new List<string>();
+            }
+
             var localAdmins = ES.Services.RDS.GetRdsCollectionLocalAdmins(PanelRequest.CollectionID);
             var organizationUsers = ES.Services.Organizations.GetOrganizationUsersPaged(PanelRequest.ItemID, null, null, null, 0, Int32.MaxValue).PageUsers;
             var applicationUsers = ES.Services.RDS.GetApplicationUsers(PanelRequest.ItemID, PanelRequest.CollectionID, null);
@@ -219,14 +226,7 @@ namespace WebsitePanel.Portal.RDS.UserControls
             }
 
             accounts = accounts.Where(x => !GetUsers().Select(p => p.AccountName).Contains(x.AccountName)).ToArray();
-            Array.Sort(accounts, CompareAccount);
-            if (Direction == SortDirection.Ascending)
-            {
-                Array.Reverse(accounts);
-                Direction = SortDirection.Descending;
-            }
-            else
-                Direction = SortDirection.Ascending;
+            Array.Sort(accounts, CompareAccount);            
 
             gvPopupAccounts.DataSource = accounts;
             gvPopupAccounts.DataBind();
@@ -262,7 +262,7 @@ namespace WebsitePanel.Portal.RDS.UserControls
 				}
 			}
 
-            gvUsers.DataSource = users;
+            gvUsers.DataSource = users.OrderBy(u => u.DisplayName);
             gvUsers.DataBind();
 		}
 

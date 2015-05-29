@@ -3100,12 +3100,20 @@ namespace WebsitePanel.Providers.RemoteDesktopServices
 
         private string GetRdsServerStatus (Runspace runspace, string serverName)
         {
+            Log.WriteWarning(string.Format("CheckServerAvailability started"));        
+
             if (CheckServerAvailability(serverName))
-            {                
+            {
+                Log.WriteWarning(string.Format("Pending reboot check started"));        
+
                 if (CheckPendingReboot(runspace, serverName))
                 {
+                    Log.WriteWarning(string.Format("Pending reboot check finished"));        
+
                     return "Online - Pending Reboot";
                 }
+
+                Log.WriteWarning(string.Format("Pending reboot check finished"));        
 
                 return "Online";
             }

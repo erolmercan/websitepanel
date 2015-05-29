@@ -667,7 +667,7 @@ namespace WebsitePanel.EnterpriseServer
             var collectionSettings = ObjectUtils.FillObjectFromDataReader<RdsCollectionSettings>(DataProvider.GetRdsCollectionSettingsByCollectionId(collectionId));
             collection.Settings = collectionSettings;
 
-            var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "ADD_RDS_COLLECTION");
+            var result = TaskManager.StartResultTask<ResultObject>("REMOTE_DESKTOP_SERVICES", "GET_RDS_COLLECTION");
 
             try
             {
@@ -682,13 +682,23 @@ namespace WebsitePanel.EnterpriseServer
                 var rds = RemoteDesktopServicesHelpers.GetRemoteDesktopServices(RemoteDesktopServicesHelpers.GetRemoteDesktopServiceID(org.PackageId));
 
                 rds.GetCollection(collection.Name);
+                FillRdsCollection(collection);
             }
             catch (Exception ex)
             {
                 result.AddError("REMOTE_DESKTOP_SERVICES_ADD_RDS_COLLECTION", ex);
             }
-
-            FillRdsCollection(collection);
+            finally
+            {
+                if (!result.IsSuccess)
+                {
+                    TaskManager.CompleteResultTask(result);
+                }
+                else
+                {
+                    TaskManager.CompleteResultTask();
+                }
+            }            
 
             return collection;
         }
@@ -2043,6 +2053,8 @@ namespace WebsitePanel.EnterpriseServer
 
         private static string GetRdsServerStatusInternal(int? itemId, string fqdnName)
         {
+            return "Online";
+
             var result = "Unavailable";
             var serviceId = GetRdsServiceId(itemId);
 

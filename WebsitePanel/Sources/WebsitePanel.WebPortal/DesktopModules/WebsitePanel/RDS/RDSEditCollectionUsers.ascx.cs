@@ -58,6 +58,17 @@ namespace WebsitePanel.Portal.RDS
 
         private void BindQuota()
         {
+            var quota = GetQuota();
+
+            if (quota != null)
+            {
+                int rdsUsersCount = ES.Services.RDS.GetOrganizationRdsUsersCount(PanelRequest.ItemID);
+                users.ButtonAddEnabled = (!(quota.QuotaAllocatedValue <= rdsUsersCount) || (quota.QuotaAllocatedValue == -1));
+            }
+        }
+
+        private QuotaValueInfo GetQuota()
+        {
             PackageContext cntx = PackagesHelper.GetCachedPackageContext(PanelSecurity.PackageId);
             OrganizationStatistics stats = ES.Services.Organizations.GetOrganizationStatisticsByOrganization(PanelRequest.ItemID);
             OrganizationStatistics tenantStats = ES.Services.Organizations.GetOrganizationStatistics(PanelRequest.ItemID);
@@ -71,9 +82,10 @@ namespace WebsitePanel.Portal.RDS
             
             if (cntx.Quotas.ContainsKey(Quotas.RDS_USERS))
             {
-                int rdsUsersCount = ES.Services.RDS.GetOrganizationRdsUsersCount(PanelRequest.ItemID);
-                users.ButtonAddEnabled = (!(cntx.Quotas[Quotas.RDS_USERS].QuotaAllocatedValue <= rdsUsersCount) || (cntx.Quotas[Quotas.RDS_USERS].QuotaAllocatedValue == -1));
+                return cntx.Quotas[Quotas.RDS_USERS];
             }
+
+            return null;
         }
 
         private void OnRefreshClicked(object sender, EventArgs e)
@@ -83,7 +95,12 @@ namespace WebsitePanel.Portal.RDS
 
             if (users.Any())
             {
+                messageBox.Visible = true;
                 messageBox.ShowErrorMessage("RDS_USERS_NOT_DELETED", new Exception(string.Join(", ", users)));
+            }
+            else
+            {
+                messageBox.Visible = false;
             }
         }
 
@@ -91,11 +108,23 @@ namespace WebsitePanel.Portal.RDS
         {
             try
             {
-                ES.Services.RDS.SetUsersToRdsCollection(PanelRequest.ItemID, PanelRequest.CollectionID, users.GetUsers());                
+                var quota = GetQuota();
+                var rdsUsers = users.GetUsers();
+
+                if (quota.QuotaAllocatedValue == -1 || quota.QuotaAllocatedValue >= rdsUsers.Count())
+                {
+                    messageBox.Visible = false;
+                    ES.Services.RDS.SetUsersToRdsCollection(PanelRequest.ItemID, PanelRequest.CollectionID, users.GetUsers());                
+                }   
+                else
+                {
+                    throw new Exception("Too many RDS users added");
+                }
             }
             catch (Exception ex)
             {
-                messageBox.ShowErrorMessage(ex.Message);
+                messageBox.Visible = true;
+                messageBox.ShowErrorMessage("RDS_USERS_NOT_UPDATED", ex);
                 return false;
             }
 
